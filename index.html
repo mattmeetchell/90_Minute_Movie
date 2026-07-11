@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>90 Minute Movie Picker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260711-private-flow-anticipation-42" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar" aria-label="Movie picker">
+      <button id="homeButton" class="placeholder-nav" type="button" aria-label="Go to landing page"></button>
+      <div class="header-drawer">
+        <div class="drawer-panel drawer-panel-genre">
+          <h1>Pick up to 2 Genres</h1>
+          <div class="header-drawer-actions">
+            <button id="headerGoToDecades" class="button-primary" type="button">Next -></button>
+            <button id="headerClearFilters" class="button-secondary" type="button">Clear</button>
+          </div>
+        </div>
+        <div class="drawer-panel drawer-panel-decade">
+          <h1>Pick the decade</h1>
+          <div class="header-drawer-actions">
+            <button id="headerPickMovie" class="button-primary" type="button">Find Movie</button>
+            <button id="headerBackToGenres" class="button-secondary" type="button">Back</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="landingView" class="view landing-view">
+        <div class="poster-marquee" aria-hidden="false">
+          <div id="posterTrack" class="poster-track" aria-label="Sample movies"></div>
+        </div>
+        <div class="hero-copy">
+          <p>Got 90 min?</p>
+          <h1>Let's watch<br>a movie</h1>
+          <button id="startPicking" class="button-primary" type="button">Lets Go</button>
+        </div>
+      </section>
+
+      <section id="pickerView" class="view tray-view picker-view hidden">
+        <div class="section-heading">
+          <h1>Pick up to 2 Genres</h1>
+          <div class="heading-actions">
+            <button id="goToDecades" class="button-primary" type="button">Next -></button>
+            <button id="clearFilters" class="button-secondary" type="button">Clear</button>
+          </div>
+        </div>
+
+        <div id="genresTray" class="genre-grid" aria-label="Movie genres"></div>
+        <p id="selectionSummary" class="selection-summary" aria-live="polite"></p>
+        <p class="availability-note">Possible matches: <strong id="resultCount">-</strong></p>
+      </section>
+
+      <section id="decadeView" class="view tray-view decade-view hidden">
+        <div class="section-heading">
+          <h1>Pick some decades</h1>
+          <div class="heading-actions">
+            <button id="pickMovie" class="button-primary" type="button">Find Movie</button>
+            <button id="backToGenres" class="button-secondary" type="button">Back</button>
+          </div>
+        </div>
+
+        <div id="decadesTray" class="decade-grid" aria-label="Movie decades"></div>
+        <p id="decadeSummary" class="selection-summary" aria-live="polite"></p>
+        <p class="availability-note">Possible matches: <strong id="decadeResultCount">-</strong></p>
+      </section>
+
+      <section id="resultView" class="view result-view hidden">
+        <div id="movieResult" class="movie-result">
+          <button id="posterButton" class="poster-frame" type="button" aria-label="Play trailer">
+            <img id="poster" class="poster" alt="Movie poster" />
+            <span id="posterHint" class="poster-hint">Play trailer</span>
+          </button>
+
+          <div class="movie-copy">
+            <span id="year" class="year-pill"></span>
+            <h1 id="title"></h1>
+            <p class="meta-line">
+              <span id="runtime"></span>
+              <span id="rating"></span>
+              <span>Director: <span id="director">-</span></span>
+            </p>
+            <div class="overview-wrap">
+              <p id="overview" class="overview"></p>
+              <button id="toggleOverview" class="overview-toggle hidden" type="button">See more</button>
+            </div>
+            <div id="cast" class="cast-line"></div>
+
+            <div class="watch-block">
+              <h2>Watch it on</h2>
+              <div id="providers" class="providers"></div>
+            </div>
+
+            <div class="result-actions">
+              <button id="tryAgain" class="button-primary" type="button">Try Again</button>
+              <button id="clearResultFilters" class="button-secondary" type="button">Clear Filters</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <img class="footer-logo" src="assets/brand/Updated_Logo.svg" alt="" aria-hidden="true" />
+      <div class="footer-copy">
+        <p>Lovingly vibe coded in NYC <span aria-hidden="true">💕</span> <button id="secretFlowTrigger" class="secret-flow-trigger" type="button" aria-label="Open personal picker">🦧</button></p>
+        <p>Powered by TMDB</p>
+        <p>Lorem ipsum here.</p>
+      </div>
+    </footer>
+
+    <div id="trailerModal" class="trailer-modal hidden" role="dialog" aria-modal="true" aria-label="Movie trailer">
+      <div class="trailer-modal-panel">
+        <button id="closeTrailer" class="modal-close" type="button" aria-label="Close trailer">Close</button>
+        <div class="video-frame">
+          <iframe
+            id="trailer"
+            title="Movie trailer"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="personal-movies.js?v=20260711-private-flow-anticipation-42"></script>
+  <script src="script.js?v=20260711-private-flow-anticipation-42"></script>
+</body>
+</html>
