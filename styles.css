@@ -1579,6 +1579,10 @@ img {
 }
 
 @media (max-width: 760px) {
+  :root {
+    --mobile-result-poster-width: min(280px, calc(100vw - 44px));
+  }
+
   .app-shell {
     overflow: clip;
     padding-bottom: 10px;
@@ -1924,14 +1928,15 @@ img {
 
   .poster-frame {
     margin: 0 auto;
-    max-width: 220px;
+    max-width: var(--mobile-result-poster-width);
     padding: 10px;
+    width: var(--mobile-result-poster-width);
   }
 
   .app-shell[data-result-source="secret"] .poster-frame,
   .personal-picking .poster-frame {
-    max-width: min(340px, calc(100vw - 44px));
-    width: min(340px, calc(100vw - 44px));
+    max-width: var(--mobile-result-poster-width);
+    width: var(--mobile-result-poster-width);
   }
 
   .personal-pick-reel {
