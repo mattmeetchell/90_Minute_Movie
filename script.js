@@ -532,6 +532,7 @@ async function refreshCount() {
 async function pickRandomMovie(options = {}) {
   const cyclePoster = options.cyclePosterOnly && state.activeView === 'result';
   const animateCopy = !state.hasShownResult || state.activeView !== 'result';
+  const shouldAnticipate = animateCopy && !cyclePoster;
   const posterExitDelay = cyclePoster ? wait(320) : Promise.resolve();
 
   if (cyclePoster) {
@@ -557,11 +558,32 @@ async function pickRandomMovie(options = {}) {
     const validResults = shuffle(pageData.results.filter((movie) => movie.poster_path));
     const [details, credits, videos, providers, releaseDates] = await fetchValidMovieBundle(validResults);
 
-    await Promise.all([posterExitDelay, preloadPoster(details.poster_path)]);
-    renderMovie(details, credits, videos, providers, releaseDates);
-    setResultSource('filtered');
-    showView('result');
-    animateResultReveal({ animateCopy, cyclePoster });
+    await preloadPoster(details.poster_path);
+    if (shouldAnticipate) {
+      await posterExitDelay;
+      setResultSource('filtered');
+      showView('result');
+      const anticipation = runPersonalPickAnticipation();
+      await wait(1180);
+      els.posterButton.classList.add('personal-card-rest');
+      renderMovie(details, credits, videos, providers, releaseDates);
+      els.movieCopy.classList.add('personal-copy-pending');
+      els.posterButton.querySelector('.personal-pick-reel')?.remove();
+      els.movieResult.classList.remove('personal-picking');
+      els.posterButton.classList.remove('personal-card-rest');
+      els.posterButton.classList.add('personal-poster-reveal');
+      await wait(860);
+      await revealPersonalPosterStroke();
+      await wait(160);
+      anticipation.then(() => {});
+    } else {
+      await posterExitDelay;
+      renderMovie(details, credits, videos, providers, releaseDates);
+      setResultSource('filtered');
+      showView('result');
+    }
+
+    animateResultReveal({ animateCopy, cyclePoster, personalReveal: shouldAnticipate });
     state.hasShownResult = true;
   } catch (error) {
     console.error(error);
@@ -640,6 +662,7 @@ async function pickSecretMovie(options = {}) {
       await wait(1180);
       els.posterButton.classList.add('personal-card-rest');
       renderMovie(details, credits, videos, providers, releaseDates);
+      els.movieCopy.classList.add('personal-copy-pending');
       els.posterButton.querySelector('.personal-pick-reel')?.remove();
       els.movieResult.classList.remove('personal-picking');
       els.posterButton.classList.remove('personal-card-rest');
@@ -945,10 +968,14 @@ function animateResultReveal({ animateCopy = false, cyclePoster = false, persona
   }
 
   if (animateCopy) {
+    els.movieCopy.classList.remove('personal-copy-pending');
     els.movieCopy.classList.add('result-copy-enter');
     els.movieCopy.classList.add('result-lockup-enter');
   } else if (cyclePoster) {
+    els.movieCopy.classList.remove('personal-copy-pending');
     els.movieCopy.classList.add('result-lockup-cycle');
+  } else {
+    els.movieCopy.classList.remove('personal-copy-pending');
   }
 }
 
@@ -1060,11 +1087,10 @@ function renderProviders(regionData, movie) {
 
   if (movie?.ownedPhysical) {
     const marker = createProviderLink({
-      name: movie.physicalNote || 'Owned on Blu-ray',
+      name: 'Owned on Blu-ray',
       url: getPhysicalMediaUrl(movie),
       logoSrc: PHYSICAL_MEDIA_LOGO
     });
-    marker.classList.add('owned-media-marker');
     els.providers.appendChild(marker);
   }
 

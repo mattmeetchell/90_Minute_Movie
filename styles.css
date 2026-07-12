@@ -918,6 +918,7 @@ img {
 }
 
 .personal-picking .movie-copy,
+.movie-copy.personal-copy-pending,
 .personal-picking .poster,
 .personal-picking .poster-hint {
   opacity: 0;
@@ -1390,32 +1391,6 @@ img {
   line-height: 1;
   padding: 4px;
   text-align: center;
-}
-
-.owned-media-marker {
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.82), 0 14px 26px rgba(0, 0, 0, 0.34);
-  position: relative;
-}
-
-.owned-media-marker::after {
-  align-items: center;
-  background: #fff;
-  border: 2px solid #050505;
-  border-radius: 999px;
-  color: #050505;
-  content: "OWNED";
-  display: flex;
-  font-size: 0.42rem;
-  font-weight: 1000;
-  height: 18px;
-  justify-content: center;
-  letter-spacing: 0.08em;
-  min-width: 48px;
-  padding: 0 6px;
-  position: absolute;
-  right: -18px;
-  top: -8px;
 }
 
 .video-frame {
@@ -1956,6 +1931,7 @@ img {
   .app-shell[data-result-source="secret"] .poster-frame,
   .personal-picking .poster-frame {
     max-width: min(340px, calc(100vw - 44px));
+    width: min(340px, calc(100vw - 44px));
   }
 
   .personal-pick-reel {

@@ -4,4 +4,5 @@ node_modules/
 .env
 .env.*
 .env.local
+local-preview-server.js
 *.log
