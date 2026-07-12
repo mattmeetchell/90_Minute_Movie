@@ -7,24 +7,32 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260711-private-flow-anticipation-42" />
+  <link rel="stylesheet" href="styles.css?v=20260712-header-logo-05" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar" aria-label="Movie picker">
-      <button id="homeButton" class="placeholder-nav" type="button" aria-label="Go to landing page"></button>
+      <button id="homeButton" class="placeholder-nav" type="button" aria-label="Go to landing page">
+        <img src="assets/brand/90_M_Logo.svg" alt="" aria-hidden="true" />
+      </button>
       <div class="header-drawer">
         <div class="drawer-panel drawer-panel-genre">
-          <h1>Pick up to 2 Genres</h1>
+          <div class="heading-copy">
+            <h1>Pick up to 2 Genres</h1>
+            <p class="drawer-availability">Possible matches: <strong id="genreHeaderResultCount">-</strong></p>
+          </div>
           <div class="header-drawer-actions">
             <button id="headerGoToDecades" class="button-primary" type="button">Next</button>
             <button id="headerClearFilters" class="button-secondary" type="button">Clear</button>
           </div>
         </div>
         <div class="drawer-panel drawer-panel-decade">
-          <h1>Pick the decade</h1>
+          <div class="heading-copy">
+            <h1>What era?</h1>
+            <p class="drawer-availability">Possible matches: <strong id="decadeHeaderResultCount">-</strong></p>
+          </div>
           <div class="header-drawer-actions">
-            <button id="headerPickMovie" class="button-primary" type="button">Find Movie</button>
+            <button id="headerPickMovie" class="button-primary" type="button">Let's do it</button>
             <button id="headerBackToGenres" class="button-secondary" type="button">Back</button>
           </div>
         </div>
@@ -39,13 +47,17 @@
         <div class="hero-copy">
           <p>Got 90 min?</p>
           <h1>Let's watch<br>a movie</h1>
+          <p class="hero-support">Choose your favorite genre, choose your era, and let's pick a comfy 90 minute movie for&nbsp;you.</p>
           <button id="startPicking" class="button-primary" type="button">Lets Go</button>
         </div>
       </section>
 
       <section id="pickerView" class="view tray-view picker-view hidden">
         <div class="section-heading">
-          <h1>Pick up to 2 Genres</h1>
+          <div class="heading-copy">
+            <h1>Pick up to 2 Genres</h1>
+            <p class="heading-availability">Possible matches: <strong id="resultCount">-</strong></p>
+          </div>
           <div class="heading-actions">
             <button id="goToDecades" class="button-primary" type="button">Next</button>
             <button id="clearFilters" class="button-secondary" type="button">Clear</button>
@@ -54,21 +66,22 @@
 
         <div id="genresTray" class="genre-grid" aria-label="Movie genres"></div>
         <p id="selectionSummary" class="selection-summary" aria-live="polite"></p>
-        <p class="availability-note">Possible matches: <strong id="resultCount">-</strong></p>
       </section>
 
       <section id="decadeView" class="view tray-view decade-view hidden">
         <div class="section-heading">
-          <h1>Pick some decades</h1>
+          <div class="heading-copy">
+            <h1>What era?</h1>
+            <p class="heading-availability">Possible matches: <strong id="decadeResultCount">-</strong></p>
+          </div>
           <div class="heading-actions">
-            <button id="pickMovie" class="button-primary" type="button">Find Movie</button>
+            <button id="pickMovie" class="button-primary" type="button">Let's do it</button>
             <button id="backToGenres" class="button-secondary" type="button">Back</button>
           </div>
         </div>
 
         <div id="decadesTray" class="decade-grid" aria-label="Movie decades"></div>
         <p id="decadeSummary" class="selection-summary" aria-live="polite"></p>
-        <p class="availability-note">Possible matches: <strong id="decadeResultCount">-</strong></p>
       </section>
 
       <section id="resultView" class="view result-view hidden">
@@ -107,7 +120,9 @@
     </main>
 
     <footer class="site-footer">
-      <img class="footer-logo" src="assets/brand/Updated_Logo.svg" alt="" aria-hidden="true" />
+      <button id="footerLogoButton" class="footer-logo-button" type="button" aria-label="Bounce footer logo">
+        <img class="footer-logo" src="assets/brand/Updated_Logo.svg" alt="" aria-hidden="true" />
+      </button>
       <div class="footer-copy">
         <p>Lovingly vibe coded in NYC <span aria-hidden="true">💕</span> <button id="secretFlowTrigger" class="secret-flow-trigger" type="button" aria-label="Open personal picker">🦧</button></p>
         <p>Powered by TMDB</p>
@@ -130,7 +145,7 @@
     </div>
   </div>
 
-  <script src="personal-movies.js?v=20260711-private-flow-anticipation-42"></script>
-  <script src="script.js?v=20260711-private-flow-anticipation-42"></script>
+  <script src="personal-movies.js?v=20260712-header-logo-05"></script>
+  <script src="script.js?v=20260712-header-logo-05"></script>
 </body>
 </html>

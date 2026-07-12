@@ -69,10 +69,24 @@ const GENRE_FILLED_ICONS = {
   Thriller: 'assets/genre-icons/filled/Thriller.svg'
 };
 
+const TRY_AGAIN_HOVER_LABELS = [
+  'Nnnnnot quite',
+  'NEXT',
+  'NO THANKS',
+  'NOPE',
+  'ONCE MORE',
+  'Fingers crossed',
+  'HELL NO',
+  'Nah fam',
+  'YUCK',
+  'PASS'
+];
+
 const state = {
   genres: [],
   selectedGenreIds: [],
   selectedDecades: [],
+  anyEraSelected: false,
   isLoadingCount: false,
   activeView: 'landing',
   resultSource: 'filtered',
@@ -80,7 +94,8 @@ const state = {
   trailerUrl: '',
   hasShownResult: false,
   secretMovies: null,
-  secretActive: false
+  secretActive: false,
+  tryAgainExitTimer: null
 };
 
 let currentPosterSamples = [];
@@ -125,9 +140,12 @@ const els = {
   closeTrailer: document.getElementById('closeTrailer'),
   trailer: document.getElementById('trailer'),
   selectionSummary: document.getElementById('selectionSummary'),
+  genreHeaderResultCount: document.getElementById('genreHeaderResultCount'),
   decadeSummary: document.getElementById('decadeSummary'),
   decadeResultCount: document.getElementById('decadeResultCount'),
+  decadeHeaderResultCount: document.getElementById('decadeHeaderResultCount'),
   footer: document.querySelector('.site-footer'),
+  footerLogoButton: document.getElementById('footerLogoButton'),
   secretFlowTrigger: document.getElementById('secretFlowTrigger')
 };
 
@@ -390,7 +408,28 @@ function renderDecadePills() {
     button.textContent = decade.label;
     button.addEventListener('click', () => toggleDecade(decade.label));
     els.decadesTray.appendChild(button);
+
+    if (decade.label === "1990's") {
+      const breakPoint = document.createElement('span');
+      breakPoint.className = 'decade-row-break';
+      breakPoint.setAttribute('aria-hidden', 'true');
+      els.decadesTray.appendChild(breakPoint);
+    }
   });
+
+  const anyEraButton = document.createElement('button');
+  anyEraButton.className = `decade-pill any-era-pill ${state.anyEraSelected ? 'active' : ''}`.trim();
+  anyEraButton.type = 'button';
+  anyEraButton.setAttribute('aria-pressed', String(state.anyEraSelected));
+  anyEraButton.textContent = 'Any era ∞';
+  anyEraButton.addEventListener('click', () => {
+    state.selectedDecades = [];
+    state.anyEraSelected = !state.anyEraSelected;
+    renderDecadePills();
+    updateDecadeSummary();
+    refreshCount();
+  });
+  els.decadesTray.appendChild(anyEraButton);
 }
 
 function renderGenrePills() {
@@ -447,6 +486,7 @@ function toggleGenre(id) {
 }
 
 function toggleDecade(label) {
+  state.anyEraSelected = false;
   if (state.selectedDecades.includes(label)) {
     state.selectedDecades = state.selectedDecades.filter((decade) => decade !== label);
   } else {
@@ -472,6 +512,11 @@ function updateSelectionSummary() {
 }
 
 function updateDecadeSummary() {
+  if (state.anyEraSelected) {
+    els.decadeSummary.textContent = 'Selected: Any era';
+    return;
+  }
+
   if (!state.selectedDecades.length) {
     els.decadeSummary.textContent = 'Choose any decades, or leave it open for all eras.';
     return;
@@ -510,7 +555,9 @@ async function refreshCount() {
   if (state.isLoadingCount) return;
   state.isLoadingCount = true;
   els.resultCount.textContent = '...';
+  els.genreHeaderResultCount.textContent = '...';
   els.decadeResultCount.textContent = '...';
+  els.decadeHeaderResultCount.textContent = '...';
 
   try {
     const decadeLabels = state.selectedDecades.length ? state.selectedDecades : [null];
@@ -519,11 +566,15 @@ async function refreshCount() {
     );
     const totalResults = counts.reduce((total, data) => total + data.total_results, 0);
     els.resultCount.textContent = totalResults.toLocaleString();
+    els.genreHeaderResultCount.textContent = totalResults.toLocaleString();
     els.decadeResultCount.textContent = totalResults.toLocaleString();
+    els.decadeHeaderResultCount.textContent = totalResults.toLocaleString();
   } catch (error) {
     console.error(error);
     els.resultCount.textContent = '-';
+    els.genreHeaderResultCount.textContent = '-';
     els.decadeResultCount.textContent = '-';
+    els.decadeHeaderResultCount.textContent = '-';
   } finally {
     state.isLoadingCount = false;
   }
@@ -912,14 +963,14 @@ function preloadPoster(posterPath) {
 }
 
 function animatePosterExit() {
-  els.posterButton.classList.remove('result-poster-enter', 'result-poster-fanfare', 'poster-cycle-in', 'poster-cycle-out', 'personal-card-rest', 'personal-poster-reveal', 'personal-stroke-reveal');
+  els.posterButton.classList.remove('result-poster-enter', 'result-poster-fanfare', 'poster-cycle-in', 'poster-cycle-out', 'personal-card-rest', 'personal-poster-reveal', 'personal-stroke-reveal', 'personal-stroke-visible');
   void els.posterButton.offsetWidth;
   els.posterButton.classList.add('poster-cycle-out');
 }
 
 function runPersonalPickAnticipation() {
   els.movieResult.classList.add('personal-picking');
-  els.posterButton.classList.remove('result-poster-enter', 'result-poster-fanfare', 'poster-cycle-in', 'poster-cycle-out', 'personal-card-rest', 'personal-poster-reveal', 'personal-stroke-reveal');
+  els.posterButton.classList.remove('result-poster-enter', 'result-poster-fanfare', 'poster-cycle-in', 'poster-cycle-out', 'personal-card-rest', 'personal-poster-reveal', 'personal-stroke-reveal', 'personal-stroke-visible');
   els.poster.src = '';
   els.poster.alt = '';
   els.posterHint.textContent = 'Picking...';
@@ -1206,9 +1257,34 @@ function setLoading(isLoading) {
   els.pickMovie.disabled = isLoading;
   els.headerPickMovie.disabled = isLoading;
   els.tryAgain.disabled = isLoading;
-  els.pickMovie.textContent = isLoading ? 'Picking...' : 'Find Movie';
-  els.headerPickMovie.textContent = isLoading ? 'Picking...' : 'Find Movie';
+  els.pickMovie.textContent = isLoading ? 'Picking...' : "Let's do it";
+  els.headerPickMovie.textContent = isLoading ? 'Picking...' : "Let's do it";
   els.tryAgain.textContent = isLoading ? 'Picking...' : 'Try Again';
+}
+
+function getRandomTryAgainLabel() {
+  return TRY_AGAIN_HOVER_LABELS[Math.floor(Math.random() * TRY_AGAIN_HOVER_LABELS.length)];
+}
+
+function startTryAgainHoverLabels() {
+  if (state.tryAgainExitTimer) {
+    window.clearTimeout(state.tryAgainExitTimer);
+    state.tryAgainExitTimer = null;
+  }
+  els.tryAgain.classList.remove('try-again-leaving');
+  els.tryAgain.classList.add('try-again-hovering');
+  els.tryAgain.dataset.hoverLabel = getRandomTryAgainLabel();
+}
+
+function stopTryAgainHoverLabels() {
+  if (!els.tryAgain.dataset.hoverLabel) return;
+  els.tryAgain.classList.remove('try-again-hovering');
+  els.tryAgain.classList.add('try-again-leaving');
+  state.tryAgainExitTimer = window.setTimeout(() => {
+    els.tryAgain.classList.remove('try-again-leaving');
+    delete els.tryAgain.dataset.hoverLabel;
+    state.tryAgainExitTimer = null;
+  }, 240);
 }
 
 function openTrailer() {
@@ -1225,6 +1301,7 @@ function closeTrailer() {
 function clearFilters() {
   state.selectedGenreIds = [];
   state.selectedDecades = [];
+  state.anyEraSelected = false;
   renderGenrePills();
   renderDecadePills();
   updateSelectionSummary();
@@ -1272,6 +1349,10 @@ function wireEvents() {
 
     pickRandomMovie({ cyclePosterOnly: true });
   });
+  els.tryAgain.addEventListener('mouseenter', startTryAgainHoverLabels);
+  els.tryAgain.addEventListener('focus', startTryAgainHoverLabels);
+  els.tryAgain.addEventListener('mouseleave', stopTryAgainHoverLabels);
+  els.tryAgain.addEventListener('blur', stopTryAgainHoverLabels);
   els.toggleOverview.addEventListener('click', () => {
     const expanded = els.overview.classList.toggle('expanded');
     els.toggleOverview.textContent = expanded ? 'See less' : 'See more';
@@ -1286,6 +1367,9 @@ function wireEvents() {
   });
   els.clearFilters.addEventListener('click', clearFilters);
   els.clearResultFilters.addEventListener('click', clearFiltersAndReturn);
+  els.footerLogoButton.addEventListener('click', () => {
+    els.footer.classList.toggle('footer-logo-bouncing');
+  });
   els.secretFlowTrigger.addEventListener('click', startSecretFlow);
   window.addEventListener('scroll', updateMobileActionOffset, { passive: true });
   window.addEventListener('resize', () => {
