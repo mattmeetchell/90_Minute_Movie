@@ -116,7 +116,7 @@ img {
   inset: 0;
   opacity: 0;
   pointer-events: none;
-  position: absolute;
+  position: fixed;
   transition: opacity 260ms ease;
   z-index: 0;
 }
@@ -126,6 +126,22 @@ img {
 }
 
 .app-shell[data-view="picker"][data-genre-count="2"]::before {
+  opacity: 0.5;
+}
+
+.app-shell[data-view="rating"][data-rating-count="1"]::before {
+  opacity: 0.3;
+}
+
+.app-shell[data-view="rating"][data-rating-count="2"]::before {
+  opacity: 0.5;
+}
+
+.app-shell[data-view="decade"][data-decade-count="1"]::before {
+  opacity: 0.3;
+}
+
+.app-shell[data-view="decade"][data-decade-count="2"]::before {
   opacity: 0.5;
 }
 
@@ -144,6 +160,7 @@ img {
 }
 
 .app-shell[data-view="picker"] .topbar,
+.app-shell[data-view="rating"] .topbar,
 .app-shell[data-view="decade"] .topbar {
   border-bottom: 1px solid rgba(255, 255, 255, 0.42);
   height: 250px;
@@ -167,6 +184,7 @@ img {
 }
 
 .app-shell[data-view="picker"] .placeholder-nav,
+.app-shell[data-view="rating"] .placeholder-nav,
 .app-shell[data-view="decade"] .placeholder-nav {
   left: max(28px, calc((100vw - 1220px) / 2));
   top: 105px;
@@ -200,6 +218,7 @@ img {
 }
 
 .app-shell[data-view="picker"] .header-drawer,
+.app-shell[data-view="rating"] .header-drawer,
 .app-shell[data-view="decade"] .header-drawer {
   opacity: 1;
   pointer-events: auto;
@@ -243,18 +262,23 @@ img {
 }
 
 .app-shell[data-view="picker"] .drawer-panel-genre,
+.app-shell[data-view="rating"] .drawer-panel-rating,
 .app-shell[data-view="decade"] .drawer-panel-decade {
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0);
 }
 
-.app-shell[data-view="decade"] .drawer-panel-genre {
+.app-shell[data-view="rating"] .drawer-panel-genre,
+.app-shell[data-view="decade"] .drawer-panel-genre,
+.app-shell[data-view="decade"] .drawer-panel-rating {
   opacity: 0;
   transform: translateX(-72px);
 }
 
-.app-shell[data-view="picker"] .drawer-panel-decade {
+.app-shell[data-view="picker"] .drawer-panel-rating,
+.app-shell[data-view="picker"] .drawer-panel-decade,
+.app-shell[data-view="rating"] .drawer-panel-decade {
   opacity: 0;
   transform: translateX(72px);
 }
@@ -404,6 +428,17 @@ img {
 .mode-toggle[aria-pressed="true"]:hover,
 .mode-toggle[aria-pressed="true"]:focus-visible {
   background: #379acf;
+  color: var(--text);
+}
+
+.app-shell[data-app-mode="monke"] .mode-toggle[aria-pressed="true"] {
+  background: #d71920;
+  color: var(--text);
+}
+
+.app-shell[data-app-mode="monke"] .mode-toggle[aria-pressed="true"]:hover,
+.app-shell[data-app-mode="monke"] .mode-toggle[aria-pressed="true"]:focus-visible {
+  background: #d71920;
   color: var(--text);
 }
 
@@ -656,6 +691,10 @@ img {
   z-index: 2;
 }
 
+.poster-card-loading-in {
+  animation: homepagePosterServeIn 720ms cubic-bezier(0.34, 1.32, 0.64, 1) var(--poster-load-delay, 0ms) both;
+}
+
 .blank-card {
   z-index: 0;
 }
@@ -791,6 +830,11 @@ img {
   width: 85px;
 }
 
+.poster-track-loading .float-card.blank-card {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.045);
+}
+
 .poster-track .blank-card:nth-child(7n + 7) {
   height: 74px;
   width: 50px;
@@ -852,10 +896,17 @@ img {
 }
 
 .genre-grid,
+.rating-grid,
 .decade-grid {
   display: grid;
   gap: 52px 70px;
   grid-template-columns: repeat(6, minmax(112px, 1fr));
+}
+
+.rating-grid {
+  grid-template-columns: repeat(4, minmax(132px, 1fr));
+  justify-items: center;
+  max-width: 760px;
 }
 
 .decade-grid {
@@ -878,7 +929,8 @@ img {
   width: 100%;
 }
 
-.genre-card {
+.genre-card,
+.rating-card {
   align-items: center;
   background: transparent;
   border: 0;
@@ -890,7 +942,8 @@ img {
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
-.genre-icon {
+.genre-icon,
+.rating-icon {
   align-items: center;
   border: 3px solid var(--line);
   border-radius: 50%;
@@ -902,18 +955,27 @@ img {
   width: 120px;
 }
 
+.rating-icon {
+  border: 0;
+  border-radius: 0;
+  height: 128px;
+  width: 128px;
+}
+
 .genre-card.has-art .genre-icon {
   border: 0;
   height: 137px;
   width: 116px;
 }
 
-.genre-card.has-art .genre-icon img {
+.genre-card.has-art .genre-icon img,
+.rating-icon img {
   height: 100%;
   width: 100%;
 }
 
-.genre-card.active .genre-icon {
+.genre-card.active .genre-icon,
+.rating-card.active .rating-icon {
   background: var(--text);
   color: #050505;
 }
@@ -923,7 +985,13 @@ img {
   filter: drop-shadow(0 0 18px #072436);
 }
 
-.genre-card.has-art.active .genre-icon img {
+.rating-card.active .rating-icon {
+  background: transparent;
+  filter: drop-shadow(0 0 18px #072436);
+}
+
+.genre-card.has-art.active .genre-icon img,
+.rating-card.active .rating-icon img {
   opacity: 1;
 }
 
@@ -954,12 +1022,14 @@ img {
   color: #050505;
 }
 
-.genre-name {
+.genre-name,
+.rating-name {
   color: rgba(255, 255, 255, 0.86);
   font-size: 0.95rem;
 }
 
-.genre-card.has-art .genre-name {
+.genre-card.has-art .genre-name,
+.rating-name {
   height: 1px;
   margin: -1px;
   overflow: hidden;
@@ -1364,9 +1434,25 @@ img {
   }
 }
 
+@keyframes homepagePosterServeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(86px) scale(0.92);
+  }
+  62% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.025);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body::before,
   .float-card,
+  .poster-card-loading-in,
   .poster-track,
   .result-poster-enter,
   .result-poster-fanfare,
@@ -1813,6 +1899,7 @@ img {
   }
 
   .app-shell[data-view="picker"] .topbar,
+  .app-shell[data-view="rating"] .topbar,
   .app-shell[data-view="decade"] .topbar {
     height: 230px;
   }
@@ -1842,6 +1929,7 @@ img {
   }
 
   .genre-grid,
+  .rating-grid,
   .decade-grid {
     gap: 42px 36px;
     grid-template-columns: repeat(4, minmax(112px, 1fr));
@@ -1881,11 +1969,13 @@ img {
   }
 
   .app-shell[data-view="picker"] .topbar,
+  .app-shell[data-view="rating"] .topbar,
   .app-shell[data-view="decade"] .topbar {
     height: 88px;
   }
 
   .app-shell[data-view="picker"] .placeholder-nav,
+  .app-shell[data-view="rating"] .placeholder-nav,
   .app-shell[data-view="decade"] .placeholder-nav {
     left: 22px;
     top: 12px;
@@ -2226,8 +2316,19 @@ img {
     width: 100%;
   }
 
-  .genre-grid {
+  .genre-grid,
+  .rating-grid {
     grid-template-columns: repeat(2, minmax(116px, 1fr));
+  }
+
+  .rating-grid {
+    gap: 32px 28px;
+    max-width: none;
+  }
+
+  .rating-icon {
+    height: 124px;
+    width: 124px;
   }
 
   .decade-grid {

@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260713-deeper-match-01" />
+  <link rel="stylesheet" href="styles.css?v=20260713-rating-selected-icons-01" />
 </head>
 <body>
   <div class="app-shell">
@@ -36,8 +36,18 @@
             <p class="drawer-availability">Possible matches: <strong id="genreHeaderResultCount">-</strong></p>
           </div>
           <div class="header-drawer-actions">
-            <button id="headerGoToDecades" class="button-primary" type="button">Next</button>
+            <button id="headerGoToRatings" class="button-primary" type="button">Next</button>
             <button id="headerClearFilters" class="button-secondary" type="button">Clear</button>
+          </div>
+        </div>
+        <div class="drawer-panel drawer-panel-rating">
+          <div class="heading-copy">
+            <h1>Pick ratings</h1>
+            <p class="drawer-availability">Possible matches: <strong id="ratingHeaderResultCount">-</strong></p>
+          </div>
+          <div class="header-drawer-actions">
+            <button id="headerGoToDecades" class="button-primary" type="button">Next</button>
+            <button id="headerBackToGenres" class="button-secondary" type="button">Back</button>
           </div>
         </div>
         <div class="drawer-panel drawer-panel-decade">
@@ -47,7 +57,7 @@
           </div>
           <div class="header-drawer-actions">
             <button id="headerPickMovie" class="button-primary" type="button">Let's do it</button>
-            <button id="headerBackToGenres" class="button-secondary" type="button">Back</button>
+            <button id="headerBackToRatings" class="button-secondary" type="button">Back</button>
           </div>
         </div>
       </div>
@@ -73,13 +83,29 @@
             <p class="heading-availability">Possible matches: <strong id="resultCount">-</strong></p>
           </div>
           <div class="heading-actions">
-            <button id="goToDecades" class="button-primary" type="button">Next</button>
+            <button id="goToRatings" class="button-primary" type="button">Next</button>
             <button id="clearFilters" class="button-secondary" type="button">Clear</button>
           </div>
         </div>
 
         <div id="genresTray" class="genre-grid" aria-label="Movie genres"></div>
         <p id="selectionSummary" class="selection-summary" aria-live="polite"></p>
+      </section>
+
+      <section id="ratingView" class="view tray-view rating-view hidden">
+        <div class="section-heading">
+          <div class="heading-copy">
+            <h1>Pick ratings</h1>
+            <p class="heading-availability">Possible matches: <strong id="ratingResultCount">-</strong></p>
+          </div>
+          <div class="heading-actions">
+            <button id="goToDecades" class="button-primary" type="button">Next</button>
+            <button id="backToGenres" class="button-secondary" type="button">Back</button>
+          </div>
+        </div>
+
+        <div id="ratingsTray" class="rating-grid" aria-label="Movie ratings"></div>
+        <p id="ratingSummary" class="selection-summary" aria-live="polite"></p>
       </section>
 
       <section id="decadeView" class="view tray-view decade-view hidden">
@@ -90,7 +116,7 @@
           </div>
           <div class="heading-actions">
             <button id="pickMovie" class="button-primary" type="button">Let's do it</button>
-            <button id="backToGenres" class="button-secondary" type="button">Back</button>
+            <button id="backToRatings" class="button-secondary" type="button">Back</button>
           </div>
         </div>
 
@@ -159,7 +185,7 @@
     </div>
   </div>
 
-  <script src="personal-movies.js?v=20260713-deeper-match-01"></script>
-  <script src="script.js?v=20260713-deeper-match-01"></script>
+  <script src="personal-movies.js?v=20260713-rating-selected-icons-01"></script>
+  <script src="script.js?v=20260713-rating-selected-icons-01"></script>
 </body>
 </html>

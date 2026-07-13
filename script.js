@@ -20,6 +20,32 @@ const DECADES = [
   { label: "2010's", start: 2010, end: 2019 },
   { label: "2020's", start: 2020, end: 2029 }
 ];
+const RATINGS = [
+  {
+    label: 'Any',
+    certification: 'ANY',
+    icon: 'assets/rating-icons/Any.svg',
+    activeIcon: 'assets/rating-icons/AnySelected.svg'
+  },
+  {
+    label: 'G',
+    certification: 'G',
+    icon: 'assets/rating-icons/G.svg',
+    activeIcon: 'assets/rating-icons/GSelected.svg'
+  },
+  {
+    label: 'PG-13',
+    certification: 'PG-13',
+    icon: 'assets/rating-icons/PG13.svg',
+    activeIcon: 'assets/rating-icons/PG13Selected.svg'
+  },
+  {
+    label: 'R',
+    certification: 'R',
+    icon: 'assets/rating-icons/R.svg',
+    activeIcon: 'assets/rating-icons/RSelected.svg'
+  }
+];
 const DESKTOP_POSTER_SIZES = ['float-card-large', 'float-card-small', 'float-card-tiny', '', 'float-card-small', 'float-card-large', ''];
 const MOBILE_POSTER_SIZES = [
   'float-card-large',
@@ -93,6 +119,8 @@ const FOOTER_DVD_FILTERS = [
 const state = {
   genres: [],
   selectedGenreIds: [],
+  selectedRatings: [],
+  anyRatingSelected: false,
   selectedDecades: [],
   anyEraSelected: false,
   isLoadingCount: false,
@@ -104,6 +132,7 @@ const state = {
   secretMovies: null,
   secretActive: false,
   physicalMode: false,
+  mode: 'streamer',
   tryAgainExitTimer: null,
   footerBounceFrame: null,
   footerBounceLastTime: null,
@@ -122,18 +151,24 @@ const els = {
   modeToggle: document.getElementById('modeToggle'),
   posterTrack: document.getElementById('posterTrack'),
   pickerView: document.getElementById('pickerView'),
+  ratingView: document.getElementById('ratingView'),
   decadeView: document.getElementById('decadeView'),
   homeButton: document.getElementById('homeButton'),
+  headerGoToRatings: document.getElementById('headerGoToRatings'),
   headerGoToDecades: document.getElementById('headerGoToDecades'),
   headerClearFilters: document.getElementById('headerClearFilters'),
   headerPickMovie: document.getElementById('headerPickMovie'),
   headerBackToGenres: document.getElementById('headerBackToGenres'),
+  headerBackToRatings: document.getElementById('headerBackToRatings'),
   resultView: document.getElementById('resultView'),
   startPicking: document.getElementById('startPicking'),
   genresTray: document.getElementById('genresTray'),
+  ratingsTray: document.getElementById('ratingsTray'),
   decadesTray: document.getElementById('decadesTray'),
+  goToRatings: document.getElementById('goToRatings'),
   goToDecades: document.getElementById('goToDecades'),
   backToGenres: document.getElementById('backToGenres'),
+  backToRatings: document.getElementById('backToRatings'),
   pickMovie: document.getElementById('pickMovie'),
   clearFilters: document.getElementById('clearFilters'),
   clearResultFilters: document.getElementById('clearResultFilters'),
@@ -158,6 +193,9 @@ const els = {
   trailer: document.getElementById('trailer'),
   selectionSummary: document.getElementById('selectionSummary'),
   genreHeaderResultCount: document.getElementById('genreHeaderResultCount'),
+  ratingSummary: document.getElementById('ratingSummary'),
+  ratingResultCount: document.getElementById('ratingResultCount'),
+  ratingHeaderResultCount: document.getElementById('ratingHeaderResultCount'),
   decadeSummary: document.getElementById('decadeSummary'),
   decadeResultCount: document.getElementById('decadeResultCount'),
   decadeHeaderResultCount: document.getElementById('decadeHeaderResultCount'),
@@ -189,9 +227,11 @@ async function tmdbFetch(path, params = {}) {
 function showView(viewName) {
   closeTrailer();
   const previousView = state.activeView;
+  const filterViews = ['picker', 'rating', 'decade'];
   const isFilterTransition =
-    (previousView === 'picker' && viewName === 'decade') ||
-    (previousView === 'decade' && viewName === 'picker');
+    previousView !== viewName &&
+    filterViews.includes(previousView) &&
+    filterViews.includes(viewName);
 
   if (state.transitionTimer) {
     clearTimeout(state.transitionTimer);
@@ -203,9 +243,14 @@ function showView(viewName) {
   clearScreenTransitionClasses();
 
   if (isFilterTransition) {
-    const outgoing = previousView === 'picker' ? els.pickerView : els.decadeView;
-    const incoming = viewName === 'picker' ? els.pickerView : els.decadeView;
-    const movingForward = previousView === 'picker' && viewName === 'decade';
+    const viewEls = {
+      picker: els.pickerView,
+      rating: els.ratingView,
+      decade: els.decadeView
+    };
+    const outgoing = viewEls[previousView];
+    const incoming = viewEls[viewName];
+    const movingForward = filterViews.indexOf(previousView) < filterViews.indexOf(viewName);
 
     outgoing.classList.remove('hidden');
     incoming.classList.remove('hidden');
@@ -223,6 +268,7 @@ function showView(viewName) {
   } else {
     els.landingView.classList.toggle('hidden', viewName !== 'landing');
     els.pickerView.classList.toggle('hidden', viewName !== 'picker');
+    els.ratingView.classList.toggle('hidden', viewName !== 'rating');
     els.decadeView.classList.toggle('hidden', viewName !== 'decade');
     els.resultView.classList.toggle('hidden', viewName !== 'result');
   }
@@ -358,7 +404,7 @@ function toggleFooterBounce() {
 }
 
 function clearScreenTransitionClasses() {
-  [els.pickerView, els.decadeView].forEach((view) => {
+  [els.pickerView, els.ratingView, els.decadeView].forEach((view) => {
     view.classList.remove('screen-enter-right', 'screen-enter-left', 'screen-exit-left', 'screen-exit-right');
   });
 }
@@ -372,9 +418,16 @@ async function loadGenres() {
 async function loadFloatingPosters() {
   if (!els.posterTrack) return;
   const loadToken = ++floatingPosterLoadToken;
-  renderPosterMarquee(getFallbackPosterSamples());
+  renderPosterMarquee(getFallbackPosterSamples(), { loading: true });
 
   try {
+    if (state.mode === 'monke') {
+      const posters = await getPersonalPosterSamples(10);
+      if (loadToken !== floatingPosterLoadToken) return;
+      renderPosterMarquee(posters, { animateIn: true });
+      return;
+    }
+
     const posterCandidates = [];
     const firstPage = Math.floor(Math.random() * 5) + 1;
     const pages = [firstPage, ((firstPage + 1) % 5) + 1, ((firstPage + 2) % 5) + 1];
@@ -386,10 +439,33 @@ async function loadFloatingPosters() {
 
     const posters = await getValidPosterSamples(posterCandidates, 10);
     if (loadToken !== floatingPosterLoadToken) return;
-    renderPosterMarquee(posters);
+    renderPosterMarquee(posters, { animateIn: true });
   } catch (error) {
     console.error(error);
   }
+}
+
+async function getPersonalPosterSamples(limit = 10) {
+  const rows = shuffle(await loadSecretMovies());
+  const samples = [];
+
+  for (const row of rows.slice(0, limit * 2)) {
+    try {
+      const details = row.tmdbId
+        ? await tmdbFetch(`/movie/${row.tmdbId}`, { language: 'en-US' })
+        : (await fetchSecretMovieBundle(row))[0];
+
+      if (details?.id && details.poster_path && isValidRuntime(details.runtime)) {
+        samples.push({ ...details, ownedPhysical: Boolean(row.ownedPhysical) });
+      }
+
+      if (samples.length >= limit) break;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  return samples.length ? samples : getFallbackPosterSamples();
 }
 
 function getFloatingPosterDiscoverParams(page) {
@@ -406,8 +482,9 @@ function getFloatingPosterDiscoverParams(page) {
   return params;
 }
 
-function renderPosterMarquee(posters) {
+function renderPosterMarquee(posters, options = {}) {
   currentPosterSamples = posters;
+  els.posterTrack.classList.toggle('poster-track-loading', Boolean(options.loading));
   const sizes = getPosterSizes();
   const uniquePosters = dedupePosterSamples(posters);
   const sequenceMovies = getNonAdjacentPosterSequence(uniquePosters, sizes.filter(Boolean).length);
@@ -421,11 +498,20 @@ function renderPosterMarquee(posters) {
   const items = Array.from({ length: 8 }, () => sequence).flat();
   const fragment = document.createDocumentFragment();
 
-  items.forEach(({ size, movie }) => {
+  items.forEach(({ size, movie }, index) => {
     const card = document.createElement(movie?.id ? 'button' : 'div');
     card.className = `float-card ${size} ${movie ? 'poster-card' : 'blank-card'}`.trim();
 
     if (movie) {
+      if (options.animateIn) {
+        card.classList.add('poster-card-loading-in');
+        card.style.setProperty('--poster-load-delay', `${(index % sizes.length) * 70}ms`);
+        card.addEventListener('animationend', () => {
+          card.classList.remove('poster-card-loading-in');
+          card.style.removeProperty('--poster-load-delay');
+        }, { once: true });
+      }
+
       const image = document.createElement('img');
       image.src = movie.localSrc || `${IMAGE_BASE_URL}${movie.poster_path}`;
       image.alt = '';
@@ -544,6 +630,7 @@ function shuffle(items) {
 
 function renderDecadePills() {
   els.decadesTray.innerHTML = '';
+  updateDecadeStage();
 
   DECADES.forEach((decade) => {
     const active = state.selectedDecades.includes(decade.label);
@@ -614,9 +701,52 @@ function renderGenrePills() {
   });
 }
 
+function renderRatingPills() {
+  els.ratingsTray.innerHTML = '';
+  updateRatingStage();
+
+  RATINGS.forEach((rating) => {
+    const isAny = rating.certification === 'ANY';
+    const active = isAny
+      ? state.anyRatingSelected
+      : state.selectedRatings.includes(rating.certification);
+    const iconPath = active ? rating.activeIcon : rating.icon;
+    const button = document.createElement('button');
+    button.className = `rating-card ${active ? 'active' : ''}`.trim();
+    button.type = 'button';
+    button.setAttribute('aria-pressed', String(active));
+    button.addEventListener('click', () => toggleRating(rating.certification));
+
+    const icon = document.createElement('span');
+    icon.className = 'rating-icon';
+
+    const image = document.createElement('img');
+    image.src = iconPath;
+    image.alt = '';
+    icon.appendChild(image);
+
+    const label = document.createElement('span');
+    label.className = 'rating-name';
+    label.textContent = rating.label;
+
+    button.append(icon, label);
+    els.ratingsTray.appendChild(button);
+  });
+}
+
 function updateGenreStage() {
   els.appShell.dataset.genreCount = String(Math.min(state.selectedGenreIds.length, 2));
   updateGenreBackClearButtons();
+}
+
+function updateRatingStage() {
+  const ratingCount = state.anyRatingSelected ? 1 : Math.min(state.selectedRatings.length, 2);
+  els.appShell.dataset.ratingCount = String(ratingCount);
+}
+
+function updateDecadeStage() {
+  const decadeCount = state.anyEraSelected ? 1 : Math.min(state.selectedDecades.length, 2);
+  els.appShell.dataset.decadeCount = String(decadeCount);
 }
 
 function updateGenreBackClearButtons() {
@@ -642,6 +772,24 @@ function toggleGenre(id) {
   refreshCount();
 }
 
+function toggleRating(certification) {
+  if (certification === 'ANY') {
+    state.selectedRatings = [];
+    state.anyRatingSelected = !state.anyRatingSelected;
+  } else {
+    state.anyRatingSelected = false;
+    if (state.selectedRatings.includes(certification)) {
+      state.selectedRatings = state.selectedRatings.filter((rating) => rating !== certification);
+    } else {
+      state.selectedRatings = [...state.selectedRatings, certification];
+    }
+  }
+
+  renderRatingPills();
+  updateRatingSummary();
+  refreshCount();
+}
+
 function toggleDecade(label) {
   state.anyEraSelected = false;
   if (state.selectedDecades.includes(label)) {
@@ -655,6 +803,12 @@ function toggleDecade(label) {
   refreshCount();
 }
 
+function getSelectedRatingLabels() {
+  return RATINGS
+    .filter((rating) => rating.certification !== 'ANY' && state.selectedRatings.includes(rating.certification))
+    .map((rating) => rating.label);
+}
+
 function updateSelectionSummary() {
   const selectedGenres = state.genres
     .filter((genre) => state.selectedGenreIds.includes(genre.id))
@@ -666,6 +820,21 @@ function updateSelectionSummary() {
   }
 
   els.selectionSummary.textContent = `Selected: ${selectedGenres.join(' + ')}`;
+}
+
+function updateRatingSummary() {
+  if (state.anyRatingSelected) {
+    els.ratingSummary.textContent = 'Selected: Any rating';
+    return;
+  }
+
+  const selectedRatings = getSelectedRatingLabels();
+  if (!selectedRatings.length) {
+    els.ratingSummary.textContent = 'Choose any ratings, or leave it open for all MPAA ratings.';
+    return;
+  }
+
+  els.ratingSummary.textContent = `Selected: ${selectedRatings.join(' + ')}`;
 }
 
 function updateDecadeSummary() {
@@ -697,6 +866,11 @@ function buildDiscoverParams(page = 1, decadeLabel = null) {
     params.with_genres = state.selectedGenreIds.join(',');
   }
 
+  if (state.selectedRatings.length && !state.anyRatingSelected) {
+    params.certification_country = 'US';
+    params.certification = state.selectedRatings.join('|');
+  }
+
   if (decadeLabel) {
     const selectedRanges = DECADES.filter((decade) => decade.label === decadeLabel);
     const minYear = Math.min(...selectedRanges.map((decade) => decade.start));
@@ -713,6 +887,8 @@ async function refreshCount() {
   state.isLoadingCount = true;
   els.resultCount.textContent = '...';
   els.genreHeaderResultCount.textContent = '...';
+  els.ratingResultCount.textContent = '...';
+  els.ratingHeaderResultCount.textContent = '...';
   els.decadeResultCount.textContent = '...';
   els.decadeHeaderResultCount.textContent = '...';
 
@@ -724,12 +900,16 @@ async function refreshCount() {
     const totalResults = counts.reduce((total, data) => total + data.total_results, 0);
     els.resultCount.textContent = totalResults.toLocaleString();
     els.genreHeaderResultCount.textContent = totalResults.toLocaleString();
+    els.ratingResultCount.textContent = totalResults.toLocaleString();
+    els.ratingHeaderResultCount.textContent = totalResults.toLocaleString();
     els.decadeResultCount.textContent = totalResults.toLocaleString();
     els.decadeHeaderResultCount.textContent = totalResults.toLocaleString();
   } catch (error) {
     console.error(error);
     els.resultCount.textContent = '-';
     els.genreHeaderResultCount.textContent = '-';
+    els.ratingResultCount.textContent = '-';
+    els.ratingHeaderResultCount.textContent = '-';
     els.decadeResultCount.textContent = '-';
     els.decadeHeaderResultCount.textContent = '-';
   } finally {
@@ -842,11 +1022,10 @@ async function startSecretFlow() {
     return;
   }
 
-  state.secretActive = true;
-  state.physicalMode = false;
+  setAppMode('monke', { refreshPosters: false });
   state.hasShownResult = false;
-  updatePhysicalModeCopy();
-  await pickSecretMovie();
+  loadFloatingPosters();
+  showView('landing');
 }
 
 async function pickSecretMovie(options = {}) {
@@ -1111,34 +1290,60 @@ function hasStreamingProviders(regionData) {
 }
 
 function updatePhysicalModeCopy() {
+  state.physicalMode = state.mode === 'physical';
+  state.secretActive = state.mode === 'monke';
   els.appShell.dataset.physicalMode = state.physicalMode ? 'true' : 'false';
+  els.appShell.dataset.appMode = state.mode;
 
   if (els.modeToggle) {
-    els.modeToggle.textContent = state.physicalMode ? 'Blu-ray mode' : 'Streamer mode';
-    els.modeToggle.setAttribute('aria-pressed', String(state.physicalMode));
+    const label = state.mode === 'monke'
+      ? 'Monke mode'
+      : state.physicalMode ? 'Blu-ray mode' : 'Streamer mode';
+    els.modeToggle.textContent = label;
+    els.modeToggle.setAttribute('aria-pressed', String(state.mode !== 'streamer'));
   }
 
-  if (state.physicalMode) {
+  if (state.mode === 'monke') {
+    els.heroEyebrow.textContent = 'HELLO MONKE';
+    els.heroSupport.textContent = "Let's pick from our agreed upon list. And let's remember to check stuff off and add stuff as we move forward.";
+    els.startPicking.textContent = 'OK PRECIOUS';
+  } else if (state.physicalMode) {
     els.heroEyebrow.textContent = 'Got 90 min? Own a blu-ray player?';
     els.heroSupport.textContent = "Choose your favorite genre, choose your era, and let's pick a comfy 90 minute movie for you. It's up to you to go find it at your local physical media store....or you can support a blood thirsty corporate giant, I'm not your dad.";
+    els.startPicking.textContent = 'Lets Go';
   } else {
     els.heroEyebrow.textContent = 'Got 90 min?';
     els.heroSupport.innerHTML = "Choose your favorite genre, choose your era, and let's pick a comfy 90 minute movie for&nbsp;you.";
+    els.startPicking.textContent = 'Lets Go';
   }
 }
 
-function setPhysicalMode(isPhysical) {
-  if (state.physicalMode === isPhysical) return;
-  state.physicalMode = isPhysical;
-  state.secretActive = false;
+function setAppMode(mode, options = {}) {
+  if (state.mode === mode) return;
+  state.mode = mode;
+  state.physicalMode = mode === 'physical';
+  state.secretActive = mode === 'monke';
   state.hasShownResult = false;
   updatePhysicalModeCopy();
-  loadFloatingPosters();
+  if (options.refreshPosters !== false) loadFloatingPosters();
+  if (mode === 'monke') showView('landing');
+}
+
+function setPhysicalMode(isPhysical) {
+  setAppMode(isPhysical ? 'physical' : 'streamer');
 }
 
 function startPhysicalFlow() {
-  setPhysicalMode(true);
+  setAppMode('physical');
   showView('landing');
+}
+
+function cycleAppMode() {
+  if (state.mode === 'streamer') {
+    setAppMode('physical');
+  } else {
+    setAppMode('streamer');
+  }
 }
 
 function wait(duration) {
@@ -1532,11 +1737,15 @@ function closeTrailer() {
 
 function clearFilters() {
   state.selectedGenreIds = [];
+  state.selectedRatings = [];
+  state.anyRatingSelected = false;
   state.selectedDecades = [];
   state.anyEraSelected = false;
   renderGenrePills();
+  renderRatingPills();
   renderDecadePills();
   updateSelectionSummary();
+  updateRatingSummary();
   updateDecadeSummary();
   refreshCount();
 }
@@ -1556,7 +1765,6 @@ async function clearFiltersAndReturn() {
     await wait(760);
     els.movieResult.classList.remove('sample-result-exit');
     els.posterTrack.classList.remove('paused');
-    state.secretActive = false;
     showView('landing');
     return;
   }
@@ -1574,11 +1782,22 @@ function setResultSource(source) {
 
 function wireEvents() {
   els.homeButton.addEventListener('click', () => showView('landing'));
-  els.startPicking.addEventListener('click', () => showView('picker'));
+  els.startPicking.addEventListener('click', () => {
+    if (state.mode === 'monke') {
+      pickSecretMovie();
+      return;
+    }
+
+    showView('picker');
+  });
+  els.goToRatings.addEventListener('click', () => showView('rating'));
+  els.headerGoToRatings.addEventListener('click', () => showView('rating'));
   els.goToDecades.addEventListener('click', () => showView('decade'));
   els.headerGoToDecades.addEventListener('click', () => showView('decade'));
   els.backToGenres.addEventListener('click', () => showView('picker'));
   els.headerBackToGenres.addEventListener('click', () => showView('picker'));
+  els.backToRatings.addEventListener('click', () => showView('rating'));
+  els.headerBackToRatings.addEventListener('click', () => showView('rating'));
   els.pickMovie.addEventListener('click', pickRandomMovie);
   els.headerPickMovie.addEventListener('click', pickRandomMovie);
   els.headerClearFilters.addEventListener('click', handleGenreBackClear);
@@ -1611,7 +1830,7 @@ function wireEvents() {
   els.footerLogoButton.addEventListener('click', toggleFooterBounce);
   els.secretFlowTrigger.addEventListener('click', startSecretFlow);
   els.physicalFlowTrigger.addEventListener('click', startPhysicalFlow);
-  els.modeToggle.addEventListener('click', () => setPhysicalMode(!state.physicalMode));
+  els.modeToggle.addEventListener('click', cycleAppMode);
   window.addEventListener('scroll', updateMobileActionOffset, { passive: true });
   window.addEventListener('resize', () => {
     scheduleMobileActionOffsetUpdate();
@@ -1630,6 +1849,8 @@ async function init() {
   updatePhysicalModeCopy();
   scheduleMobileActionOffsetUpdate();
   updateSelectionSummary();
+  renderRatingPills();
+  updateRatingSummary();
   renderDecadePills();
   updateDecadeSummary();
   wireEvents();
