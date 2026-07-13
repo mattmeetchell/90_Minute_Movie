@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260712-card-stack-02" />
+  <link rel="stylesheet" href="styles.css?v=20260713-mode-toggle-05" />
 </head>
 <body>
   <div class="app-shell">
@@ -28,6 +28,7 @@
       <button id="homeButton" class="placeholder-nav" type="button" aria-label="Go to landing page">
         <img src="assets/brand/90_M_Logo.svg" alt="" aria-hidden="true" />
       </button>
+      <button id="modeToggle" class="mode-toggle" type="button" aria-pressed="false">Streamer mode</button>
       <div class="header-drawer">
         <div class="drawer-panel drawer-panel-genre">
           <div class="heading-copy">
@@ -58,9 +59,9 @@
           <div id="posterTrack" class="poster-track" aria-label="Sample movies"></div>
         </div>
         <div class="hero-copy">
-          <p>Got 90 min?</p>
+          <p id="heroEyebrow">Got 90 min?</p>
           <h1>Let's watch<br>a movie</h1>
-          <p class="hero-support">Choose your favorite genre, choose your era, and let's pick a comfy 90 minute movie for&nbsp;you.</p>
+          <p id="heroSupport" class="hero-support">Choose your favorite genre, choose your era, and let's pick a comfy 90 minute movie for&nbsp;you.</p>
           <button id="startPicking" class="button-primary" type="button">Lets Go</button>
         </div>
       </section>
@@ -138,6 +139,7 @@
       </button>
       <div class="footer-copy">
         <p>Lovingly vibe coded in NYC <span aria-hidden="true">💕</span> <button id="secretFlowTrigger" class="secret-flow-trigger" type="button" aria-label="Open personal picker">🦧</button></p>
+        <p><button id="physicalFlowTrigger" class="footer-flow-trigger" type="button">I own a blu-ray player 💿</button></p>
         <p>Powered by TMDB</p>
       </div>
     </footer>
@@ -157,7 +159,7 @@
     </div>
   </div>
 
-  <script src="personal-movies.js?v=20260712-card-stack-02"></script>
-  <script src="script.js?v=20260712-card-stack-02"></script>
+  <script src="personal-movies.js?v=20260713-mode-toggle-05"></script>
+  <script src="script.js?v=20260713-mode-toggle-05"></script>
 </body>
 </html>

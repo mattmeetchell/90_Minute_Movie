@@ -175,7 +175,12 @@ img {
 .placeholder-nav img {
   display: block;
   height: 100%;
+  transition: filter 180ms ease;
   width: 100%;
+}
+
+.app-shell[data-physical-mode="true"] .placeholder-nav img {
+  filter: brightness(0) saturate(100%) invert(57%) sepia(64%) saturate(852%) hue-rotate(162deg) brightness(87%) contrast(89%);
 }
 
 .placeholder-nav:hover,
@@ -280,6 +285,10 @@ img {
   position: relative;
 }
 
+.app-shell[data-physical-mode="true"] .landing-view {
+  min-height: 650px;
+}
+
 .tray-view {
   padding-top: 58px;
 }
@@ -348,6 +357,56 @@ img {
   display: none;
 }
 
+.mode-toggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 60px;
+  color: var(--text);
+  cursor: pointer;
+  display: none;
+  flex-direction: row;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 1000;
+  gap: 10px;
+  height: 38px;
+  justify-content: center;
+  left: auto;
+  letter-spacing: 0.18em;
+  padding: 11px 19px;
+  position: absolute;
+  right: max(28px, calc((100vw - 1220px) / 2));
+  text-transform: uppercase;
+  top: 27px;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease, width 180ms ease;
+  width: auto;
+  z-index: 3;
+}
+
+.app-shell[data-view="landing"] .mode-toggle,
+.app-shell[data-view="result"] .mode-toggle {
+  display: flex;
+}
+
+.mode-toggle:hover,
+.mode-toggle:focus-visible {
+  color: rgba(255, 255, 255, 0.72);
+  transform: translateY(-1px);
+}
+
+.mode-toggle[aria-pressed="true"] {
+  background: #379acf;
+  color: var(--text);
+  width: 168px;
+}
+
+.mode-toggle[aria-pressed="true"]:hover,
+.mode-toggle[aria-pressed="true"]:focus-visible {
+  background: #379acf;
+  color: var(--text);
+}
+
 .hero-copy {
   align-items: flex-start;
   display: flex;
@@ -367,6 +426,11 @@ img {
   line-height: 14px;
   margin: 0 0 24px;
   text-transform: uppercase;
+}
+
+.app-shell[data-physical-mode="true"] .hero-copy #heroEyebrow {
+  font-size: 14px;
+  line-height: 17px;
 }
 
 .hero-copy .hero-support {
@@ -475,9 +539,20 @@ img {
   transform: translateY(-2px);
 }
 
+.button-secondary:hover,
+.button-secondary:focus-visible {
+  background: var(--text);
+  color: #050505;
+}
+
 @media (min-width: 761px) {
   #tryAgain {
-    min-width: 340px;
+    min-width: 280px;
+  }
+
+  .result-actions .button-primary,
+  .result-actions .button-secondary {
+    min-width: 280px;
   }
 }
 
@@ -786,7 +861,7 @@ img {
 .decade-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 28px 18px;
+  gap: 18px 18px;
   justify-content: flex-start;
   max-width: 900px;
   padding: 42px 0 56px;
@@ -1371,11 +1446,12 @@ img {
 }
 
 .movie-copy h1.long-title {
-  font-size: 56px;
+  font-size: 46px;
 }
 
 .year-pill {
   background: var(--text);
+  border-radius: 18px;
   color: #101010;
   display: inline-flex;
   font-size: 1rem;
@@ -1641,6 +1717,21 @@ img {
   transform: scale(1.12);
 }
 
+.footer-flow-trigger {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+}
+
+.footer-flow-trigger:hover,
+.footer-flow-trigger:focus-visible {
+  color: rgba(255, 255, 255, 0.72);
+}
+
 .trailer-modal {
   align-items: center;
   background: rgba(0, 0, 0, 0.84);
@@ -1752,6 +1843,7 @@ img {
 
   .decade-grid {
     display: flex;
+    gap: 28px 24px;
   }
 
   .movie-result {
@@ -1801,6 +1893,10 @@ img {
     min-height: 770px;
   }
 
+  .app-shell[data-physical-mode="true"] .landing-view {
+    min-height: 850px;
+  }
+
   .hero-copy {
     left: 22px;
     top: 112px;
@@ -1824,6 +1920,24 @@ img {
     line-height: 24px;
   }
 
+  .app-shell[data-physical-mode="true"] .hero-copy #heroEyebrow {
+    font-size: 14px;
+    line-height: 17px;
+  }
+
+  .mode-toggle {
+    height: 38px;
+    left: auto;
+    padding: 10px 16px;
+    right: 22px;
+    top: 25px;
+    width: auto;
+  }
+
+  .mode-toggle[aria-pressed="true"] {
+    width: 150px;
+  }
+
   .poster-marquee {
     bottom: auto;
     height: 410px;
@@ -1835,6 +1949,10 @@ img {
     top: 450px;
     transform: none;
     width: auto;
+  }
+
+  .app-shell[data-physical-mode="true"] .poster-marquee {
+    top: 490px;
   }
 
   .poster-track {

@@ -2,7 +2,7 @@ const TMDB_PROXY_URL = '/api/tmdb';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w780';
 const PROFILE_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w185';
 const PROVIDER_LOGO_BASE = 'https://image.tmdb.org/t/p/original';
-const PHYSICAL_MEDIA_LOGO = 'assets/media/Bluray.svg';
+const PHYSICAL_MEDIA_LOGO = 'assets/media/Blu-ray.svg';
 const MAX_RUNTIME_MINUTES = 105;
 const SECRET_PASSWORD = 'Monke';
 const SECRET_SHEET_ID = '16xflKfxJMpwWbKOXNPsQA7RjO8ta4K6EO9AOzdp7UXU';
@@ -103,6 +103,7 @@ const state = {
   hasShownResult: false,
   secretMovies: null,
   secretActive: false,
+  physicalMode: false,
   tryAgainExitTimer: null,
   footerBounceFrame: null,
   footerBounceLastTime: null,
@@ -111,10 +112,14 @@ const state = {
 };
 
 let currentPosterSamples = [];
+let floatingPosterLoadToken = 0;
 
 const els = {
   appShell: document.querySelector('.app-shell'),
   landingView: document.getElementById('landingView'),
+  heroEyebrow: document.getElementById('heroEyebrow'),
+  heroSupport: document.getElementById('heroSupport'),
+  modeToggle: document.getElementById('modeToggle'),
   posterTrack: document.getElementById('posterTrack'),
   pickerView: document.getElementById('pickerView'),
   decadeView: document.getElementById('decadeView'),
@@ -159,7 +164,8 @@ const els = {
   footer: document.querySelector('.site-footer'),
   footerLogoButton: document.getElementById('footerLogoButton'),
   footerCopy: document.querySelector('.footer-copy'),
-  secretFlowTrigger: document.getElementById('secretFlowTrigger')
+  secretFlowTrigger: document.getElementById('secretFlowTrigger'),
+  physicalFlowTrigger: document.getElementById('physicalFlowTrigger')
 };
 
 const mobileMediaQuery = window.matchMedia('(max-width: 760px)');
@@ -365,19 +371,39 @@ async function loadGenres() {
 
 async function loadFloatingPosters() {
   if (!els.posterTrack) return;
+  const loadToken = ++floatingPosterLoadToken;
   renderPosterMarquee(getFallbackPosterSamples());
 
   try {
-    const randomPage = Math.floor(Math.random() * 5) + 1;
-    const data = await tmdbFetch('/discover/movie', {
-      ...buildDiscoverParams(randomPage),
-      page: randomPage
-    });
-    const posters = await getValidPosterSamples(data.results.filter((movie) => movie.poster_path), 10);
+    const posterCandidates = [];
+    const firstPage = Math.floor(Math.random() * 5) + 1;
+    const pages = [firstPage, ((firstPage + 1) % 5) + 1, ((firstPage + 2) % 5) + 1];
+
+    for (const page of pages) {
+      const data = await tmdbFetch('/discover/movie', getFloatingPosterDiscoverParams(page));
+      posterCandidates.push(...data.results.filter((movie) => movie.poster_path));
+    }
+
+    const posters = await getValidPosterSamples(posterCandidates, 10);
+    if (loadToken !== floatingPosterLoadToken) return;
     renderPosterMarquee(posters);
   } catch (error) {
     console.error(error);
   }
+}
+
+function getFloatingPosterDiscoverParams(page) {
+  const params = {
+    ...buildDiscoverParams(page),
+    page
+  };
+
+  if (!state.physicalMode) {
+    params.watch_region = 'US';
+    params.with_watch_monetization_types = 'flatrate';
+  }
+
+  return params;
 }
 
 function renderPosterMarquee(posters) {
@@ -497,8 +523,11 @@ async function getValidPosterSamples(movies, limit = 5) {
     if (samples.length >= limit) break;
 
     try {
-      const details = await tmdbFetch(`/movie/${movie.id}`, { language: 'en-US' });
-      if (isValidRuntime(details.runtime)) {
+      const [details, , , providers] = await fetchMovieBundle(movie.id);
+      const hasStreamers = hasStreamingProviders(providers.results?.US || providers.results?.GB || null);
+      const matchesMode = state.physicalMode ? !hasStreamers : hasStreamers;
+
+      if (isValidRuntime(details.runtime) && matchesMode) {
         samples.push({ ...movie, runtime: details.runtime });
       }
     } catch (error) {
@@ -587,6 +616,17 @@ function renderGenrePills() {
 
 function updateGenreStage() {
   els.appShell.dataset.genreCount = String(Math.min(state.selectedGenreIds.length, 2));
+  updateGenreBackClearButtons();
+}
+
+function updateGenreBackClearButtons() {
+  const hasGenreFilters = state.selectedGenreIds.length > 0;
+  const label = hasGenreFilters ? 'Clear' : 'Back';
+  [els.clearFilters, els.headerClearFilters].forEach((button) => {
+    if (!button) return;
+    button.textContent = label;
+    button.setAttribute('aria-label', hasGenreFilters ? 'Clear genre filters' : 'Back to homepage');
+  });
 }
 
 function toggleGenre(id) {
@@ -729,14 +769,15 @@ async function pickRandomMovie(options = {}) {
     await preloadPoster(details.poster_path);
     if (shouldAnticipate) {
       await posterExitDelay;
-      await runResultAnticipationReveal(details, credits, videos, providers, releaseDates, 'filtered');
+      await runResultAnticipationReveal(details, credits, videos, providers, releaseDates, state.physicalMode ? 'physical' : 'filtered');
     } else {
       await posterExitDelay;
+      setResultSource(state.physicalMode ? 'physical' : 'filtered');
       renderMovie(details, credits, videos, providers, releaseDates);
-      setResultSource('filtered');
       showView('result');
     }
 
+    if (!shouldAnticipate) setResultSource(state.physicalMode ? 'physical' : 'filtered');
     animateResultReveal({ animateCopy, cyclePoster, personalReveal: shouldAnticipate });
     state.hasShownResult = true;
   } catch (error) {
@@ -780,7 +821,9 @@ async function startSecretFlow() {
   }
 
   state.secretActive = true;
+  state.physicalMode = false;
   state.hasShownResult = false;
+  updatePhysicalModeCopy();
   await pickSecretMovie();
 }
 
@@ -956,7 +999,7 @@ function normalizeSecretMovieRow(row, headers) {
     const index = headers.findIndex((header) => wanted.includes(header));
     return index >= 0 ? (row[index] || '').trim() : '';
   };
-  const physicalNote = get('note', 'physical', 'owned physical', 'owned_physical', 'bluray', 'blu ray');
+  const physicalNote = get('note', 'physical', 'owned physical', 'owned_physical', 'blu-ray', 'blu_ray');
 
   return {
     tmdbId: get('tmdb_id', 'tmdb id', 'tmdb', 'id'),
@@ -973,7 +1016,7 @@ function normalizeSheetHeader(value) {
 }
 
 function isOwnedPhysicalNote(value) {
-  return /blu\s?-?ray|bluray|owned|yes|true/i.test(String(value || ''));
+  return /blu[\s-]?ray|owned|yes|true/i.test(String(value || ''));
 }
 
 async function fetchSecretMovieBundle(row) {
@@ -1022,18 +1065,58 @@ async function fetchValidMovieBundle(candidates) {
 
   for (const movie of fallbackCandidates.slice(0, 10)) {
     const bundle = await fetchMovieBundle(movie.id);
-    const [details] = bundle;
+    const [details, , , providers] = bundle;
 
-    if (isValidRuntime(details.runtime)) {
+    if (!isValidRuntime(details.runtime)) continue;
+
+    const hasStreamers = hasStreamingProviders(providers.results?.US || providers.results?.GB || null);
+    if (state.physicalMode ? !hasStreamers : hasStreamers) {
       return bundle;
     }
   }
 
-  throw new Error('No under-105-minute matches found for the current filters.');
+  throw new Error(state.physicalMode
+    ? 'No physical-media matches found for the current filters.'
+    : 'No streaming matches found for the current filters.');
 }
 
 function isValidRuntime(runtime) {
   return runtime && runtime <= MAX_RUNTIME_MINUTES;
+}
+
+function hasStreamingProviders(regionData) {
+  return Boolean(regionData?.flatrate?.length);
+}
+
+function updatePhysicalModeCopy() {
+  els.appShell.dataset.physicalMode = state.physicalMode ? 'true' : 'false';
+
+  if (els.modeToggle) {
+    els.modeToggle.textContent = state.physicalMode ? 'Blu-ray mode' : 'Streamer mode';
+    els.modeToggle.setAttribute('aria-pressed', String(state.physicalMode));
+  }
+
+  if (state.physicalMode) {
+    els.heroEyebrow.textContent = 'Got 90 min? Own a blu-ray player?';
+    els.heroSupport.textContent = "Choose your favorite genre, choose your era, and let's pick a comfy 90 minute movie for you. It's up to you to go find it at your local physical media store....or you can support a blood thirsty corporate giant, I'm not your dad.";
+  } else {
+    els.heroEyebrow.textContent = 'Got 90 min?';
+    els.heroSupport.innerHTML = "Choose your favorite genre, choose your era, and let's pick a comfy 90 minute movie for&nbsp;you.";
+  }
+}
+
+function setPhysicalMode(isPhysical) {
+  if (state.physicalMode === isPhysical) return;
+  state.physicalMode = isPhysical;
+  state.secretActive = false;
+  state.hasShownResult = false;
+  updatePhysicalModeCopy();
+  loadFloatingPosters();
+}
+
+function startPhysicalFlow() {
+  setPhysicalMode(true);
+  showView('landing');
 }
 
 function wait(duration) {
@@ -1248,9 +1331,10 @@ function getCertification(releaseDates) {
 function renderProviders(regionData, movie) {
   els.providers.innerHTML = '';
 
-  if (movie?.ownedPhysical) {
+  const shouldShowPhysical = movie?.ownedPhysical || state.resultSource === 'physical';
+  if (shouldShowPhysical) {
     const marker = createProviderLink({
-      name: 'Owned on Blu-ray',
+      name: movie?.ownedPhysical ? 'Owned on Blu-ray' : 'Blu-ray',
       url: getPhysicalMediaUrl(movie),
       logoSrc: PHYSICAL_MEDIA_LOGO
     });
@@ -1258,15 +1342,7 @@ function renderProviders(regionData, movie) {
   }
 
   const flatrate = regionData?.flatrate || [];
-  if (!flatrate.length) {
-    if (movie?.ownedPhysical) return;
-
-    const fallback = createProviderLink({
-      name: 'Blu-ray',
-      url: getPhysicalMediaUrl(movie),
-      logoSrc: PHYSICAL_MEDIA_LOGO
-    });
-    els.providers.appendChild(fallback);
+  if (!flatrate.length || state.resultSource === 'physical') {
     return;
   }
 
@@ -1312,7 +1388,7 @@ function createProviderLink({ name, url, logoSrc }) {
 function getPhysicalMediaUrl(movie) {
   const title = movie?.title || 'movie';
   const year = (movie?.release_date || '').slice(0, 4);
-  const query = encodeURIComponent(`${title} ${year} blu ray`);
+  const query = encodeURIComponent(`${title} ${year} blu-ray`);
   return `https://www.amazon.com/s?k=${query}`;
 }
 
@@ -1421,6 +1497,15 @@ function clearFilters() {
   refreshCount();
 }
 
+function handleGenreBackClear() {
+  if (!state.selectedGenreIds.length) {
+    showView('landing');
+    return;
+  }
+
+  clearFilters();
+}
+
 async function clearFiltersAndReturn() {
   if (state.resultSource === 'sample' || state.resultSource === 'secret') {
     els.movieResult.classList.add('sample-result-exit');
@@ -1452,7 +1537,7 @@ function wireEvents() {
   els.headerBackToGenres.addEventListener('click', () => showView('picker'));
   els.pickMovie.addEventListener('click', pickRandomMovie);
   els.headerPickMovie.addEventListener('click', pickRandomMovie);
-  els.headerClearFilters.addEventListener('click', clearFilters);
+  els.headerClearFilters.addEventListener('click', handleGenreBackClear);
   els.tryAgain.addEventListener('click', () => {
     if (state.resultSource === 'secret') {
       pickSecretMovie({ cyclePosterOnly: true });
@@ -1477,10 +1562,12 @@ function wireEvents() {
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeTrailer();
   });
-  els.clearFilters.addEventListener('click', clearFilters);
+  els.clearFilters.addEventListener('click', handleGenreBackClear);
   els.clearResultFilters.addEventListener('click', clearFiltersAndReturn);
   els.footerLogoButton.addEventListener('click', toggleFooterBounce);
   els.secretFlowTrigger.addEventListener('click', startSecretFlow);
+  els.physicalFlowTrigger.addEventListener('click', startPhysicalFlow);
+  els.modeToggle.addEventListener('click', () => setPhysicalMode(!state.physicalMode));
   window.addEventListener('scroll', updateMobileActionOffset, { passive: true });
   window.addEventListener('resize', () => {
     scheduleMobileActionOffsetUpdate();
@@ -1495,6 +1582,7 @@ function wireEvents() {
 async function init() {
   els.appShell.dataset.view = state.activeView;
   els.appShell.dataset.resultSource = state.resultSource;
+  updatePhysicalModeCopy();
   scheduleMobileActionOffsetUpdate();
   updateSelectionSummary();
   renderDecadePills();
