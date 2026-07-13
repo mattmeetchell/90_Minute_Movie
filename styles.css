@@ -1449,6 +1449,12 @@ img {
   font-size: 46px;
 }
 
+@media (min-width: 761px) {
+  .movie-copy h1.actions-collision-title {
+    font-size: 58px;
+  }
+}
+
 .year-pill {
   background: var(--text);
   border-radius: 18px;

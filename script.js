@@ -757,13 +757,7 @@ async function pickRandomMovie(options = {}) {
       throw new Error('No matches found for the current filters.');
     }
 
-    const maxPage = Math.min(firstPage.total_pages, 20);
-    const randomPage = Math.floor(Math.random() * maxPage) + 1;
-    const pageData = randomPage === 1
-      ? firstPage
-      : await tmdbFetch('/discover/movie', buildDiscoverParams(randomPage, decade));
-
-    const validResults = shuffle(pageData.results.filter((movie) => movie.poster_path));
+    const validResults = await getRandomCandidateMovies(firstPage, decade);
     const [details, credits, videos, providers, releaseDates] = await fetchValidMovieBundle(validResults);
 
     await preloadPoster(details.poster_path);
@@ -786,6 +780,34 @@ async function pickRandomMovie(options = {}) {
   } finally {
     setLoading(false);
   }
+}
+
+async function getRandomCandidateMovies(firstPage, decade) {
+  const maxPage = Math.min(firstPage.total_pages, 20);
+  const pages = new Set([1]);
+
+  while (pages.size < Math.min(4, maxPage)) {
+    pages.add(Math.floor(Math.random() * maxPage) + 1);
+  }
+
+  const pageResults = await Promise.all(
+    [...pages].map((page) => (
+      page === 1
+        ? Promise.resolve(firstPage)
+        : tmdbFetch('/discover/movie', buildDiscoverParams(page, decade))
+    ))
+  );
+
+  const seen = new Set();
+  const candidates = pageResults
+    .flatMap((page) => page.results || [])
+    .filter((movie) => {
+      if (!movie.poster_path || seen.has(movie.id)) return false;
+      seen.add(movie.id);
+      return true;
+    });
+
+  return shuffle(candidates);
 }
 
 async function showFloatingMovie(movieId) {
@@ -1063,7 +1085,7 @@ function fetchMovieBundle(movieId) {
 async function fetchValidMovieBundle(candidates) {
   const fallbackCandidates = candidates.length ? candidates : [];
 
-  for (const movie of fallbackCandidates.slice(0, 10)) {
+  for (const movie of fallbackCandidates.slice(0, 60)) {
     const bundle = await fetchMovieBundle(movie.id);
     const [details, , , providers] = bundle;
 
@@ -1223,6 +1245,8 @@ function animateResultReveal({ animateCopy = false, cyclePoster = false, persona
   } else {
     els.movieCopy.classList.remove('personal-copy-pending');
   }
+
+  updateTitleSize();
 }
 
 function getRandomSelectedDecade() {
@@ -1278,7 +1302,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
 }
 
 function updateTitleSize() {
-  els.title.classList.remove('long-title');
+  els.title.classList.remove('long-title', 'actions-collision-title');
 
   requestAnimationFrame(() => {
     const styles = window.getComputedStyle(els.title);
@@ -1286,8 +1310,28 @@ function updateTitleSize() {
     if (!lineHeight) return;
 
     const lineCount = Math.round(els.title.scrollHeight / lineHeight);
-    els.title.classList.toggle('long-title', lineCount >= 4);
+    if (lineCount >= 4) {
+      els.title.classList.add('long-title');
+      return;
+    }
+
+    if (shouldReduceTitleForActions()) {
+      els.title.classList.add('actions-collision-title');
+    }
   });
+}
+
+function shouldReduceTitleForActions() {
+  if (mobileMediaQuery.matches || state.activeView !== 'result') return false;
+
+  const watchBlock = els.movieCopy.querySelector('.watch-block');
+  if (!watchBlock || !els.tryAgain) return false;
+
+  const watchRect = watchBlock.getBoundingClientRect();
+  const actionsRect = els.tryAgain.getBoundingClientRect();
+  const lockupBottom = watchRect.bottom + 120;
+
+  return actionsRect.top > lockupBottom;
 }
 
 function renderCast(cast) {
@@ -1572,6 +1616,7 @@ function wireEvents() {
   window.addEventListener('resize', () => {
     scheduleMobileActionOffsetUpdate();
     updatePosterLoopWidth();
+    updateTitleSize();
   });
   mobileMediaQuery.addEventListener('change', () => {
     scheduleMobileActionOffsetUpdate();
