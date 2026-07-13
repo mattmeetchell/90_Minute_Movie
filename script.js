@@ -82,6 +82,14 @@ const TRY_AGAIN_HOVER_LABELS = [
   'PASS'
 ];
 
+const FOOTER_DVD_FILTERS = [
+  'brightness(0) saturate(100%) invert(72%) sepia(92%) saturate(716%) hue-rotate(118deg) brightness(101%) contrast(96%)',
+  'brightness(0) saturate(100%) invert(83%) sepia(88%) saturate(1333%) hue-rotate(359deg) brightness(105%) contrast(104%)',
+  'brightness(0) saturate(100%) invert(60%) sepia(88%) saturate(3898%) hue-rotate(306deg) brightness(101%) contrast(101%)',
+  'brightness(0) saturate(100%) invert(54%) sepia(98%) saturate(1924%) hue-rotate(181deg) brightness(101%) contrast(101%)',
+  'brightness(0) saturate(100%) invert(68%) sepia(76%) saturate(1568%) hue-rotate(72deg) brightness(104%) contrast(102%)'
+];
+
 const state = {
   genres: [],
   selectedGenreIds: [],
@@ -95,7 +103,11 @@ const state = {
   hasShownResult: false,
   secretMovies: null,
   secretActive: false,
-  tryAgainExitTimer: null
+  tryAgainExitTimer: null,
+  footerBounceFrame: null,
+  footerBounceLastTime: null,
+  footerBounce: null,
+  footerDvdColorIndex: 0
 };
 
 let currentPosterSamples = [];
@@ -146,6 +158,7 @@ const els = {
   decadeHeaderResultCount: document.getElementById('decadeHeaderResultCount'),
   footer: document.querySelector('.site-footer'),
   footerLogoButton: document.getElementById('footerLogoButton'),
+  footerCopy: document.querySelector('.footer-copy'),
   secretFlowTrigger: document.getElementById('secretFlowTrigger')
 };
 
@@ -232,6 +245,110 @@ function scheduleMobileActionOffsetUpdate() {
   setTimeout(updateMobileActionOffset, 120);
   setTimeout(updateMobileActionOffset, 420);
   setTimeout(updateMobileActionOffset, 720);
+}
+
+function getFooterBounceBounds() {
+  const inset = mobileMediaQuery.matches ? 18 : 24;
+  const maxX = Math.max(inset, els.footer.clientWidth - els.footerLogoButton.offsetWidth - inset);
+  const maxY = Math.max(inset, els.footer.clientHeight - els.footerLogoButton.offsetHeight - inset);
+
+  return {
+    inset,
+    maxX,
+    maxY
+  };
+}
+
+function setFooterLogoPosition(x, y) {
+  els.footer.style.setProperty('--footer-dvd-x', `${Math.round(x)}px`);
+  els.footer.style.setProperty('--footer-dvd-y', `${Math.round(y)}px`);
+}
+
+function advanceFooterDvdColor() {
+  state.footerDvdColorIndex = (state.footerDvdColorIndex + 1) % FOOTER_DVD_FILTERS.length;
+  els.footer.style.setProperty('--footer-dvd-filter', FOOTER_DVD_FILTERS[state.footerDvdColorIndex]);
+}
+
+function runFooterBounce(timestamp) {
+  if (!state.footerBounce) return;
+
+  const bounds = getFooterBounceBounds();
+  const delta = state.footerBounceLastTime ? Math.min(32, timestamp - state.footerBounceLastTime) : 16;
+  state.footerBounceLastTime = timestamp;
+  let didHitWall = false;
+
+  state.footerBounce.x += state.footerBounce.vx * delta;
+  state.footerBounce.y += state.footerBounce.vy * delta;
+
+  if (state.footerBounce.x <= bounds.inset) {
+    state.footerBounce.x = bounds.inset;
+    state.footerBounce.vx = Math.abs(state.footerBounce.vx);
+    didHitWall = true;
+  } else if (state.footerBounce.x >= bounds.maxX) {
+    state.footerBounce.x = bounds.maxX;
+    state.footerBounce.vx = -Math.abs(state.footerBounce.vx);
+    didHitWall = true;
+  }
+
+  if (state.footerBounce.y <= bounds.inset) {
+    state.footerBounce.y = bounds.inset;
+    state.footerBounce.vy = Math.abs(state.footerBounce.vy);
+    didHitWall = true;
+  } else if (state.footerBounce.y >= bounds.maxY) {
+    state.footerBounce.y = bounds.maxY;
+    state.footerBounce.vy = -Math.abs(state.footerBounce.vy);
+    didHitWall = true;
+  }
+
+  if (didHitWall) advanceFooterDvdColor();
+  setFooterLogoPosition(state.footerBounce.x, state.footerBounce.y);
+  state.footerBounceFrame = requestAnimationFrame(runFooterBounce);
+}
+
+function stopFooterBounce() {
+  if (state.footerBounceFrame) cancelAnimationFrame(state.footerBounceFrame);
+  state.footerBounceFrame = null;
+  state.footerBounceLastTime = null;
+  state.footerBounce = null;
+  els.footer.classList.remove('footer-logo-bouncing', 'footer-logo-roaming');
+  els.footer.style.removeProperty('--footer-dvd-x');
+  els.footer.style.removeProperty('--footer-dvd-y');
+  els.footer.style.removeProperty('--footer-dvd-filter');
+}
+
+function startFooterBounce() {
+  const footerRect = els.footer.getBoundingClientRect();
+  const logoRect = els.footerLogoButton.getBoundingClientRect();
+  const bounds = getFooterBounceBounds();
+  const startX = Math.min(Math.max(logoRect.left - footerRect.left, bounds.inset), bounds.maxX);
+  const startY = Math.min(Math.max(logoRect.top - footerRect.top, bounds.inset), bounds.maxY);
+
+  els.footer.classList.add('footer-logo-bouncing');
+  state.footerDvdColorIndex = 0;
+  els.footer.style.setProperty('--footer-dvd-filter', FOOTER_DVD_FILTERS[state.footerDvdColorIndex]);
+  setFooterLogoPosition(startX, startY);
+
+  window.setTimeout(() => {
+    if (!els.footer.classList.contains('footer-logo-bouncing')) return;
+
+    els.footer.classList.add('footer-logo-roaming');
+    state.footerBounce = {
+      x: startX,
+      y: startY,
+      vx: mobileMediaQuery.matches ? 0.08 : 0.1,
+      vy: mobileMediaQuery.matches ? 0.065 : 0.078
+    };
+    state.footerBounceLastTime = null;
+    state.footerBounceFrame = requestAnimationFrame(runFooterBounce);
+  }, 260);
+}
+
+function toggleFooterBounce() {
+  if (els.footer.classList.contains('footer-logo-bouncing')) {
+    stopFooterBounce();
+  } else {
+    startFooterBounce();
+  }
 }
 
 function clearScreenTransitionClasses() {
@@ -612,21 +729,7 @@ async function pickRandomMovie(options = {}) {
     await preloadPoster(details.poster_path);
     if (shouldAnticipate) {
       await posterExitDelay;
-      setResultSource('filtered');
-      showView('result');
-      const anticipation = runPersonalPickAnticipation();
-      await wait(1180);
-      els.posterButton.classList.add('personal-card-rest');
-      renderMovie(details, credits, videos, providers, releaseDates);
-      els.movieCopy.classList.add('personal-copy-pending');
-      els.posterButton.querySelector('.personal-pick-reel')?.remove();
-      els.movieResult.classList.remove('personal-picking');
-      els.posterButton.classList.remove('personal-card-rest');
-      els.posterButton.classList.add('personal-poster-reveal');
-      await wait(860);
-      await revealPersonalPosterStroke();
-      await wait(160);
-      anticipation.then(() => {});
+      await runResultAnticipationReveal(details, credits, videos, providers, releaseDates, 'filtered');
     } else {
       await posterExitDelay;
       renderMovie(details, credits, videos, providers, releaseDates);
@@ -707,21 +810,7 @@ async function pickSecretMovie(options = {}) {
     await preloadPoster(details.poster_path);
     if (shouldAnticipate) {
       await posterExitDelay;
-      setResultSource('secret');
-      showView('result');
-      const anticipation = runPersonalPickAnticipation();
-      await wait(1180);
-      els.posterButton.classList.add('personal-card-rest');
-      renderMovie(details, credits, videos, providers, releaseDates);
-      els.movieCopy.classList.add('personal-copy-pending');
-      els.posterButton.querySelector('.personal-pick-reel')?.remove();
-      els.movieResult.classList.remove('personal-picking');
-      els.posterButton.classList.remove('personal-card-rest');
-      els.posterButton.classList.add('personal-poster-reveal');
-      await wait(860);
-      await revealPersonalPosterStroke();
-      await wait(160);
-      anticipation.then(() => {});
+      await runResultAnticipationReveal(details, credits, videos, providers, releaseDates, 'secret');
     } else {
       await posterExitDelay;
       renderMovie(details, credits, videos, providers, releaseDates);
@@ -994,6 +1083,26 @@ function runPersonalPickAnticipation() {
   });
 }
 
+async function runResultAnticipationReveal(details, credits, videos, providers, releaseDates, resultSource) {
+  setResultSource(resultSource);
+  showView('result');
+  const anticipation = runPersonalPickAnticipation();
+
+  await wait(1520);
+  els.posterButton.classList.add('personal-card-rest');
+  renderMovie(details, credits, videos, providers, releaseDates);
+  els.movieCopy.classList.add('personal-copy-pending');
+  els.posterButton.querySelector('.personal-pick-reel')?.remove();
+  els.movieResult.classList.remove('personal-picking');
+  els.posterButton.classList.remove('personal-card-rest');
+  els.posterButton.classList.add('personal-poster-reveal');
+
+  await wait(1240);
+  await revealPersonalPosterStroke();
+  await wait(220);
+  anticipation.then(() => {});
+}
+
 function revealPersonalPosterStroke() {
   els.posterButton.classList.add('personal-stroke-reveal');
   void els.posterButton.offsetWidth;
@@ -1006,7 +1115,10 @@ function revealPersonalPosterStroke() {
 
 function animateResultReveal({ animateCopy = false, cyclePoster = false, personalReveal = false } = {}) {
   els.movieResult.classList.remove('sample-result-exit');
-  els.posterButton.classList.remove('result-poster-enter', 'result-poster-fanfare', 'poster-cycle-in', 'poster-cycle-out', 'personal-card-rest', 'personal-poster-reveal', 'personal-stroke-reveal', 'personal-stroke-visible');
+  els.posterButton.classList.remove('result-poster-enter', 'result-poster-fanfare', 'poster-cycle-in', 'poster-cycle-out', 'personal-card-rest', 'personal-stroke-reveal');
+  if (!personalReveal) {
+    els.posterButton.classList.remove('personal-poster-reveal', 'personal-stroke-visible');
+  }
   els.movieCopy.classList.remove('result-copy-enter');
   els.movieCopy.classList.remove('result-lockup-enter');
   els.movieCopy.classList.remove('result-lockup-cycle');
@@ -1367,9 +1479,7 @@ function wireEvents() {
   });
   els.clearFilters.addEventListener('click', clearFilters);
   els.clearResultFilters.addEventListener('click', clearFiltersAndReturn);
-  els.footerLogoButton.addEventListener('click', () => {
-    els.footer.classList.toggle('footer-logo-bouncing');
-  });
+  els.footerLogoButton.addEventListener('click', toggleFooterBounce);
   els.secretFlowTrigger.addEventListener('click', startSecretFlow);
   window.addEventListener('scroll', updateMobileActionOffset, { passive: true });
   window.addEventListener('resize', () => {
