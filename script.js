@@ -46,6 +46,20 @@ const RATINGS = [
     activeIcon: 'assets/rating-icons/RSelected.svg'
   }
 ];
+const MONKE_FORMATS = [
+  {
+    id: 'stream',
+    label: 'Stream',
+    icon: 'assets/monke-icons/Streaming.svg',
+    activeIcon: 'assets/monke-icons/StreamingSelected.svg'
+  },
+  {
+    id: 'bluray',
+    label: 'Blu-ray',
+    icon: 'assets/monke-icons/Bluray.svg',
+    activeIcon: 'assets/monke-icons/BluraySelected.svg'
+  }
+];
 const DESKTOP_POSTER_SIZES = ['float-card-large', 'float-card-small', 'float-card-tiny', '', 'float-card-small', 'float-card-large', ''];
 const MOBILE_POSTER_SIZES = [
   'float-card-large',
@@ -133,6 +147,7 @@ const state = {
   secretActive: false,
   physicalMode: false,
   mode: 'streamer',
+  monkeFormats: [],
   tryAgainExitTimer: null,
   footerBounceFrame: null,
   footerBounceLastTime: null,
@@ -153,6 +168,7 @@ const els = {
   pickerView: document.getElementById('pickerView'),
   ratingView: document.getElementById('ratingView'),
   decadeView: document.getElementById('decadeView'),
+  monkeFilterView: document.getElementById('monkeFilterView'),
   homeButton: document.getElementById('homeButton'),
   headerGoToRatings: document.getElementById('headerGoToRatings'),
   headerGoToDecades: document.getElementById('headerGoToDecades'),
@@ -160,16 +176,21 @@ const els = {
   headerPickMovie: document.getElementById('headerPickMovie'),
   headerBackToGenres: document.getElementById('headerBackToGenres'),
   headerBackToRatings: document.getElementById('headerBackToRatings'),
+  headerPickMonkeMovie: document.getElementById('headerPickMonkeMovie'),
+  headerBackToMonkeHome: document.getElementById('headerBackToMonkeHome'),
   resultView: document.getElementById('resultView'),
   startPicking: document.getElementById('startPicking'),
   genresTray: document.getElementById('genresTray'),
   ratingsTray: document.getElementById('ratingsTray'),
   decadesTray: document.getElementById('decadesTray'),
+  monkeFormatTray: document.getElementById('monkeFormatTray'),
   goToRatings: document.getElementById('goToRatings'),
   goToDecades: document.getElementById('goToDecades'),
   backToGenres: document.getElementById('backToGenres'),
   backToRatings: document.getElementById('backToRatings'),
   pickMovie: document.getElementById('pickMovie'),
+  pickMonkeMovie: document.getElementById('pickMonkeMovie'),
+  backToMonkeHome: document.getElementById('backToMonkeHome'),
   clearFilters: document.getElementById('clearFilters'),
   clearResultFilters: document.getElementById('clearResultFilters'),
   tryAgain: document.getElementById('tryAgain'),
@@ -197,6 +218,9 @@ const els = {
   ratingResultCount: document.getElementById('ratingResultCount'),
   ratingHeaderResultCount: document.getElementById('ratingHeaderResultCount'),
   decadeSummary: document.getElementById('decadeSummary'),
+  monkeFormatSummary: document.getElementById('monkeFormatSummary'),
+  monkeFormatResultCount: document.getElementById('monkeFormatResultCount'),
+  monkeHeaderFormatResultCount: document.getElementById('monkeHeaderFormatResultCount'),
   decadeResultCount: document.getElementById('decadeResultCount'),
   decadeHeaderResultCount: document.getElementById('decadeHeaderResultCount'),
   footer: document.querySelector('.site-footer'),
@@ -252,15 +276,13 @@ function showView(viewName) {
     const incoming = viewEls[viewName];
     const movingForward = filterViews.indexOf(previousView) < filterViews.indexOf(viewName);
 
-    outgoing.classList.remove('hidden');
+    outgoing.classList.add('hidden');
     incoming.classList.remove('hidden');
-    outgoing.classList.add(movingForward ? 'screen-exit-left' : 'screen-exit-right');
     incoming.classList.add(movingForward ? 'screen-enter-right' : 'screen-enter-left');
     els.landingView.classList.add('hidden');
     els.resultView.classList.add('hidden');
 
     state.transitionTimer = setTimeout(() => {
-      outgoing.classList.add('hidden');
       clearScreenTransitionClasses();
       state.transitionTimer = null;
       scheduleMobileActionOffsetUpdate();
@@ -270,6 +292,7 @@ function showView(viewName) {
     els.pickerView.classList.toggle('hidden', viewName !== 'picker');
     els.ratingView.classList.toggle('hidden', viewName !== 'rating');
     els.decadeView.classList.toggle('hidden', viewName !== 'decade');
+    els.monkeFilterView.classList.toggle('hidden', viewName !== 'monkeFilter');
     els.resultView.classList.toggle('hidden', viewName !== 'result');
   }
 
@@ -404,7 +427,7 @@ function toggleFooterBounce() {
 }
 
 function clearScreenTransitionClasses() {
-  [els.pickerView, els.ratingView, els.decadeView].forEach((view) => {
+  [els.pickerView, els.ratingView, els.decadeView, els.monkeFilterView].forEach((view) => {
     view.classList.remove('screen-enter-right', 'screen-enter-left', 'screen-exit-left', 'screen-exit-right');
   });
 }
@@ -446,7 +469,7 @@ async function loadFloatingPosters() {
 }
 
 async function getPersonalPosterSamples(limit = 10) {
-  const rows = shuffle(await loadSecretMovies());
+  const rows = shuffle(getFilteredSecretMovies(await loadSecretMovies()));
   const samples = [];
 
   for (const row of rows.slice(0, limit * 2)) {
@@ -734,6 +757,36 @@ function renderRatingPills() {
   });
 }
 
+function renderMonkeFormatPills() {
+  els.monkeFormatTray.innerHTML = '';
+
+  MONKE_FORMATS.forEach((format) => {
+    const active = state.monkeFormats.includes(format.id);
+    const button = document.createElement('button');
+    button.className = `monke-format-card ${active ? 'active' : ''}`.trim();
+    button.type = 'button';
+    button.setAttribute('aria-pressed', String(active));
+    button.addEventListener('click', () => toggleMonkeFormat(format.id));
+
+    const icon = document.createElement('span');
+    icon.className = 'monke-format-icon';
+
+    const image = document.createElement('img');
+    image.src = active ? format.activeIcon : format.icon;
+    image.alt = '';
+    icon.appendChild(image);
+
+    const label = document.createElement('span');
+    label.className = 'monke-format-name';
+    label.textContent = format.label;
+
+    button.append(icon, label);
+    els.monkeFormatTray.appendChild(button);
+  });
+
+  updateMonkeFormatSummary();
+}
+
 function updateGenreStage() {
   els.appShell.dataset.genreCount = String(Math.min(state.selectedGenreIds.length, 2));
   updateGenreBackClearButtons();
@@ -803,6 +856,17 @@ function toggleDecade(label) {
   refreshCount();
 }
 
+function toggleMonkeFormat(formatId) {
+  if (state.monkeFormats.includes(formatId)) {
+    state.monkeFormats = state.monkeFormats.filter((format) => format !== formatId);
+  } else {
+    state.monkeFormats = [...state.monkeFormats, formatId];
+  }
+
+  renderMonkeFormatPills();
+  loadFloatingPosters();
+}
+
 function getSelectedRatingLabels() {
   return RATINGS
     .filter((rating) => rating.certification !== 'ANY' && state.selectedRatings.includes(rating.certification))
@@ -849,6 +913,41 @@ function updateDecadeSummary() {
   }
 
   els.decadeSummary.textContent = `Selected: ${state.selectedDecades.join(' + ')}`;
+}
+
+function updateMonkeFormatSummary() {
+  updateMonkeFormatCount();
+
+  if (!state.monkeFormats.length || state.monkeFormats.length === MONKE_FORMATS.length) {
+    els.monkeFormatSummary.textContent = 'Selected: Stream + Blu-ray';
+    return;
+  }
+
+  const selectedFormats = MONKE_FORMATS
+    .filter((format) => state.monkeFormats.includes(format.id))
+    .map((format) => format.label);
+  els.monkeFormatSummary.textContent = `Selected: ${selectedFormats.join(' + ')}`;
+}
+
+async function updateMonkeFormatCount() {
+  if (!els.monkeFormatResultCount) return;
+
+  [els.monkeFormatResultCount, els.monkeHeaderFormatResultCount].forEach((count) => {
+    if (count) count.textContent = '-';
+  });
+
+  try {
+    const rows = await loadSecretMovies();
+    const countText = getFilteredSecretMovies(rows).length.toLocaleString();
+    [els.monkeFormatResultCount, els.monkeHeaderFormatResultCount].forEach((count) => {
+      if (count) count.textContent = countText;
+    });
+  } catch (error) {
+    console.error(error);
+    [els.monkeFormatResultCount, els.monkeHeaderFormatResultCount].forEach((count) => {
+      if (count) count.textContent = '-';
+    });
+  }
 }
 
 function buildDiscoverParams(page = 1, decadeLabel = null) {
@@ -1041,7 +1140,7 @@ async function pickSecretMovie(options = {}) {
   setLoading(true);
 
   try {
-    const rows = await loadSecretMovies();
+    const rows = getFilteredSecretMovies(await loadSecretMovies());
     if (!rows.length) {
       throw new Error('The personal list is empty, or I could not read any usable movie rows from it.');
     }
@@ -1073,6 +1172,24 @@ async function pickSecretMovie(options = {}) {
   } finally {
     setLoading(false);
   }
+}
+
+function getFilteredSecretMovies(rows) {
+  const selectedFormats = state.monkeFormats;
+
+  if (!selectedFormats.length || selectedFormats.length === MONKE_FORMATS.length) {
+    return rows;
+  }
+
+  if (selectedFormats.includes('bluray')) {
+    return rows.filter((row) => row.ownedPhysical);
+  }
+
+  if (selectedFormats.includes('stream')) {
+    return rows.filter((row) => !row.ownedPhysical);
+  }
+
+  return rows;
 }
 
 async function loadSecretMovies() {
@@ -1323,8 +1440,10 @@ function setAppMode(mode, options = {}) {
   state.mode = mode;
   state.physicalMode = mode === 'physical';
   state.secretActive = mode === 'monke';
+  if (mode !== 'monke') state.monkeFormats = [];
   state.hasShownResult = false;
   updatePhysicalModeCopy();
+  renderMonkeFormatPills();
   if (options.refreshPosters !== false) loadFloatingPosters();
   if (mode === 'monke') showView('landing');
 }
@@ -1339,11 +1458,15 @@ function startPhysicalFlow() {
 }
 
 function cycleAppMode() {
+  const shouldReturnHome = state.activeView === 'result';
+
   if (state.mode === 'streamer') {
     setAppMode('physical');
   } else {
     setAppMode('streamer');
   }
+
+  if (shouldReturnHome) showView('landing');
 }
 
 function wait(duration) {
@@ -1693,9 +1816,13 @@ function formatRuntime(runtime) {
 function setLoading(isLoading) {
   els.pickMovie.disabled = isLoading;
   els.headerPickMovie.disabled = isLoading;
+  els.pickMonkeMovie.disabled = isLoading;
+  els.headerPickMonkeMovie.disabled = isLoading;
   els.tryAgain.disabled = isLoading;
   els.pickMovie.textContent = isLoading ? 'Picking...' : "Let's do it";
   els.headerPickMovie.textContent = isLoading ? 'Picking...' : "Let's do it";
+  els.pickMonkeMovie.textContent = isLoading ? 'Picking...' : 'OK Precious';
+  els.headerPickMonkeMovie.textContent = isLoading ? 'Picking...' : 'OK Precious';
   els.tryAgain.textContent = isLoading ? 'Picking...' : 'Try Again';
 }
 
@@ -1760,7 +1887,16 @@ function handleGenreBackClear() {
 }
 
 async function clearFiltersAndReturn() {
-  if (state.resultSource === 'sample' || state.resultSource === 'secret') {
+  if (state.resultSource === 'secret') {
+    els.movieResult.classList.add('sample-result-exit');
+    await wait(760);
+    els.movieResult.classList.remove('sample-result-exit');
+    els.posterTrack.classList.remove('paused');
+    showView('monkeFilter');
+    return;
+  }
+
+  if (state.resultSource === 'sample') {
     els.movieResult.classList.add('sample-result-exit');
     await wait(760);
     els.movieResult.classList.remove('sample-result-exit');
@@ -1784,7 +1920,7 @@ function wireEvents() {
   els.homeButton.addEventListener('click', () => showView('landing'));
   els.startPicking.addEventListener('click', () => {
     if (state.mode === 'monke') {
-      pickSecretMovie();
+      showView('monkeFilter');
       return;
     }
 
@@ -1799,6 +1935,10 @@ function wireEvents() {
   els.backToRatings.addEventListener('click', () => showView('rating'));
   els.headerBackToRatings.addEventListener('click', () => showView('rating'));
   els.pickMovie.addEventListener('click', pickRandomMovie);
+  els.pickMonkeMovie.addEventListener('click', pickSecretMovie);
+  els.headerPickMonkeMovie.addEventListener('click', pickSecretMovie);
+  els.backToMonkeHome.addEventListener('click', () => showView('landing'));
+  els.headerBackToMonkeHome.addEventListener('click', () => showView('landing'));
   els.headerPickMovie.addEventListener('click', pickRandomMovie);
   els.headerClearFilters.addEventListener('click', handleGenreBackClear);
   els.tryAgain.addEventListener('click', () => {
@@ -1853,6 +1993,7 @@ async function init() {
   updateRatingSummary();
   renderDecadePills();
   updateDecadeSummary();
+  renderMonkeFormatPills();
   wireEvents();
   loadFloatingPosters();
 

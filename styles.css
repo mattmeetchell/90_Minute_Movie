@@ -113,11 +113,14 @@ img {
 .app-shell::before {
   background: #000;
   content: "";
-  inset: 0;
+  height: 100dvh;
+  left: 0;
   opacity: 0;
   pointer-events: none;
   position: fixed;
+  top: 0;
   transition: opacity 260ms ease;
+  width: 100vw;
   z-index: 0;
 }
 
@@ -161,7 +164,8 @@ img {
 
 .app-shell[data-view="picker"] .topbar,
 .app-shell[data-view="rating"] .topbar,
-.app-shell[data-view="decade"] .topbar {
+.app-shell[data-view="decade"] .topbar,
+.app-shell[data-view="monkeFilter"] .topbar {
   border-bottom: 1px solid rgba(255, 255, 255, 0.42);
   height: 250px;
 }
@@ -185,7 +189,8 @@ img {
 
 .app-shell[data-view="picker"] .placeholder-nav,
 .app-shell[data-view="rating"] .placeholder-nav,
-.app-shell[data-view="decade"] .placeholder-nav {
+.app-shell[data-view="decade"] .placeholder-nav,
+.app-shell[data-view="monkeFilter"] .placeholder-nav {
   left: max(28px, calc((100vw - 1220px) / 2));
   top: 105px;
 }
@@ -219,7 +224,8 @@ img {
 
 .app-shell[data-view="picker"] .header-drawer,
 .app-shell[data-view="rating"] .header-drawer,
-.app-shell[data-view="decade"] .header-drawer {
+.app-shell[data-view="decade"] .header-drawer,
+.app-shell[data-view="monkeFilter"] .header-drawer {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
@@ -263,7 +269,8 @@ img {
 
 .app-shell[data-view="picker"] .drawer-panel-genre,
 .app-shell[data-view="rating"] .drawer-panel-rating,
-.app-shell[data-view="decade"] .drawer-panel-decade {
+.app-shell[data-view="decade"] .drawer-panel-decade,
+.app-shell[data-view="monkeFilter"] .drawer-panel-monke {
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0);
@@ -278,7 +285,10 @@ img {
 
 .app-shell[data-view="picker"] .drawer-panel-rating,
 .app-shell[data-view="picker"] .drawer-panel-decade,
-.app-shell[data-view="rating"] .drawer-panel-decade {
+.app-shell[data-view="picker"] .drawer-panel-monke,
+.app-shell[data-view="rating"] .drawer-panel-decade,
+.app-shell[data-view="rating"] .drawer-panel-monke,
+.app-shell[data-view="decade"] .drawer-panel-monke {
   opacity: 0;
   transform: translateX(72px);
 }
@@ -909,6 +919,14 @@ img {
   max-width: 760px;
 }
 
+.monke-format-grid {
+  display: grid;
+  gap: 52px 86px;
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+  justify-items: center;
+  max-width: 520px;
+}
+
 .decade-grid {
   display: flex;
   flex-wrap: wrap;
@@ -930,7 +948,8 @@ img {
 }
 
 .genre-card,
-.rating-card {
+.rating-card,
+.monke-format-card {
   align-items: center;
   background: transparent;
   border: 0;
@@ -943,7 +962,8 @@ img {
 }
 
 .genre-icon,
-.rating-icon {
+.rating-icon,
+.monke-format-icon {
   align-items: center;
   border: 3px solid var(--line);
   border-radius: 50%;
@@ -962,6 +982,13 @@ img {
   width: 128px;
 }
 
+.monke-format-icon {
+  border: 0;
+  border-radius: 0;
+  height: 152px;
+  width: 152px;
+}
+
 .genre-card.has-art .genre-icon {
   border: 0;
   height: 137px;
@@ -969,13 +996,15 @@ img {
 }
 
 .genre-card.has-art .genre-icon img,
-.rating-icon img {
+.rating-icon img,
+.monke-format-icon img {
   height: 100%;
   width: 100%;
 }
 
 .genre-card.active .genre-icon,
-.rating-card.active .rating-icon {
+.rating-card.active .rating-icon,
+.monke-format-card.active .monke-format-icon {
   background: var(--text);
   color: #050505;
 }
@@ -990,8 +1019,14 @@ img {
   filter: drop-shadow(0 0 18px #072436);
 }
 
+.monke-format-card.active .monke-format-icon {
+  background: transparent;
+  filter: drop-shadow(0 0 18px #072436);
+}
+
 .genre-card.has-art.active .genre-icon img,
-.rating-card.active .rating-icon img {
+.rating-card.active .rating-icon img,
+.monke-format-card.active .monke-format-icon img {
   opacity: 1;
 }
 
@@ -1023,13 +1058,15 @@ img {
 }
 
 .genre-name,
-.rating-name {
+.rating-name,
+.monke-format-name {
   color: rgba(255, 255, 255, 0.86);
   font-size: 0.95rem;
 }
 
 .genre-card.has-art .genre-name,
-.rating-name {
+.rating-name,
+.monke-format-name {
   height: 1px;
   margin: -1px;
   overflow: hidden;
@@ -1900,7 +1937,8 @@ img {
 
   .app-shell[data-view="picker"] .topbar,
   .app-shell[data-view="rating"] .topbar,
-  .app-shell[data-view="decade"] .topbar {
+  .app-shell[data-view="decade"] .topbar,
+  .app-shell[data-view="monkeFilter"] .topbar {
     height: 230px;
   }
 
@@ -1970,13 +2008,15 @@ img {
 
   .app-shell[data-view="picker"] .topbar,
   .app-shell[data-view="rating"] .topbar,
-  .app-shell[data-view="decade"] .topbar {
+  .app-shell[data-view="decade"] .topbar,
+  .app-shell[data-view="monkeFilter"] .topbar {
     height: 88px;
   }
 
   .app-shell[data-view="picker"] .placeholder-nav,
   .app-shell[data-view="rating"] .placeholder-nav,
-  .app-shell[data-view="decade"] .placeholder-nav {
+  .app-shell[data-view="decade"] .placeholder-nav,
+  .app-shell[data-view="monkeFilter"] .placeholder-nav {
     left: 22px;
     top: 12px;
   }
@@ -2281,6 +2321,7 @@ img {
     background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.78) 36%, #000000 100%);
     border-top: 0;
     bottom: var(--mobile-action-footer-offset, 0px);
+    contain: layout paint;
     display: grid;
     gap: 12px;
     grid-template-columns: 1fr;
@@ -2288,7 +2329,9 @@ img {
     padding: 14px 22px max(14px, env(safe-area-inset-bottom));
     position: fixed !important;
     top: auto !important;
+    transform: translate3d(0, 0, 0);
     transition: background 180ms ease;
+    will-change: transform;
     width: 100%;
     z-index: 1000;
   }
@@ -2316,12 +2359,22 @@ img {
     width: 100%;
   }
 
+  .heading-actions .button-primary {
+    order: 1;
+  }
+
+  .heading-actions .button-secondary {
+    order: 2;
+  }
+
   .genre-grid,
-  .rating-grid {
+  .rating-grid,
+  .monke-format-grid {
     grid-template-columns: repeat(2, minmax(116px, 1fr));
   }
 
-  .rating-grid {
+  .rating-grid,
+  .monke-format-grid {
     gap: 32px 28px;
     max-width: none;
   }
@@ -2329,6 +2382,11 @@ img {
   .rating-icon {
     height: 124px;
     width: 124px;
+  }
+
+  .monke-format-icon {
+    height: 136px;
+    width: 136px;
   }
 
   .decade-grid {
