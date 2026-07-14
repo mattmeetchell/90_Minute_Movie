@@ -8,6 +8,7 @@ const SECRET_PASSWORD = 'Monke';
 const SECRET_SHEET_ID = '16xflKfxJMpwWbKOXNPsQA7RjO8ta4K6EO9AOzdp7UXU';
 const SECRET_SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SECRET_SHEET_ID}/export?format=csv&gid=0`;
 const SECRET_SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SECRET_SHEET_ID}/gviz/tq?gid=0`;
+const tmdbResponseCache = new Map();
 
 const EXCLUDED_GENRES = new Set(['History', 'TV Movie', 'War', 'Western']);
 const DECADES = [
@@ -241,11 +242,18 @@ async function tmdbFetch(path, params = {}) {
     }
   });
 
-  const response = await fetch(url.toString(), { headers: { accept: 'application/json' } });
+  const cacheKey = url.toString();
+  if (tmdbResponseCache.has(cacheKey)) {
+    return tmdbResponseCache.get(cacheKey);
+  }
+
+  const response = await fetch(cacheKey, { headers: { accept: 'application/json' } });
   if (!response.ok) {
     throw new Error(`TMDb request failed: ${response.status}`);
   }
-  return response.json();
+  const data = await response.json();
+  tmdbResponseCache.set(cacheKey, data);
+  return data;
 }
 
 function showView(viewName) {
@@ -549,6 +557,8 @@ function renderPosterMarquee(posters, options = {}) {
       const image = document.createElement('img');
       image.src = movie.localSrc || `${IMAGE_BASE_URL}${movie.poster_path}`;
       image.alt = '';
+      image.decoding = 'async';
+      image.loading = index < sizes.length ? 'eager' : 'lazy';
       card.appendChild(image);
 
       if (movie.id) {
@@ -1696,6 +1706,8 @@ function renderCast(cast) {
       const image = document.createElement('img');
       image.src = `${PROFILE_IMAGE_BASE_URL}${person.profile_path}`;
       image.alt = `${person.name} headshot`;
+      image.decoding = 'async';
+      image.loading = 'lazy';
 
       headshot.appendChild(image);
       member.appendChild(headshot);
@@ -1758,6 +1770,8 @@ function createProviderLink({ name, url, logoSrc }) {
     const logo = document.createElement('img');
     logo.src = logoSrc;
     logo.alt = '';
+    logo.decoding = 'async';
+    logo.loading = 'lazy';
     pill.appendChild(logo);
   } else {
     const text = document.createElement('span');

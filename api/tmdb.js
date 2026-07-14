@@ -38,6 +38,7 @@ module.exports = async function handler(request, response) {
 
     response
       .status(tmdbResponse.status)
+      .setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400')
       .setHeader('Content-Type', tmdbResponse.headers.get('content-type') || 'application/json')
       .send(body);
   } catch (error) {

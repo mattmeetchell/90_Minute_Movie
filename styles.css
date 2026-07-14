@@ -605,7 +605,9 @@ img {
 
 .button-primary:hover,
 .button-secondary:hover,
-.genre-card:hover {
+.genre-card:hover,
+.rating-card:hover,
+.rating-card:focus-visible {
   transform: translateY(-2px);
 }
 
@@ -1044,7 +1046,13 @@ img {
 .rating-icon img,
 .monke-format-icon img {
   height: 100%;
+  transition: transform 180ms ease;
   width: 100%;
+}
+
+.rating-card:hover .rating-icon img,
+.rating-card:focus-visible .rating-icon img {
+  transform: scale(1.05);
 }
 
 .genre-card.active .genre-icon,
