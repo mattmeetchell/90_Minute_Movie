@@ -973,6 +973,25 @@ img {
   width: 100%;
 }
 
+@media (min-width: 761px) {
+  .tray-view > .genre-grid,
+  .tray-view > .rating-grid,
+  .tray-view > .decade-grid,
+  .tray-view > .monke-format-grid,
+  .tray-view > .selection-summary {
+    margin-left: 42px;
+    width: calc(100% - 42px);
+  }
+
+  .tray-view > .rating-grid {
+    width: min(760px, calc(100% - 42px));
+  }
+
+  .tray-view > .monke-format-grid {
+    width: min(520px, calc(100% - 42px));
+  }
+}
+
 .genre-card,
 .rating-card,
 .monke-format-card {
