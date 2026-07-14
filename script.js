@@ -297,7 +297,18 @@ function showView(viewName) {
   }
 
   window.scrollTo(0, 0);
+  if (viewName === 'landing') {
+    playLandingIntro();
+  } else {
+    els.landingView.classList.remove('landing-intro');
+  }
   scheduleMobileActionOffsetUpdate();
+}
+
+function playLandingIntro() {
+  els.landingView.classList.remove('landing-intro');
+  void els.landingView.offsetWidth;
+  els.landingView.classList.add('landing-intro');
 }
 
 function updateMobileActionOffset() {
@@ -1995,6 +2006,7 @@ async function init() {
   updateDecadeSummary();
   renderMonkeFormatPills();
   wireEvents();
+  playLandingIntro();
   loadFloatingPosters();
 
   try {

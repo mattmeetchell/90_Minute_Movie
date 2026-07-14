@@ -324,7 +324,12 @@ img {
 }
 
 .tray-view {
+  min-height: 700px;
   padding-top: 58px;
+}
+
+.tray-view > .section-heading {
+  margin-bottom: 64px;
 }
 
 .screen-enter-right {
@@ -495,6 +500,26 @@ img {
   line-height: 0.96;
   margin: 0;
   width: 100%;
+}
+
+.landing-view.landing-intro .hero-copy > * {
+  animation: landingCopyIn 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.landing-view.landing-intro #heroEyebrow {
+  animation-delay: 40ms;
+}
+
+.landing-view.landing-intro .hero-copy h1 {
+  animation-delay: 120ms;
+}
+
+.landing-view.landing-intro .hero-support {
+  animation-delay: 210ms;
+}
+
+.landing-view.landing-intro .hero-copy .button-primary {
+  animation-delay: 300ms;
 }
 
 .section-heading h1 {
@@ -928,22 +953,23 @@ img {
 }
 
 .decade-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 18px 18px;
-  justify-content: flex-start;
-  max-width: 900px;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  max-width: 1120px;
   padding: 42px 0 56px;
+  width: 100%;
 }
 
 .decade-row-break {
+  display: none;
   flex-basis: 100%;
   height: 0;
 }
 
 .any-era-pill {
-  flex-basis: 100%;
-  margin-top: 80px;
+  grid-column: 1 / -1;
+  margin-top: 56px;
   width: 100%;
 }
 
@@ -1043,12 +1069,15 @@ img {
   font-weight: 900;
   letter-spacing: 0.16em;
   min-height: 64px;
-  padding: 0 32px;
+  padding: 0 12px;
   text-transform: uppercase;
   transition: background 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
-.decade-pill:hover {
+.decade-pill:hover,
+.decade-pill:focus-visible {
+  background: var(--text);
+  color: #050505;
   transform: translateY(-2px);
 }
 
@@ -1471,6 +1500,17 @@ img {
   }
 }
 
+@keyframes landingCopyIn {
+  0% {
+    opacity: 0;
+    transform: translateY(34px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes homepagePosterServeIn {
   0% {
     opacity: 0;
@@ -1501,6 +1541,7 @@ img {
   .poster-cycle-out,
   .sample-result-exit .poster-frame,
   .sample-result-exit .movie-copy,
+  .landing-view.landing-intro .hero-copy > *,
   .result-copy-enter .meta-line,
   .result-copy-enter .overview-wrap,
   .result-copy-enter .cast-line,
@@ -1966,15 +2007,17 @@ img {
     left: 106px;
   }
 
-  .genre-grid,
-  .rating-grid,
-  .decade-grid {
+  .genre-grid {
+    gap: 42px 28px;
+    grid-template-columns: repeat(5, minmax(98px, 1fr));
+  }
+
+  .rating-grid {
     gap: 42px 36px;
     grid-template-columns: repeat(4, minmax(112px, 1fr));
   }
 
   .decade-grid {
-    display: flex;
     gap: 28px 24px;
   }
 
@@ -2306,6 +2349,7 @@ img {
   .tray-view {
     padding-bottom: 172px;
     padding-top: 54px;
+    min-height: calc(100dvh - 88px + 180px);
   }
 
   .hero-copy .button-primary {
@@ -2391,6 +2435,7 @@ img {
 
   .decade-grid {
     gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: 16px 0 22px;
   }
 
@@ -2399,12 +2444,11 @@ img {
   }
 
   .decade-pill {
-    flex: 1 1 calc(50% - 12px);
     min-width: 132px;
   }
 
   .any-era-pill {
-    flex-basis: 100%;
+    grid-column: 1 / -1;
     margin-top: 10px;
     width: 100%;
   }
