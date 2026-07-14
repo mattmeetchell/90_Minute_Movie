@@ -149,6 +149,8 @@ const state = {
   physicalMode: false,
   mode: 'streamer',
   monkeFormats: [],
+  tryAgainLabelBag: [],
+  lastTryAgainLabel: '',
   tryAgainExitTimer: null,
   footerBounceFrame: null,
   footerBounceLastTime: null,
@@ -2009,7 +2011,16 @@ function setLoading(isLoading) {
 }
 
 function getRandomTryAgainLabel() {
-  return TRY_AGAIN_HOVER_LABELS[Math.floor(Math.random() * TRY_AGAIN_HOVER_LABELS.length)];
+  if (!state.tryAgainLabelBag.length) {
+    state.tryAgainLabelBag = shuffle(TRY_AGAIN_HOVER_LABELS);
+    if (state.tryAgainLabelBag[0] === state.lastTryAgainLabel && state.tryAgainLabelBag.length > 1) {
+      state.tryAgainLabelBag.push(state.tryAgainLabelBag.shift());
+    }
+  }
+
+  const label = state.tryAgainLabelBag.shift();
+  state.lastTryAgainLabel = label;
+  return label;
 }
 
 function startTryAgainHoverLabels() {
