@@ -201,6 +201,7 @@ const els = {
   posterHint: document.getElementById('posterHint'),
   poster: document.getElementById('poster'),
   movieCopy: document.querySelector('.movie-copy'),
+  titleHeading: document.getElementById('titleHeading'),
   title: document.getElementById('title'),
   year: document.getElementById('year'),
   runtime: document.getElementById('runtime'),
@@ -1626,6 +1627,8 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
   els.poster.src = details.poster_path ? `${IMAGE_BASE_URL}${details.poster_path}` : '';
   els.poster.alt = `${details.title} poster`;
   els.title.textContent = details.title;
+  els.title.href = getLetterboxdSearchUrl(details);
+  els.title.setAttribute('aria-label', `Find ${details.title} on Letterboxd`);
   updateTitleSize();
   els.year.textContent = (details.release_date || '-').slice(0, 4);
   els.runtime.textContent = formatRuntime(details.runtime);
@@ -1653,21 +1656,21 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
 }
 
 function updateTitleSize() {
-  els.title.classList.remove('long-title', 'actions-collision-title');
+  els.titleHeading.classList.remove('long-title', 'actions-collision-title');
 
   requestAnimationFrame(() => {
-    const styles = window.getComputedStyle(els.title);
+    const styles = window.getComputedStyle(els.titleHeading);
     const lineHeight = parseFloat(styles.lineHeight);
     if (!lineHeight) return;
 
-    const lineCount = Math.round(els.title.scrollHeight / lineHeight);
+    const lineCount = Math.round(els.titleHeading.scrollHeight / lineHeight);
     if (lineCount >= 4) {
-      els.title.classList.add('long-title');
+      els.titleHeading.classList.add('long-title');
       return;
     }
 
     if (shouldReduceTitleForActions()) {
-      els.title.classList.add('actions-collision-title');
+      els.titleHeading.classList.add('actions-collision-title');
     }
   });
 }
@@ -1869,6 +1872,13 @@ function getPhysicalMediaUrl(movie) {
   const year = (movie?.release_date || '').slice(0, 4);
   const query = encodeURIComponent(`${title} ${year} blu-ray`);
   return `https://www.amazon.com/s?k=${query}`;
+}
+
+function getLetterboxdSearchUrl(movie) {
+  const title = movie?.title || 'movie';
+  const year = (movie?.release_date || '').slice(0, 4);
+  const query = encodeURIComponent(`${title} ${year}`.trim());
+  return `https://letterboxd.com/search/films/${query}/`;
 }
 
 function getProviderUrl(name) {
