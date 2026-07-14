@@ -673,7 +673,12 @@ async function getValidPosterSamples(movies, limit = 5) {
 }
 
 function shuffle(items) {
-  return [...items].sort(() => Math.random() - 0.5);
+  const shuffled = [...items];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
 }
 
 function renderDecadePills() {
@@ -2023,7 +2028,11 @@ function getRandomTryAgainLabel() {
   return label;
 }
 
-function startTryAgainHoverLabels() {
+function startTryAgainHoverLabels({ force = false } = {}) {
+  if (!force && els.tryAgain.dataset.hoverLabel && els.tryAgain.classList.contains('try-again-hovering')) {
+    return;
+  }
+
   if (state.tryAgainExitTimer) {
     window.clearTimeout(state.tryAgainExitTimer);
     state.tryAgainExitTimer = null;
@@ -2031,6 +2040,11 @@ function startTryAgainHoverLabels() {
   els.tryAgain.classList.remove('try-again-leaving');
   els.tryAgain.classList.add('try-again-hovering');
   els.tryAgain.dataset.hoverLabel = getRandomTryAgainLabel();
+}
+
+function rotateTryAgainTouchLabel(event) {
+  if (event.pointerType === 'mouse' || els.tryAgain.disabled) return;
+  startTryAgainHoverLabels({ force: true });
 }
 
 function stopTryAgainHoverLabels() {
@@ -2185,6 +2199,7 @@ function wireEvents() {
 
     pickRandomMovie({ cyclePosterOnly: true });
   });
+  els.tryAgain.addEventListener('pointerdown', rotateTryAgainTouchLabel);
   els.tryAgain.addEventListener('mouseenter', startTryAgainHoverLabels);
   els.tryAgain.addEventListener('focus', startTryAgainHoverLabels);
   els.tryAgain.addEventListener('mouseleave', stopTryAgainHoverLabels);
