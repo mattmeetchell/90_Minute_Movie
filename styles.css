@@ -1704,6 +1704,27 @@ img {
   margin-right: 2px;
 }
 
+.result-filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.result-filter-pill {
+  align-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.72);
+  border-radius: var(--radius-pill);
+  color: rgba(255, 255, 255, 0.86);
+  display: inline-flex;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  min-height: 28px;
+  padding: 0 12px;
+  text-transform: uppercase;
+}
+
 .cast-member {
   color: rgba(255, 255, 255, 0.78);
   cursor: default;
@@ -1765,6 +1786,10 @@ img {
   margin: 0 0 36px;
   padding-bottom: 14px;
   text-transform: uppercase;
+}
+
+.watch-block h2 {
+  margin-bottom: 20px;
 }
 
 .providers {

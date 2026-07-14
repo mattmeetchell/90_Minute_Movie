@@ -209,6 +209,7 @@ const els = {
   toggleOverview: document.getElementById('toggleOverview'),
   director: document.getElementById('director'),
   cast: document.getElementById('cast'),
+  resultFilters: document.getElementById('resultFilters'),
   providers: document.getElementById('providers'),
   trailerModal: document.getElementById('trailerModal'),
   closeTrailer: document.getElementById('closeTrailer'),
@@ -1119,8 +1120,8 @@ async function showFloatingMovie(movieId) {
       throw new Error('That sample is longer than 1h 45m, so it is not available in this picker.');
     }
     await preloadPoster(details.poster_path);
-    renderMovie(details, credits, videos, providers, releaseDates);
     setResultSource('sample');
+    renderMovie(details, credits, videos, providers, releaseDates);
     showView('result');
     animateResultReveal({ animateCopy: true });
     state.hasShownResult = true;
@@ -1177,10 +1178,10 @@ async function pickSecretMovie(options = {}) {
       await runResultAnticipationReveal(details, credits, videos, providers, releaseDates, 'secret');
     } else {
       await posterExitDelay;
+      setResultSource('secret');
       renderMovie(details, credits, videos, providers, releaseDates);
     }
 
-    setResultSource('secret');
     showView('result');
     animateResultReveal({ animateCopy, cyclePoster, personalReveal: shouldAnticipate });
     state.hasShownResult = true;
@@ -1636,6 +1637,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
   els.toggleOverview.textContent = 'See more';
   updateOverviewToggle();
   renderCast(cast);
+  renderResultFilters();
 
   renderProviders(providerData.results?.US || providerData.results?.GB || null, details);
 
@@ -1721,6 +1723,86 @@ function getCertification(releaseDates) {
   const usRelease = releaseDates.results?.find((item) => item.iso_3166_1 === 'US');
   const ratedRelease = usRelease?.release_dates.find((item) => item.certification);
   return ratedRelease?.certification || '';
+}
+
+function renderResultFilters() {
+  const filters = getResultFilterLabels();
+  els.resultFilters.replaceChildren();
+  els.resultFilters.classList.toggle('hidden', !filters.length);
+
+  filters.forEach((filter) => {
+    const pill = document.createElement('span');
+    pill.className = 'result-filter-pill';
+    pill.textContent = filter;
+    els.resultFilters.appendChild(pill);
+  });
+}
+
+function getResultFilterLabels() {
+  if (state.resultSource === 'sample') return [];
+
+  if (state.resultSource === 'secret') {
+    const formats = state.monkeFormats.length && state.monkeFormats.length < MONKE_FORMATS.length
+      ? MONKE_FORMATS.filter((format) => state.monkeFormats.includes(format.id)).map((format) => format.label)
+      : ['Stream + Blu-ray'];
+    return formats;
+  }
+
+  const genres = state.genres
+    .filter((genre) => state.selectedGenreIds.includes(genre.id))
+    .map((genre) => genre.name);
+  const ratings = state.anyRatingSelected
+    ? ['Any rating']
+    : formatSelectedRatingPills(state.selectedRatings);
+  const eras = state.anyEraSelected
+    ? ['Any era']
+    : formatSelectedEraPills(state.selectedDecades);
+
+  return [
+    ...(genres.length ? genres : ['Any vibe']),
+    ...(ratings.length ? ratings : ['Any rating']),
+    ...(eras.length ? eras : ['Any era'])
+  ];
+}
+
+function formatSelectedEraPills(selectedDecades) {
+  const selected = DECADES
+    .filter((decade) => selectedDecades.includes(decade.label))
+    .map((decade) => ({ label: decade.label, start: decade.start }));
+
+  if (!selected.length) return [];
+
+  const ranges = [];
+  let rangeStart = selected[0];
+  let previous = selected[0];
+
+  selected.slice(1).forEach((decade) => {
+    if (decade.start === previous.start + 10) {
+      previous = decade;
+      return;
+    }
+
+    ranges.push(formatEraRange(rangeStart, previous));
+    rangeStart = decade;
+    previous = decade;
+  });
+
+  ranges.push(formatEraRange(rangeStart, previous));
+  return ranges;
+}
+
+function formatEraRange(startDecade, endDecade) {
+  if (startDecade.label === endDecade.label) return startDecade.label;
+  return `${startDecade.label}-${endDecade.label}`;
+}
+
+function formatSelectedRatingPills(selectedRatings) {
+  const selected = RATINGS
+    .filter((rating) => rating.certification !== 'ANY' && selectedRatings.includes(rating.certification))
+    .map((rating) => rating.label);
+
+  if (selected.length <= 1) return selected;
+  return [`${selected[0]}-${selected[selected.length - 1]}`];
 }
 
 function renderProviders(regionData, movie) {
