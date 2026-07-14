@@ -1627,7 +1627,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
   els.poster.src = details.poster_path ? `${IMAGE_BASE_URL}${details.poster_path}` : '';
   els.poster.alt = `${details.title} poster`;
   els.title.textContent = details.title;
-  els.title.href = getLetterboxdSearchUrl(details);
+  els.title.href = getLetterboxdFilmUrl(details);
   els.title.setAttribute('aria-label', `Find ${details.title} on Letterboxd`);
   updateTitleSize();
   els.year.textContent = (details.release_date || '-').slice(0, 4);
@@ -1729,42 +1729,61 @@ function getCertification(releaseDates) {
 }
 
 function renderResultFilters() {
-  const filters = getResultFilterLabels();
+  const filters = getResultFilterItems();
   els.resultFilters.replaceChildren();
   els.resultFilters.classList.toggle('hidden', !filters.length);
 
   filters.forEach((filter) => {
-    const pill = document.createElement('span');
+    const pill = document.createElement(filter.removable ? 'button' : 'span');
     pill.className = 'result-filter-pill';
-    pill.textContent = filter;
+    pill.textContent = filter.label;
+    if (filter.removable) {
+      pill.type = 'button';
+      pill.dataset.filterType = filter.type;
+      pill.dataset.filterValues = filter.values.join(',');
+      pill.setAttribute('aria-label', `Remove ${filter.label} and reroll`);
+    }
     els.resultFilters.appendChild(pill);
   });
 }
 
-function getResultFilterLabels() {
+function getResultFilterItems() {
   if (state.resultSource === 'sample') return [];
 
   if (state.resultSource === 'secret') {
-    const formats = state.monkeFormats.length && state.monkeFormats.length < MONKE_FORMATS.length
-      ? MONKE_FORMATS.filter((format) => state.monkeFormats.includes(format.id)).map((format) => format.label)
-      : ['Stream + Blu-ray'];
-    return formats;
+    if (!state.monkeFormats.length || state.monkeFormats.length === MONKE_FORMATS.length) {
+      return [{ label: 'Stream + Blu-ray', removable: false, type: 'monkeFormat', values: [] }];
+    }
+
+    return MONKE_FORMATS
+      .filter((format) => state.monkeFormats.includes(format.id))
+      .map((format) => ({
+        label: format.label,
+        removable: true,
+        type: 'monkeFormat',
+        values: [format.id]
+      }));
   }
 
   const genres = state.genres
     .filter((genre) => state.selectedGenreIds.includes(genre.id))
-    .map((genre) => genre.name);
+    .map((genre) => ({
+      label: genre.name,
+      removable: true,
+      type: 'genre',
+      values: [String(genre.id)]
+    }));
   const ratings = state.anyRatingSelected
-    ? ['Any rating']
+    ? [{ label: 'Any rating', removable: false, type: 'rating', values: [] }]
     : formatSelectedRatingPills(state.selectedRatings);
   const eras = state.anyEraSelected
-    ? ['Any era']
+    ? [{ label: 'Any era', removable: false, type: 'era', values: [] }]
     : formatSelectedEraPills(state.selectedDecades);
 
   return [
-    ...(genres.length ? genres : ['Any vibe']),
-    ...(ratings.length ? ratings : ['Any rating']),
-    ...(eras.length ? eras : ['Any era'])
+    ...(genres.length ? genres : [{ label: 'Any vibe', removable: false, type: 'genre', values: [] }]),
+    ...(ratings.length ? ratings : [{ label: 'Any rating', removable: false, type: 'rating', values: [] }]),
+    ...(eras.length ? eras : [{ label: 'Any era', removable: false, type: 'era', values: [] }])
   ];
 }
 
@@ -1795,17 +1814,36 @@ function formatSelectedEraPills(selectedDecades) {
 }
 
 function formatEraRange(startDecade, endDecade) {
-  if (startDecade.label === endDecade.label) return startDecade.label;
-  return `${startDecade.label}-${endDecade.label}`;
+  const startIndex = DECADES.findIndex((decade) => decade.label === startDecade.label);
+  const endIndex = DECADES.findIndex((decade) => decade.label === endDecade.label);
+  const values = DECADES.slice(startIndex, endIndex + 1).map((decade) => decade.label);
+  return {
+    label: startDecade.label === endDecade.label ? startDecade.label : `${startDecade.label}-${endDecade.label}`,
+    removable: true,
+    type: 'era',
+    values
+  };
 }
 
 function formatSelectedRatingPills(selectedRatings) {
   const selected = RATINGS
     .filter((rating) => rating.certification !== 'ANY' && selectedRatings.includes(rating.certification))
-    .map((rating) => rating.label);
+    .map((rating) => ({ label: rating.label, value: rating.certification }));
 
-  if (selected.length <= 1) return selected;
-  return [`${selected[0]}-${selected[selected.length - 1]}`];
+  if (selected.length <= 1) {
+    return selected.map((rating) => ({
+      label: rating.label,
+      removable: true,
+      type: 'rating',
+      values: [rating.value]
+    }));
+  }
+  return [{
+    label: `${selected[0].label}-${selected[selected.length - 1].label}`,
+    removable: true,
+    type: 'rating',
+    values: selected.map((rating) => rating.value)
+  }];
 }
 
 function renderProviders(regionData, movie) {
@@ -1874,11 +1912,38 @@ function getPhysicalMediaUrl(movie) {
   return `https://www.amazon.com/s?k=${query}`;
 }
 
-function getLetterboxdSearchUrl(movie) {
+function getLetterboxdFilmUrl(movie) {
+  if (movie?.imdb_id) {
+    return `https://letterboxd.com/imdb/${movie.imdb_id}/`;
+  }
+
   const title = movie?.title || 'movie';
-  const year = (movie?.release_date || '').slice(0, 4);
-  const query = encodeURIComponent(`${title} ${year}`.trim());
-  return `https://letterboxd.com/search/films/${query}/`;
+  return `https://letterboxd.com/film/${getLetterboxdSlug(title)}/`;
+}
+
+function getLetterboxdSlug(title) {
+  return title
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/&/g, ' and ')
+    .replace(/[\u00b7\u2018\u2019']/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+}
+
+function getCurrentLetterboxdUrl() {
+  return els.title.href || '';
+}
+
+function handleTitleLetterboxdClick(event) {
+  const url = getCurrentLetterboxdUrl();
+  if (!url) {
+    event.preventDefault();
+    return;
+  }
+
+  els.title.href = url;
 }
 
 function getProviderUrl(name) {
@@ -1994,6 +2059,49 @@ function clearFilters() {
   refreshCount();
 }
 
+function syncFilterControls() {
+  renderGenrePills();
+  renderRatingPills();
+  renderDecadePills();
+  if (state.mode === 'monke' || state.resultSource === 'secret') {
+    renderMonkeFormatPills();
+  }
+  updateSelectionSummary();
+  updateRatingSummary();
+  updateDecadeSummary();
+  refreshCount();
+}
+
+function handleResultFilterDismiss(event) {
+  const pill = event.target.closest('.result-filter-pill[data-filter-type]');
+  if (!pill) return;
+
+  const values = pill.dataset.filterValues.split(',').filter(Boolean);
+  if (!values.length) return;
+
+  switch (pill.dataset.filterType) {
+    case 'genre':
+      state.selectedGenreIds = state.selectedGenreIds.filter((id) => !values.includes(String(id)));
+      break;
+    case 'rating':
+      state.anyRatingSelected = false;
+      state.selectedRatings = state.selectedRatings.filter((rating) => !values.includes(rating));
+      break;
+    case 'era':
+      state.anyEraSelected = false;
+      state.selectedDecades = state.selectedDecades.filter((decade) => !values.includes(decade));
+      break;
+    case 'monkeFormat':
+      state.monkeFormats = state.monkeFormats.filter((format) => !values.includes(format));
+      break;
+    default:
+      return;
+  }
+
+  syncFilterControls();
+  renderResultFilters();
+}
+
 function handleGenreBackClear() {
   if (!state.selectedGenreIds.length) {
     showView('landing');
@@ -2075,6 +2183,8 @@ function wireEvents() {
     els.toggleOverview.textContent = expanded ? 'See less' : 'See more';
   });
   els.posterButton.addEventListener('click', openTrailer);
+  els.title.addEventListener('click', handleTitleLetterboxdClick);
+  els.resultFilters.addEventListener('click', handleResultFilterDismiss);
   els.closeTrailer.addEventListener('click', closeTrailer);
   els.trailerModal.addEventListener('click', (event) => {
     if (event.target === els.trailerModal) closeTrailer();

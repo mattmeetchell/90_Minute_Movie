@@ -1230,6 +1230,7 @@ img {
 .result-copy-enter .meta-line,
 .result-copy-enter .overview-wrap,
 .result-copy-enter .cast-line,
+.result-copy-enter .result-filter-pills,
 .result-copy-enter .watch-block,
 .result-copy-enter .result-actions {
   animation: resultInfoUp 560ms cubic-bezier(0.16, 1, 0.3, 1) 250ms both;
@@ -1238,6 +1239,7 @@ img {
 .result-poster-fanfare + .movie-copy.result-copy-enter .meta-line,
 .result-poster-fanfare + .movie-copy.result-copy-enter .overview-wrap,
 .result-poster-fanfare + .movie-copy.result-copy-enter .cast-line,
+.result-poster-fanfare + .movie-copy.result-copy-enter .result-filter-pills,
 .result-poster-fanfare + .movie-copy.result-copy-enter .watch-block,
 .result-poster-fanfare + .movie-copy.result-copy-enter .result-actions {
   animation-delay: 720ms;
@@ -1572,6 +1574,7 @@ img {
   .result-copy-enter .meta-line,
   .result-copy-enter .overview-wrap,
   .result-copy-enter .cast-line,
+  .result-copy-enter .result-filter-pills,
   .result-copy-enter .watch-block,
   .result-copy-enter .result-actions,
   .result-lockup-enter .year-pill,
@@ -1740,6 +1743,7 @@ img {
 }
 
 .result-filter-pill {
+  background: transparent;
   align-items: center;
   border: 2px solid rgba(255, 255, 255, 0.72);
   border-radius: var(--radius-pill);
@@ -1751,6 +1755,18 @@ img {
   min-height: 28px;
   padding: 0 12px;
   text-transform: uppercase;
+}
+
+button.result-filter-pill {
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+button.result-filter-pill:hover,
+button.result-filter-pill:focus-visible {
+  background: #fff;
+  color: #050707;
+  transform: translateY(-1px);
 }
 
 .cast-member {
