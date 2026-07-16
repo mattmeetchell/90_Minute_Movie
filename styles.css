@@ -1656,6 +1656,10 @@ img {
   font-size: 46px;
 }
 
+.movie-copy h1.balanced-title {
+  font-size: 58px;
+}
+
 @media (min-width: 761px) {
   .movie-copy h1.actions-collision-title {
     font-size: 58px;

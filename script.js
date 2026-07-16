@@ -1674,7 +1674,11 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
 }
 
 function updateTitleSize() {
-  els.titleHeading.classList.remove('long-title', 'actions-collision-title');
+  els.titleHeading.classList.remove('long-title', 'balanced-title', 'actions-collision-title');
+
+  if (shouldUseBalancedTitleSize(els.title.textContent)) {
+    els.titleHeading.classList.add('balanced-title');
+  }
 
   requestAnimationFrame(() => {
     const styles = window.getComputedStyle(els.titleHeading);
@@ -1695,6 +1699,13 @@ function updateTitleSize() {
 
 function formatTitleForBalancedWrap(title) {
   return String(title || '').trim().replace(/\s+(\S+)\s*$/, '\u00a0$1');
+}
+
+function shouldUseBalancedTitleSize(title) {
+  const words = String(title || '').trim().split(/\s+/).filter(Boolean);
+  const characterCount = words.join(' ').length;
+
+  return words.length >= 4 && characterCount >= 30 && characterCount < 48;
 }
 
 function shouldReduceTitleForActions() {
