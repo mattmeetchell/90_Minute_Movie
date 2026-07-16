@@ -1716,6 +1716,12 @@ img {
   overflow: hidden;
 }
 
+@media (min-width: 761px) {
+  .movie-copy.compact-overview .overview:not(.expanded) {
+    -webkit-line-clamp: 2;
+  }
+}
+
 .overview-toggle {
   background: transparent;
   border: 0;

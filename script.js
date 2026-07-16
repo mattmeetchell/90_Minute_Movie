@@ -214,6 +214,7 @@ const els = {
   director: document.getElementById('director'),
   cast: document.getElementById('cast'),
   resultFilters: document.getElementById('resultFilters'),
+  resultActions: document.querySelector('.result-actions'),
   providers: document.getElementById('providers'),
   trailerModal: document.getElementById('trailerModal'),
   closeTrailer: document.getElementById('closeTrailer'),
@@ -1617,6 +1618,7 @@ function animateResultReveal({ animateCopy = false, cyclePoster = false, persona
   }
 
   updateTitleSize();
+  updateResultLayoutGuards();
 }
 
 function getRandomSelectedDecade() {
@@ -1632,6 +1634,27 @@ function updateOverviewToggle() {
   requestAnimationFrame(() => {
     const overflows = els.overview.scrollHeight > els.overview.clientHeight + 1;
     els.toggleOverview.classList.toggle('hidden', !overflows);
+  });
+}
+
+function updateResultLayoutGuards() {
+  els.movieCopy.classList.remove('compact-overview');
+
+  if (mobileMediaQuery.matches || state.activeView !== 'result' || els.overview.classList.contains('expanded')) {
+    updateOverviewToggle();
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    els.movieCopy.classList.remove('compact-overview');
+
+    const posterRect = els.posterButton.getBoundingClientRect();
+    const actionsRect = els.resultActions.getBoundingClientRect();
+    if (actionsRect.bottom > posterRect.bottom) {
+      els.movieCopy.classList.add('compact-overview');
+    }
+
+    updateOverviewToggle();
   });
 }
 
@@ -1656,6 +1679,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
   els.rating.classList.toggle('hidden', !certification);
   els.director.textContent = director;
   els.overview.textContent = details.overview || '';
+  els.movieCopy.classList.remove('compact-overview');
   els.overview.classList.remove('expanded');
   els.toggleOverview.textContent = 'See more';
   updateOverviewToggle();
@@ -1690,12 +1714,15 @@ function updateTitleSize() {
     const lineCount = Math.round(els.titleHeading.scrollHeight / lineHeight);
     if (lineCount >= 3) {
       els.titleHeading.classList.add('long-title');
+      updateResultLayoutGuards();
       return;
     }
 
     if (shouldReduceTitleForActions()) {
       els.titleHeading.classList.add('actions-collision-title');
     }
+
+    updateResultLayoutGuards();
   });
 }
 
@@ -2341,6 +2368,7 @@ function wireEvents() {
   els.toggleOverview.addEventListener('click', () => {
     const expanded = els.overview.classList.toggle('expanded');
     els.toggleOverview.textContent = expanded ? 'See less' : 'See more';
+    updateResultLayoutGuards();
   });
   els.posterButton.addEventListener('click', openTrailer);
   els.title.addEventListener('click', handleTitleLetterboxdClick);
@@ -2367,6 +2395,7 @@ function wireEvents() {
   mobileMediaQuery.addEventListener('change', () => {
     scheduleMobileActionOffsetUpdate();
     renderPosterMarquee(currentPosterSamples);
+    updateResultLayoutGuards();
   });
 }
 
