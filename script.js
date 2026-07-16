@@ -487,9 +487,7 @@ async function loadFloatingPosters() {
       posterCandidates.push(...data.results.filter((movie) => movie.poster_path));
     });
 
-    const posters = state.physicalMode
-      ? await getValidPosterSamples(posterCandidates, 10)
-      : getFastPosterSamples(posterCandidates, 10);
+    const posters = await getValidPosterSamples(posterCandidates, 10);
     if (loadToken !== floatingPosterLoadToken) return;
     renderPosterMarquee(posters, { animateIn: true });
   } catch (error) {
@@ -671,10 +669,8 @@ async function getValidPosterSamples(movies, limit = 5) {
 
     try {
       const [details, , , providers] = await fetchMovieBundle(movie.id);
-      const hasStreamers = hasStreamingProviders(providers.results?.US || providers.results?.GB || null);
-      const matchesMode = state.physicalMode ? !hasStreamers : hasStreamers;
 
-      if (isValidRuntime(details.runtime) && matchesMode) {
+      if (isValidSampleMovie(details, providers)) {
         samples.push({ ...movie, runtime: details.runtime });
       }
     } catch (error) {
@@ -1443,6 +1439,13 @@ async function fetchValidMovieBundle(candidates) {
 
 function isValidRuntime(runtime) {
   return runtime && runtime <= MAX_RUNTIME_MINUTES;
+}
+
+function isValidSampleMovie(details, providers) {
+  if (!isValidRuntime(details.runtime)) return false;
+
+  const hasStreamers = hasStreamingProviders(providers.results?.US || providers.results?.GB || null);
+  return state.physicalMode ? !hasStreamers : hasStreamers;
 }
 
 function hasStreamingProviders(regionData) {
