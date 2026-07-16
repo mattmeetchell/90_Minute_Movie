@@ -478,12 +478,16 @@ async function loadFloatingPosters() {
     const firstPage = Math.floor(Math.random() * 5) + 1;
     const pages = [firstPage, ((firstPage + 1) % 5) + 1, ((firstPage + 2) % 5) + 1];
 
-    for (const page of pages) {
-      const data = await tmdbFetch('/discover/movie', getFloatingPosterDiscoverParams(page));
+    const pageResults = await Promise.all(
+      pages.map((page) => tmdbFetch('/discover/movie', getFloatingPosterDiscoverParams(page)))
+    );
+    pageResults.forEach((data) => {
       posterCandidates.push(...data.results.filter((movie) => movie.poster_path));
-    }
+    });
 
-    const posters = await getValidPosterSamples(posterCandidates, 10);
+    const posters = state.physicalMode
+      ? await getValidPosterSamples(posterCandidates, 10)
+      : getFastPosterSamples(posterCandidates, 10);
     if (loadToken !== floatingPosterLoadToken) return;
     renderPosterMarquee(posters, { animateIn: true });
   } catch (error) {
@@ -493,23 +497,26 @@ async function loadFloatingPosters() {
 
 async function getPersonalPosterSamples(limit = 10) {
   const rows = shuffle(getFilteredSecretMovies(await loadSecretMovies()));
-  const samples = [];
-
-  for (const row of rows.slice(0, limit * 2)) {
-    try {
+  const settled = await Promise.allSettled(
+    rows.slice(0, limit * 2).map(async (row) => {
       const details = row.tmdbId
         ? await tmdbFetch(`/movie/${row.tmdbId}`, { language: 'en-US' })
         : (await fetchSecretMovieBundle(row))[0];
 
-      if (details?.id && details.poster_path && isValidRuntime(details.runtime)) {
-        samples.push({ ...details, ownedPhysical: Boolean(row.ownedPhysical) });
-      }
+      return details?.id && details.poster_path && isValidRuntime(details.runtime)
+        ? { ...details, ownedPhysical: Boolean(row.ownedPhysical) }
+        : null;
+    })
+  );
 
-      if (samples.length >= limit) break;
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  settled
+    .filter((result) => result.status === 'rejected')
+    .forEach((result) => console.error(result.reason));
+
+  const samples = settled
+    .filter((result) => result.status === 'fulfilled' && result.value)
+    .map((result) => result.value)
+    .slice(0, limit);
 
   return samples.length ? samples : getFallbackPosterSamples();
 }
@@ -648,6 +655,10 @@ function updatePosterLoopWidth() {
 
 function getFallbackPosterSamples() {
   return [];
+}
+
+function getFastPosterSamples(movies, limit = 5) {
+  return dedupePosterSamples(shuffle(movies)).slice(0, limit);
 }
 
 async function getValidPosterSamples(movies, limit = 5) {
@@ -1983,6 +1994,7 @@ function getProviderUrl(name) {
     [/roku/, 'https://therokuchannel.roku.com/'],
     [/freevee/, 'https://www.amazon.com/gp/video/storefront/'],
     [/fubo/, 'https://www.fubo.tv/'],
+    [/philo/, 'https://www.philo.com/'],
     [/youtube/, 'https://www.youtube.com/feed/storefront'],
     [/pluto/, 'https://pluto.tv/search'],
     [/crunchyroll/, 'https://www.crunchyroll.com/search']
