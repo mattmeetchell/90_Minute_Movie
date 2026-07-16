@@ -141,6 +141,7 @@ const state = {
   isLoadingCount: false,
   activeView: 'landing',
   resultSource: 'filtered',
+  currentResultMovie: null,
   transitionTimer: null,
   trailerUrl: '',
   hasShownResult: false,
@@ -1641,6 +1642,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
     (video) => video.site === 'YouTube' && video.type === 'Trailer'
   );
   const certification = getCertification(releaseDates);
+  state.currentResultMovie = details;
 
   els.poster.src = details.poster_path ? `${IMAGE_BASE_URL}${details.poster_path}` : '';
   els.poster.alt = `${details.title} poster`;
@@ -1686,7 +1688,7 @@ function updateTitleSize() {
     if (!lineHeight) return;
 
     const lineCount = Math.round(els.titleHeading.scrollHeight / lineHeight);
-    if (lineCount >= 4) {
+    if (lineCount >= 3) {
       els.titleHeading.classList.add('long-title');
       return;
     }
@@ -1770,6 +1772,7 @@ function renderResultFilters(movie = null) {
     const pill = document.createElement(filter.removable ? 'button' : 'span');
     pill.className = 'result-filter-pill';
     pill.textContent = filter.label;
+    pill.dataset.filterKey = getResultFilterKey(filter);
     if (filter.removable) {
       pill.type = 'button';
       pill.dataset.filterType = filter.type;
@@ -1778,6 +1781,10 @@ function renderResultFilters(movie = null) {
     }
     els.resultFilters.appendChild(pill);
   });
+}
+
+function getResultFilterKey(filter) {
+  return `${filter.type}:${filter.label}:${filter.values.join('|')}`;
 }
 
 function getResultFilterItems(movie = null) {
@@ -2156,12 +2163,14 @@ function syncFilterControls() {
   refreshCount();
 }
 
-function handleResultFilterDismiss(event) {
+async function handleResultFilterDismiss(event) {
   const pill = event.target.closest('.result-filter-pill[data-filter-type]');
-  if (!pill) return;
+  if (!pill || pill.classList.contains('is-dismissing')) return;
 
   const values = pill.dataset.filterValues.split(',').filter(Boolean);
   if (!values.length) return;
+  const previousRects = getResultFilterRects();
+  await animateResultFilterDismiss(pill);
 
   switch (pill.dataset.filterType) {
     case 'genre':
@@ -2183,7 +2192,73 @@ function handleResultFilterDismiss(event) {
   }
 
   syncFilterControls();
-  renderResultFilters();
+  renderResultFilters(state.currentResultMovie);
+  animateResultFilterReflow(previousRects);
+}
+
+function getResultFilterRects() {
+  return new Map(
+    Array.from(els.resultFilters.querySelectorAll('.result-filter-pill[data-filter-key]')).map((pill) => [
+      pill.dataset.filterKey,
+      pill.getBoundingClientRect()
+    ])
+  );
+}
+
+function animateResultFilterDismiss(pill) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return Promise.resolve();
+  }
+
+  pill.classList.add('is-dismissing');
+  return new Promise((resolve) => {
+    const finish = () => {
+      pill.removeEventListener('transitionend', finish);
+      resolve();
+    };
+
+    pill.addEventListener('transitionend', finish, { once: true });
+    window.setTimeout(finish, 180);
+  });
+}
+
+function animateResultFilterReflow(previousRects) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  els.resultFilters.querySelectorAll('.result-filter-pill[data-filter-key]').forEach((pill) => {
+    const previousRect = previousRects.get(pill.dataset.filterKey);
+    if (!previousRect) {
+      animateResultFilterEntrance(pill);
+      return;
+    }
+
+    const nextRect = pill.getBoundingClientRect();
+    const deltaX = previousRect.left - nextRect.left;
+    const deltaY = previousRect.top - nextRect.top;
+    if (!deltaX && !deltaY) return;
+
+    pill.style.transition = 'none';
+    pill.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+    requestAnimationFrame(() => {
+      pill.style.transition = '';
+      pill.style.transform = '';
+    });
+  });
+}
+
+function animateResultFilterEntrance(pill) {
+  if (!pill.textContent.trim().toLowerCase().startsWith('any ')) return;
+
+  pill.style.transition = 'none';
+  pill.style.opacity = '0';
+  pill.style.transform = 'translateX(-18px) scale(0.94)';
+
+  requestAnimationFrame(() => {
+    pill.style.transition = '';
+    pill.style.opacity = '';
+    pill.style.transform = '';
+  });
 }
 
 function handleGenreBackClear() {

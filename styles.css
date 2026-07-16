@@ -1760,18 +1760,47 @@ img {
   min-height: 28px;
   padding: 0 12px;
   text-transform: uppercase;
+  transform-origin: center;
+  transition: opacity 220ms ease, transform 220ms cubic-bezier(0.2, 0.82, 0.2, 1);
 }
 
 button.result-filter-pill {
   cursor: pointer;
-  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+  position: relative;
+  transition: background 160ms ease, color 160ms ease, opacity 150ms ease, padding-right 160ms ease, transform 150ms cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+button.result-filter-pill::after {
+  content: "x";
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  opacity: 0;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translate(8px, -50%) scale(0);
+  transition: opacity 140ms ease, transform 140ms ease;
 }
 
 button.result-filter-pill:hover,
 button.result-filter-pill:focus-visible {
   background: #fff;
   color: #050707;
+  padding-right: 34px;
   transform: translateY(-1px);
+}
+
+button.result-filter-pill:hover::after,
+button.result-filter-pill:focus-visible::after {
+  opacity: 1;
+  transform: translate(0, -50%) scale(1);
+}
+
+.result-filter-pill.is-dismissing {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(14px) scale(0.9);
 }
 
 .cast-member {
