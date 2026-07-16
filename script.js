@@ -487,7 +487,9 @@ async function loadFloatingPosters() {
       posterCandidates.push(...data.results.filter((movie) => movie.poster_path));
     });
 
-    const posters = await getValidPosterSamples(posterCandidates, 10);
+    const posters = state.physicalMode
+      ? await getValidPosterSamples(posterCandidates, 10)
+      : await getRuntimeValidPosterSamples(posterCandidates, 10);
     if (loadToken !== floatingPosterLoadToken) return;
     renderPosterMarquee(posters, { animateIn: true });
   } catch (error) {
@@ -679,6 +681,21 @@ async function getValidPosterSamples(movies, limit = 5) {
   }
 
   return samples;
+}
+
+async function getRuntimeValidPosterSamples(movies, limit = 5) {
+  const candidates = dedupePosterSamples(shuffle(movies)).slice(0, limit * 3);
+  const settled = await Promise.allSettled(
+    candidates.map(async (movie) => {
+      const details = await tmdbFetch(`/movie/${movie.id}`, { language: 'en-US' });
+      return isValidRuntime(details.runtime) ? { ...movie, runtime: details.runtime } : null;
+    })
+  );
+
+  return settled
+    .filter((result) => result.status === 'fulfilled' && result.value)
+    .map((result) => result.value)
+    .slice(0, limit);
 }
 
 function shuffle(items) {
@@ -1471,12 +1488,12 @@ function updatePhysicalModeCopy() {
     els.heroSupport.textContent = "Let's pick from our agreed upon list. And let's remember to check stuff off and add stuff as we move forward.";
     els.startPicking.textContent = 'OK PRECIOUS';
   } else if (state.physicalMode) {
-    els.heroEyebrow.textContent = 'Got 90 min? Own a blu-ray player?';
-    els.heroSupport.textContent = "Choose your favorite genre, choose your era, and let's pick a comfy 90 minute movie for you. It's up to you to go find it at your local physical media store....or you can support a blood thirsty corporate giant, I'm not your dad.";
+    els.heroEyebrow.textContent = 'Got 90ish min? Own a blu-ray player?';
+    els.heroSupport.textContent = "Choose your favorite genre, choose your era, and let's pick a comfy 90ish minute movie for you. It's up to you to go find it at your local physical media store....or you can support a blood thirsty corporate giant, I'm not your dad.";
     els.startPicking.textContent = 'Lets Go';
   } else {
-    els.heroEyebrow.textContent = 'Got 90 min?';
-    els.heroSupport.innerHTML = "Choose your favorite genre, choose your era, and let's pick a comfy 90 minute movie for&nbsp;you.";
+    els.heroEyebrow.textContent = 'Got 90ish min?';
+    els.heroSupport.innerHTML = "Choose your favorite genre, choose your era, and let's pick a comfy 90ish minute movie for&nbsp;you.";
     els.startPicking.textContent = 'Lets Go';
   }
 }
