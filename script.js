@@ -2422,7 +2422,7 @@ async function clearFiltersAndReturn() {
 function setResultSource(source) {
   state.resultSource = source;
   els.appShell.dataset.resultSource = source;
-  els.clearResultFilters.textContent = source === 'sample' || source === 'secret' ? 'Go Back' : 'Clear Filters';
+  els.clearResultFilters.textContent = source === 'sample' || source === 'secret' ? 'Go Back' : 'Back to filters';
 }
 
 function wireEvents() {
