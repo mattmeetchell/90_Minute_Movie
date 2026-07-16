@@ -1658,7 +1658,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
   els.toggleOverview.textContent = 'See more';
   updateOverviewToggle();
   renderCast(cast);
-  renderResultFilters();
+  renderResultFilters(details);
 
   renderProviders(providerData.results?.US || providerData.results?.GB || null, details);
 
@@ -1746,8 +1746,8 @@ function getCertification(releaseDates) {
   return ratedRelease?.certification || '';
 }
 
-function renderResultFilters() {
-  const filters = getResultFilterItems();
+function renderResultFilters(movie = null) {
+  const filters = getResultFilterItems(movie);
   els.resultFilters.replaceChildren();
   els.resultFilters.classList.toggle('hidden', !filters.length);
 
@@ -1765,22 +1765,14 @@ function renderResultFilters() {
   });
 }
 
-function getResultFilterItems() {
+function getResultFilterItems(movie = null) {
   if (state.resultSource === 'sample') return [];
 
   if (state.resultSource === 'secret') {
-    if (!state.monkeFormats.length || state.monkeFormats.length === MONKE_FORMATS.length) {
-      return [{ label: 'Stream + Blu-ray', removable: false, type: 'monkeFormat', values: [] }];
-    }
+    const genres = getMovieGenrePills(movie);
+    const formats = getSecretFormatPills();
 
-    return MONKE_FORMATS
-      .filter((format) => state.monkeFormats.includes(format.id))
-      .map((format) => ({
-        label: format.label,
-        removable: true,
-        type: 'monkeFormat',
-        values: [format.id]
-      }));
+    return [...genres, ...formats];
   }
 
   const genres = state.genres
@@ -1803,6 +1795,32 @@ function getResultFilterItems() {
     ...(ratings.length ? ratings : [{ label: 'Any rating', removable: false, type: 'rating', values: [] }]),
     ...(eras.length ? eras : [{ label: 'Any era', removable: false, type: 'era', values: [] }])
   ];
+}
+
+function getMovieGenrePills(movie) {
+  return (movie?.genres || [])
+    .filter((genre) => genre?.name)
+    .map((genre) => ({
+      label: genre.name,
+      removable: false,
+      type: 'movieGenre',
+      values: [String(genre.id || '')]
+    }));
+}
+
+function getSecretFormatPills() {
+  if (!state.monkeFormats.length || state.monkeFormats.length === MONKE_FORMATS.length) {
+    return [{ label: 'Stream + Blu-ray', removable: false, type: 'monkeFormat', values: [] }];
+  }
+
+  return MONKE_FORMATS
+    .filter((format) => state.monkeFormats.includes(format.id))
+    .map((format) => ({
+      label: format.label,
+      removable: true,
+      type: 'monkeFormat',
+      values: [format.id]
+    }));
 }
 
 function formatSelectedEraPills(selectedDecades) {
