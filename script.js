@@ -21,6 +21,45 @@ const DECADES = [
   { label: "2010's", start: 2010, end: 2019 },
   { label: "2020's", start: 2020, end: 2029 }
 ];
+const DESKTOP_DECADE_ORDER = [...DECADES].reverse();
+const YEAR_ICONS = {
+  all: {
+    icon: 'assets/year-icons/Icon_Anytime.svg',
+    activeIcon: 'assets/year-icons/selected/Icon_Anytime_selected.svg'
+  },
+  "1950's": {
+    icon: 'assets/year-icons/Icon_50s.svg',
+    activeIcon: 'assets/year-icons/selected/Icon_50s_selected.svg'
+  },
+  "1960's": {
+    icon: 'assets/year-icons/Icon_60s.svg',
+    activeIcon: 'assets/year-icons/selected/Icon_60s_selected.svg'
+  },
+  "1970's": {
+    icon: 'assets/year-icons/Icon_70s.svg',
+    activeIcon: 'assets/year-icons/selected/Icon_70s_selected.svg'
+  },
+  "1980's": {
+    icon: 'assets/year-icons/Icon_80s.svg',
+    activeIcon: 'assets/year-icons/selected/Icon_80s.svg'
+  },
+  "1990's": {
+    icon: 'assets/year-icons/Icon_90s.svg',
+    activeIcon: 'assets/year-icons/selected/Icon_90s_selected.svg'
+  },
+  "2000's": {
+    icon: 'assets/year-icons/Icon_2000s.svg',
+    activeIcon: 'assets/year-icons/selected/Icon_2000s_selected.svg'
+  },
+  "2010's": {
+    icon: 'assets/year-icons/Icon_2010s.svg',
+    activeIcon: 'assets/year-icons/selected/Icon_2010s_selected.svg'
+  },
+  "2020's": {
+    icon: 'assets/year-icons/Icon_2020s.svg',
+    activeIcon: 'assets/year-icons/selected/Icon_2020s_selected.svg'
+  }
+};
 const RATINGS = [
   {
     label: 'Any',
@@ -711,17 +750,27 @@ function renderDecadePills() {
   els.decadesTray.innerHTML = '';
   updateDecadeStage();
 
-  DECADES.forEach((decade) => {
+  if (!mobileMediaQuery.matches) {
+    els.decadesTray.appendChild(createAnyEraButton({ label: 'All eras', useIcon: true }));
+  }
+
+  const decades = mobileMediaQuery.matches ? DECADES : DESKTOP_DECADE_ORDER;
+  decades.forEach((decade) => {
     const active = state.selectedDecades.includes(decade.label);
     const button = document.createElement('button');
-    button.className = `decade-pill ${active ? 'active' : ''}`.trim();
+    const useIcon = !mobileMediaQuery.matches && YEAR_ICONS[decade.label];
+    button.className = `decade-pill ${useIcon ? 'decade-card has-art' : ''} ${active ? 'active' : ''}`.trim();
     button.type = 'button';
     button.setAttribute('aria-pressed', String(active));
-    button.textContent = decade.label;
     button.addEventListener('click', () => toggleDecade(decade.label));
+    if (useIcon) {
+      appendYearIconContent(button, decade.label, active);
+    } else {
+      button.textContent = decade.label;
+    }
     els.decadesTray.appendChild(button);
 
-    if (decade.label === "1990's") {
+    if (mobileMediaQuery.matches && decade.label === "1990's") {
       const breakPoint = document.createElement('span');
       breakPoint.className = 'decade-row-break';
       breakPoint.setAttribute('aria-hidden', 'true');
@@ -729,11 +778,21 @@ function renderDecadePills() {
     }
   });
 
+  if (mobileMediaQuery.matches) {
+    els.decadesTray.appendChild(createAnyEraButton({ label: 'Any era ∞', useIcon: false }));
+  }
+}
+
+function createAnyEraButton({ label, useIcon }) {
   const anyEraButton = document.createElement('button');
-  anyEraButton.className = `decade-pill any-era-pill ${state.anyEraSelected ? 'active' : ''}`.trim();
+  anyEraButton.className = `decade-pill any-era-pill ${useIcon ? 'decade-card has-art' : ''} ${state.anyEraSelected ? 'active' : ''}`.trim();
   anyEraButton.type = 'button';
   anyEraButton.setAttribute('aria-pressed', String(state.anyEraSelected));
-  anyEraButton.textContent = 'Any era ∞';
+  if (useIcon) {
+    appendYearIconContent(anyEraButton, 'all', state.anyEraSelected, label);
+  } else {
+    anyEraButton.textContent = label;
+  }
   anyEraButton.addEventListener('click', () => {
     state.selectedDecades = [];
     state.anyEraSelected = !state.anyEraSelected;
@@ -741,7 +800,26 @@ function renderDecadePills() {
     updateDecadeSummary();
     refreshCount();
   });
-  els.decadesTray.appendChild(anyEraButton);
+  return anyEraButton;
+}
+
+function appendYearIconContent(button, iconKey, active, labelText = iconKey) {
+  const iconPath = active ? YEAR_ICONS[iconKey].activeIcon : YEAR_ICONS[iconKey].icon;
+  button.setAttribute('aria-label', labelText);
+
+  const icon = document.createElement('span');
+  icon.className = 'decade-icon';
+
+  const image = document.createElement('img');
+  image.src = iconPath;
+  image.alt = '';
+  icon.appendChild(image);
+
+  const label = document.createElement('span');
+  label.className = 'decade-name';
+  label.textContent = labelText;
+
+  button.append(icon, label);
 }
 
 function renderGenrePills() {
@@ -959,7 +1037,7 @@ function updateRatingSummary() {
 
 function updateDecadeSummary() {
   if (state.anyEraSelected) {
-    els.decadeSummary.textContent = 'Selected: Any era';
+    els.decadeSummary.textContent = 'Selected: All eras';
     return;
   }
 
@@ -1856,13 +1934,13 @@ function getResultFilterItems(movie = null) {
     ? [{ label: 'Any rating', removable: false, type: 'rating', values: [] }]
     : formatSelectedRatingPills(state.selectedRatings);
   const eras = state.anyEraSelected
-    ? [{ label: 'Any era', removable: false, type: 'era', values: [] }]
+    ? [{ label: 'All eras', removable: false, type: 'era', values: [] }]
     : formatSelectedEraPills(state.selectedDecades);
 
   return [
     ...(genres.length ? genres : [{ label: 'Any vibe', removable: false, type: 'genre', values: [] }]),
     ...(ratings.length ? ratings : [{ label: 'Any rating', removable: false, type: 'rating', values: [] }]),
-    ...(eras.length ? eras : [{ label: 'Any era', removable: false, type: 'era', values: [] }])
+    ...(eras.length ? eras : [{ label: 'All eras', removable: false, type: 'era', values: [] }])
   ];
 }
 
@@ -2415,6 +2493,7 @@ function wireEvents() {
   mobileMediaQuery.addEventListener('change', () => {
     scheduleMobileActionOffsetUpdate();
     renderPosterMarquee(currentPosterSamples);
+    renderDecadePills();
     updateResultLayoutGuards();
   });
 }
