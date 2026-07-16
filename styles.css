@@ -1637,6 +1637,7 @@ img {
 .movie-copy h1 {
   font-size: 68px;
   margin: 28px 0 26px;
+  text-wrap: balance;
 }
 
 .title-link {

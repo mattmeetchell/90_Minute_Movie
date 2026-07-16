@@ -1644,7 +1644,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
 
   els.poster.src = details.poster_path ? `${IMAGE_BASE_URL}${details.poster_path}` : '';
   els.poster.alt = `${details.title} poster`;
-  els.title.textContent = details.title;
+  els.title.textContent = formatTitleForBalancedWrap(details.title);
   els.title.href = getLetterboxdFilmUrl(details);
   els.title.setAttribute('aria-label', `Find ${details.title} on Letterboxd`);
   updateTitleSize();
@@ -1691,6 +1691,10 @@ function updateTitleSize() {
       els.titleHeading.classList.add('actions-collision-title');
     }
   });
+}
+
+function formatTitleForBalancedWrap(title) {
+  return String(title || '').trim().replace(/\s+(\S+)\s*$/, '\u00a0$1');
 }
 
 function shouldReduceTitleForActions() {
