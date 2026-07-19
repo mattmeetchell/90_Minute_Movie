@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260713-era-full-grid-01" />
+  <link rel="stylesheet" href="styles.css?v=20260718-about-posters-ghosted-01" />
   <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
@@ -29,7 +29,11 @@
       <button id="homeButton" class="placeholder-nav" type="button" aria-label="Go to landing page">
         <img src="assets/brand/90_M_Logo.svg" alt="" aria-hidden="true" />
       </button>
-      <button id="modeToggle" class="mode-toggle" type="button" aria-pressed="false">Streamer mode</button>
+      <div class="topbar-actions">
+        <button id="navToggle" class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+          <img src="assets/nav/hamburger-open.svg" alt="" aria-hidden="true" />
+        </button>
+      </div>
       <div class="header-drawer">
         <div class="drawer-panel drawer-panel-genre">
           <div class="heading-copy">
@@ -71,8 +75,34 @@
             <button id="headerPickMonkeMovie" class="button-primary" type="button">OK Precious</button>
           </div>
         </div>
+        <div class="drawer-panel drawer-panel-saved">
+          <div class="heading-copy">
+            <div class="saved-title-row">
+              <h1>My List</h1>
+              <button id="headerSavedListShare" class="saved-link-button" type="button" aria-label="Save list link" title="Save list link">
+                <img src="assets/nav/link.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
+            <p class="drawer-availability">Saved movies: <strong id="savedHeaderListCount">0</strong></p>
+          </div>
+          <div class="header-drawer-actions">
+            <button id="headerSavedListBackHome" class="button-secondary" type="button">Home</button>
+            <button id="headerSavedListRandom" class="button-primary" type="button">Random From List</button>
+          </div>
+        </div>
       </div>
     </header>
+    <div id="navOverlay" class="nav-overlay hidden" aria-hidden="true">
+      <button id="navClose" class="nav-close" type="button" aria-label="Close menu">
+        <img src="assets/nav/hamburger-close.svg" alt="" aria-hidden="true" />
+      </button>
+      <nav class="nav-panel" aria-label="Primary navigation">
+        <button id="navHome" class="nav-item" type="button">Home</button>
+        <button id="navSavedList" class="nav-item" type="button">My List <span id="navSavedCount">0</span></button>
+        <button id="navPhysicalMode" class="nav-item nav-special-item" type="button">Blu-ray Mode</button>
+        <button id="navAbout" class="nav-item" type="button">About</button>
+      </nav>
+    </div>
 
     <main>
       <section id="landingView" class="view landing-view">
@@ -151,6 +181,79 @@
         <p id="monkeFormatSummary" class="selection-summary" aria-live="polite"></p>
       </section>
 
+      <section id="savedListView" class="view saved-list-view hidden">
+        <div class="section-heading saved-list-heading">
+          <div class="heading-copy">
+            <div class="saved-title-row">
+              <h1>My List</h1>
+              <button id="savedListShare" class="saved-link-button" type="button" aria-label="Save list link" title="Save list link">
+                <img src="assets/nav/link.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
+            <p class="heading-availability">Saved movies: <strong id="savedListCount">0</strong></p>
+          </div>
+          <div class="heading-actions">
+            <button id="savedListBackHome" class="button-secondary" type="button">Home</button>
+            <button id="savedListRandom" class="button-primary" type="button">Random From List</button>
+          </div>
+        </div>
+
+        <div class="saved-list-sort" aria-label="Sort saved movies">
+          <span>Sort</span>
+          <button class="saved-sort-option active" type="button" data-sort="recent" aria-pressed="true">Recent</button>
+          <button class="saved-sort-option" type="button" data-sort="alpha" aria-pressed="false">A-Z</button>
+          <button class="saved-sort-option" type="button" data-sort="runtime" aria-pressed="false">Length</button>
+        </div>
+        <p id="savedListStatus" class="saved-list-status" aria-live="polite"></p>
+
+        <div id="savedListGrid" class="saved-list-grid" aria-live="polite"></div>
+      </section>
+
+      <section id="aboutView" class="view about-view hidden">
+        <section class="about-intro" aria-labelledby="aboutIntroTitle">
+          <div class="about-panel about-poster-marquee" aria-hidden="true">
+            <div id="aboutPosterTrack" class="poster-track about-poster-track"></div>
+          </div>
+          <div class="about-intro-heading">
+            <p class="about-eyebrow">About</p>
+            <h2 id="aboutIntroTitle">Sometimes,<br>2 hours is<br>too long.</h2>
+          </div>
+          <div class="about-intro-copy">
+            <p>Late night? Long day? Sometimes you want to watch a movie with your significant other*, but you can't lock in for <button id="aboutLongMovie" class="about-long-movie" type="button">a really long movie.</button> We're here for you. We'll serve you a crisp 90**minute movie and let you find a new favorite or old classic based on your parameters.</p>
+            <p class="about-footnote">*Dog? Cat? I don't know your life.</p>
+            <p class="about-footnote">** ish</p>
+          </div>
+        </section>
+
+        <section class="about-team" aria-labelledby="aboutTeamTitle">
+          <h2 id="aboutTeamTitle">The<br>team.</h2>
+          <div class="team-card-row">
+            <article class="team-card">
+              <div class="team-card-media">
+                <a class="team-avatar-link" href="https://www.meetchell.com" target="_blank" rel="noreferrer" aria-label="Visit Matt M.'s website">
+                  <img class="team-avatar" src="assets/team/matt-portrait.png" alt="Matt M." />
+                </a>
+              </div>
+              <div class="team-card-copy">
+                <h3>Matt<br>M.</h3>
+                <p>Visionary, founder, creative architect of dreams.</p>
+              </div>
+            </article>
+            <article class="team-card">
+              <div class="team-card-media">
+                <span class="team-avatar-frame">
+                  <img class="team-avatar" src="assets/team/chad-portrait.png" alt="Chad Jippity" />
+                </span>
+              </div>
+              <div class="team-card-copy">
+                <h3>Chad<br>Jippity</h3>
+                <p>The muscle.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+      </section>
+
       <section id="resultView" class="view result-view hidden">
         <div id="movieResult" class="movie-result">
           <button id="posterButton" class="poster-frame" type="button" aria-label="Play trailer">
@@ -181,7 +284,7 @@
 
             <div class="result-actions">
               <button id="tryAgain" class="button-primary" type="button">Try Again</button>
-              <button id="clearResultFilters" class="button-secondary" type="button">Back to filters</button>
+              <button id="clearResultFilters" class="button-secondary" type="button">Add to list</button>
             </div>
           </div>
         </div>
@@ -189,13 +292,25 @@
     </main>
 
     <footer class="site-footer">
-      <button id="footerLogoButton" class="footer-logo-button" type="button" aria-label="Bounce footer logo">
-        <img class="footer-logo" src="assets/brand/Updated_Logo.svg" alt="" aria-hidden="true" />
-      </button>
+      <div class="footer-brand">
+        <button id="footerLogoButton" class="footer-logo-button" type="button" aria-label="Bounce footer logo">
+          <img class="footer-logo" src="assets/brand/Updated_Logo.svg" alt="" aria-hidden="true" />
+        </button>
+        <div class="footer-brand-actions">
+          <button id="modeToggle" class="mode-toggle" type="button" aria-pressed="false">Streamer mode</button>
+        </div>
+      </div>
       <div class="footer-copy">
         <p>Lovingly vibe coded in NYC <span aria-hidden="true">💕</span> <button id="secretFlowTrigger" class="secret-flow-trigger" type="button" aria-label="Open personal picker">🦧</button></p>
-        <p><button id="physicalFlowTrigger" class="footer-flow-trigger" type="button">I own a blu-ray player 💿</button></p>
         <p>Powered by TMDB</p>
+        <div class="footer-social" aria-label="Social links">
+          <a class="footer-social-link" href="https://x.com/mattmeetchell" target="_blank" rel="noreferrer" aria-label="Twitter profile">
+            <img src="assets/social/twitter.svg" alt="" aria-hidden="true" />
+          </a>
+          <a class="footer-social-link" href="https://www.linkedin.com/in/matt-mitchell-954a2938" target="_blank" rel="noreferrer" aria-label="LinkedIn profile">
+            <img src="assets/social/linkedin.svg" alt="" aria-hidden="true" />
+          </a>
+        </div>
       </div>
     </footer>
 
@@ -215,6 +330,6 @@
   </div>
 
   <script src="personal-movies.js?v=20260713-era-full-grid-01"></script>
-  <script src="script.js?v=20260713-era-full-grid-01"></script>
+  <script src="script.js?v=20260718-about-poster-clip-01"></script>
 </body>
 </html>
