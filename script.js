@@ -2749,7 +2749,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
 }
 
 function updateTitleSize() {
-  els.titleHeading.classList.remove('long-title', 'balanced-title', 'actions-collision-title');
+  els.titleHeading.classList.remove('long-title', 'balanced-title', 'actions-collision-title', 'mobile-edge-title');
 
   if (shouldUseBalancedTitleSize(els.title.textContent)) {
     els.titleHeading.classList.add('balanced-title');
@@ -2761,6 +2761,12 @@ function updateTitleSize() {
     if (!lineHeight) return;
 
     const lineCount = Math.round(els.titleHeading.scrollHeight / lineHeight);
+    if (shouldUseMobileEdgeTitleSize(lineCount)) {
+      els.titleHeading.classList.add('mobile-edge-title');
+      updateResultLayoutGuards();
+      return;
+    }
+
     if (lineCount >= 3) {
       els.titleHeading.classList.add('long-title');
       updateResultLayoutGuards();
@@ -2773,6 +2779,16 @@ function updateTitleSize() {
 
     updateResultLayoutGuards();
   });
+}
+
+function shouldUseMobileEdgeTitleSize(lineCount) {
+  if (!mobileMediaQuery.matches) return false;
+
+  const title = els.title.textContent || '';
+  const words = title.trim().split(/\s+/).filter(Boolean);
+  const longestWordLength = words.reduce((length, word) => Math.max(length, word.length), 0);
+  const isHorizontallyOverflowing = els.titleHeading.scrollWidth > els.titleHeading.clientWidth + 1;
+  return isHorizontallyOverflowing || lineCount >= 4 || title.length >= 36 || longestWordLength >= 13;
 }
 
 function formatTitleForBalancedWrap(title) {

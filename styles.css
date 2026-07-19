@@ -4378,6 +4378,17 @@ button.result-filter-pill:focus-visible::after {
 
   .movie-copy h1 {
     font-size: 2.55rem;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .movie-copy h1.long-title {
+    font-size: 2.2rem;
+  }
+
+  .movie-copy h1.mobile-edge-title {
+    font-size: clamp(1.82rem, 8.6vw, 2.08rem);
+    line-height: 1.03;
   }
 
   .site-footer {
