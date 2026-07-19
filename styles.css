@@ -862,7 +862,6 @@ img {
 
 .button-primary:hover,
 .button-secondary:hover,
-.genre-card:hover,
 .rating-card:hover,
 .rating-card:focus-visible {
   transform: translateY(-2px);
@@ -1441,6 +1440,8 @@ img {
   font-weight: 900;
   height: 120px;
   justify-content: center;
+  transform-origin: center;
+  transition: background 180ms ease, color 180ms ease, filter 180ms ease, transform 180ms ease;
   width: 120px;
 }
 
@@ -1462,6 +1463,20 @@ img {
   border: 0;
   height: 137px;
   width: 116px;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 761px) {
+  .genre-card:not(.active):not(.disabled):hover .genre-icon,
+  .genre-card:not(.active):not(.disabled):focus-visible .genre-icon {
+    transform: scale(1.2);
+    transition-duration: 140ms;
+  }
+
+  .genre-card.active .genre-icon,
+  .genre-card.disabled .genre-icon {
+    transform: scale(1);
+    transition-duration: 80ms;
+  }
 }
 
 .genre-card.has-art .genre-icon img,
