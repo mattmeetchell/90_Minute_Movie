@@ -1466,8 +1466,8 @@ img {
 }
 
 @media (hover: hover) and (pointer: fine) and (min-width: 761px) {
-  .genre-card:not(.disabled):hover .genre-icon,
-  .genre-card:not(.disabled):focus-visible .genre-icon {
+  .genre-card:not(.disabled):not(.settling):hover .genre-icon,
+  .genre-card:not(.disabled):not(.settling):focus-visible .genre-icon {
     transform: scale(1.2);
     transition-duration: 140ms;
   }

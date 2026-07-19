@@ -231,7 +231,7 @@ const state = {
   tryAgainExitTimer: null,
   genreSettleId: null,
   genreSettleDirection: '',
-  genreSettleTimer: null,
+  genreHoverLockId: null,
   footerBounceFrame: null,
   footerBounceLastTime: null,
   footerBounce: null,
@@ -1778,6 +1778,8 @@ function renderGenrePills() {
     button.disabled = disable;
     button.setAttribute('aria-pressed', String(active));
     button.addEventListener('click', () => toggleGenre(genre.id));
+    button.addEventListener('mouseleave', () => clearGenreHoverLock(genre.id));
+    button.addEventListener('blur', () => clearGenreHoverLock(genre.id));
 
     const icon = document.createElement('span');
     icon.className = 'genre-icon';
@@ -1890,9 +1892,9 @@ function updateGenreBackClearButtons() {
 
 function toggleGenre(id) {
   const wasActive = state.selectedGenreIds.includes(id);
-  window.clearTimeout(state.genreSettleTimer);
   state.genreSettleId = id;
   state.genreSettleDirection = wasActive ? 'off' : 'on';
+  state.genreHoverLockId = id;
 
   if (wasActive) {
     state.selectedGenreIds = state.selectedGenreIds.filter((genreId) => genreId !== id);
@@ -1904,12 +1906,15 @@ function toggleGenre(id) {
   updateGenreStage();
   updateSelectionSummary();
   refreshCount();
+}
 
-  state.genreSettleTimer = window.setTimeout(() => {
-    state.genreSettleId = null;
-    state.genreSettleDirection = '';
-    renderGenrePills();
-  }, 260);
+function clearGenreHoverLock(id) {
+  if (String(state.genreHoverLockId || '') !== String(id)) return;
+
+  state.genreSettleId = null;
+  state.genreSettleDirection = '';
+  state.genreHoverLockId = null;
+  renderGenrePills();
 }
 
 function toggleRating(certification) {
