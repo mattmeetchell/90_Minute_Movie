@@ -4350,6 +4350,9 @@ button.result-filter-pill:focus-visible::after {
 
   .movie-result {
     grid-template-columns: 1fr;
+    max-width: calc(100vw - 48px);
+    min-width: 0;
+    width: 100%;
   }
 
   .result-view {
@@ -4380,15 +4383,34 @@ button.result-filter-pill:focus-visible::after {
     font-size: 2.55rem;
     max-width: 100%;
     overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .movie-copy {
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .title-link {
+    max-width: 100%;
+    overflow-wrap: inherit;
+    word-break: inherit;
   }
 
   .movie-copy h1.long-title {
-    font-size: 2.2rem;
+    font-size: 2rem;
   }
 
   .movie-copy h1.mobile-edge-title {
-    font-size: clamp(1.82rem, 8.6vw, 2.08rem);
-    line-height: 1.03;
+    font-size: clamp(1.42rem, 6.65vw, 1.72rem);
+    line-height: 1.05;
+    text-wrap: wrap;
+  }
+
+  .movie-copy h1.mobile-ultra-title {
+    font-size: clamp(1.28rem, 6vw, 1.55rem);
+    line-height: 1.06;
   }
 
   .site-footer {

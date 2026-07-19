@@ -2716,6 +2716,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
 
   els.poster.src = details.poster_path ? `${IMAGE_BASE_URL}${details.poster_path}` : '';
   els.poster.alt = `${details.title} poster`;
+  els.title.dataset.rawTitle = details.title || '';
   els.title.textContent = formatTitleForBalancedWrap(details.title);
   els.title.href = getLetterboxdFilmUrl(details);
   els.title.setAttribute('aria-label', `Find ${details.title} on Letterboxd`);
@@ -2749,7 +2750,8 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
 }
 
 function updateTitleSize() {
-  els.titleHeading.classList.remove('long-title', 'balanced-title', 'actions-collision-title', 'mobile-edge-title');
+  els.titleHeading.classList.remove('long-title', 'balanced-title', 'actions-collision-title', 'mobile-edge-title', 'mobile-ultra-title');
+  els.title.textContent = formatTitleForBalancedWrap(getRawTitleText());
 
   if (shouldUseBalancedTitleSize(els.title.textContent)) {
     els.titleHeading.classList.add('balanced-title');
@@ -2763,7 +2765,14 @@ function updateTitleSize() {
     const lineCount = Math.round(els.titleHeading.scrollHeight / lineHeight);
     if (shouldUseMobileEdgeTitleSize(lineCount)) {
       els.titleHeading.classList.add('mobile-edge-title');
+      els.title.textContent = getRawTitleText();
       updateResultLayoutGuards();
+      requestAnimationFrame(() => {
+        if (isTitleHorizontallyOverflowing()) {
+          els.titleHeading.classList.add('mobile-ultra-title');
+          updateResultLayoutGuards();
+        }
+      });
       return;
     }
 
@@ -2781,14 +2790,21 @@ function updateTitleSize() {
   });
 }
 
+function getRawTitleText() {
+  return els.title.dataset.rawTitle || els.title.textContent || '';
+}
+
 function shouldUseMobileEdgeTitleSize(lineCount) {
   if (!mobileMediaQuery.matches) return false;
 
-  const title = els.title.textContent || '';
+  const title = getRawTitleText();
   const words = title.trim().split(/\s+/).filter(Boolean);
   const longestWordLength = words.reduce((length, word) => Math.max(length, word.length), 0);
-  const isHorizontallyOverflowing = els.titleHeading.scrollWidth > els.titleHeading.clientWidth + 1;
-  return isHorizontallyOverflowing || lineCount >= 4 || title.length >= 36 || longestWordLength >= 13;
+  return isTitleHorizontallyOverflowing() || lineCount >= 3 || title.length >= 30 || longestWordLength >= 12;
+}
+
+function isTitleHorizontallyOverflowing() {
+  return els.titleHeading.scrollWidth > els.titleHeading.clientWidth + 1;
 }
 
 function formatTitleForBalancedWrap(title) {
