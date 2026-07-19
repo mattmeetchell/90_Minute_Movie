@@ -1072,11 +1072,30 @@ function pickRandomSavedMovieFromList(options = {}) {
     return;
   }
 
-  const movie = state.savedMovies[Math.floor(Math.random() * state.savedMovies.length)];
+  const movie = chooseRandomMovieWithoutImmediateRepeat(state.savedMovies);
   openSavedMovie(movie.id, {
     resultSource: 'savedRandom',
     cyclePosterOnly: Boolean(options.cyclePosterOnly)
   });
+}
+
+function chooseRandomMovieWithoutImmediateRepeat(movies, getId = (movie) => movie?.id) {
+  const pool = getMoviesWithoutImmediateRepeat(movies, getId);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function getMoviesWithoutImmediateRepeat(movies, getId = (movie) => movie?.id) {
+  if (!Array.isArray(movies) || movies.length <= 1) return movies;
+
+  const currentMovieId = getCurrentResultMovieId();
+  if (!currentMovieId) return movies;
+
+  const filteredMovies = movies.filter((movie) => String(getId(movie) || '') !== currentMovieId);
+  return filteredMovies.length ? filteredMovies : movies;
+}
+
+function getCurrentResultMovieId() {
+  return state.currentResultMovie?.id ? String(state.currentResultMovie.id) : '';
 }
 
 function openNav() {
@@ -2197,7 +2216,7 @@ async function pickSecretMovie(options = {}) {
       throw new Error('The personal list is empty, or I could not read any usable movie rows from it.');
     }
 
-    const row = rows[Math.floor(Math.random() * rows.length)];
+    const row = chooseRandomMovieWithoutImmediateRepeat(rows, getSecretMovieRowId);
     const [details, credits, videos, providers, releaseDates] = await fetchSecretMovieBundle(row);
     details.ownedPhysical = Boolean(row.ownedPhysical);
     details.physicalNote = row.physicalNote || '';
@@ -2224,6 +2243,10 @@ async function pickSecretMovie(options = {}) {
   } finally {
     setLoading(false);
   }
+}
+
+function getSecretMovieRowId(row) {
+  return row?.tmdbId || '';
 }
 
 function getFilteredSecretMovies(rows) {
@@ -2432,8 +2455,23 @@ function fetchMovieBundle(movieId) {
 
 async function fetchValidMovieBundle(candidates) {
   const fallbackCandidates = candidates.length ? candidates : [];
+  const preferredCandidates = getMoviesWithoutImmediateRepeat(fallbackCandidates);
 
-  for (const movie of fallbackCandidates.slice(0, 60)) {
+  const preferredBundle = await findValidMovieBundle(preferredCandidates);
+  if (preferredBundle) return preferredBundle;
+
+  if (preferredCandidates.length !== fallbackCandidates.length) {
+    const fallbackBundle = await findValidMovieBundle(fallbackCandidates);
+    if (fallbackBundle) return fallbackBundle;
+  }
+
+  throw new Error(state.physicalMode
+    ? 'No physical-media matches found for the current filters.'
+    : 'No streaming matches found for the current filters.');
+}
+
+async function findValidMovieBundle(candidates) {
+  for (const movie of candidates.slice(0, 60)) {
     const bundle = await fetchMovieBundle(movie.id);
     const [details, , , providers] = bundle;
 
@@ -2445,9 +2483,7 @@ async function fetchValidMovieBundle(candidates) {
     }
   }
 
-  throw new Error(state.physicalMode
-    ? 'No physical-media matches found for the current filters.'
-    : 'No streaming matches found for the current filters.');
+  return null;
 }
 
 function isValidRuntime(runtime) {
