@@ -229,6 +229,8 @@ const state = {
   tryAgainLabelBag: [],
   lastTryAgainLabel: '',
   tryAgainExitTimer: null,
+  genreSettleId: null,
+  genreSettleTimer: null,
   footerBounceFrame: null,
   footerBounceLastTime: null,
   footerBounce: null,
@@ -1768,7 +1770,8 @@ function renderGenrePills() {
     const disable = !active && state.selectedGenreIds.length >= 2;
     const button = document.createElement('button');
     const iconPath = active ? GENRE_FILLED_ICONS[genre.name] || GENRE_ICONS[genre.name] : GENRE_ICONS[genre.name];
-    button.className = `genre-card ${iconPath ? 'has-art' : ''} ${active ? 'active' : ''} ${disable ? 'disabled' : ''}`.trim();
+    const settling = String(state.genreSettleId || '') === String(genre.id);
+    button.className = `genre-card ${iconPath ? 'has-art' : ''} ${active ? 'active' : ''} ${disable ? 'disabled' : ''} ${settling ? 'settling' : ''}`.trim();
     button.type = 'button';
     button.disabled = disable;
     button.setAttribute('aria-pressed', String(active));
@@ -1884,6 +1887,9 @@ function updateGenreBackClearButtons() {
 }
 
 function toggleGenre(id) {
+  window.clearTimeout(state.genreSettleTimer);
+  state.genreSettleId = id;
+
   if (state.selectedGenreIds.includes(id)) {
     state.selectedGenreIds = state.selectedGenreIds.filter((genreId) => genreId !== id);
   } else if (state.selectedGenreIds.length < 2) {
@@ -1894,6 +1900,11 @@ function toggleGenre(id) {
   updateGenreStage();
   updateSelectionSummary();
   refreshCount();
+
+  state.genreSettleTimer = window.setTimeout(() => {
+    state.genreSettleId = null;
+    renderGenrePills();
+  }, 260);
 }
 
 function toggleRating(certification) {
