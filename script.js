@@ -11,6 +11,7 @@ const SECRET_SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SECRET_
 const SAVED_MOVIES_STORAGE_KEY = 'ninetyishSavedMovies';
 const SAVED_LIST_ID_STORAGE_KEY = 'ninetyishSavedListId';
 const LISTS_API_URL = '/api/lists';
+const SAVED_LIST_DATA_PARAM = 'listData';
 const NAV_OPEN_ICON = 'assets/nav/hamburger-open.svg';
 const NAV_CLOSE_ICON = 'assets/nav/hamburger-close.svg';
 const RESULT_RETURN_EXIT_MS = 760;
@@ -493,9 +494,53 @@ function getSharedListIdFromUrl() {
   return new URLSearchParams(window.location.search).get('list') || '';
 }
 
-function getSavedListShareUrl() {
+function getSharedListDataFromUrl() {
+  return new URLSearchParams(window.location.search).get(SAVED_LIST_DATA_PARAM) || '';
+}
+
+function getShareableSavedMovies() {
+  return state.savedMovies.map((movie) => ({
+    id: movie.id,
+    title: movie.title,
+    poster_path: movie.poster_path || '',
+    release_date: movie.release_date || '',
+    runtime: movie.runtime || null,
+    genres: Array.isArray(movie.genres)
+      ? movie.genres.slice(0, 8).map((genre) => ({ id: genre.id || '', name: genre.name || '' })).filter((genre) => genre.name)
+      : [],
+    savedAt: movie.savedAt || new Date().toISOString()
+  }));
+}
+
+function encodeSavedListData() {
+  const payload = JSON.stringify({ movies: getShareableSavedMovies() });
+  const bytes = new TextEncoder().encode(payload);
+  let binary = '';
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/u, '');
+}
+
+function decodeSavedListData(encodedData) {
+  const paddedData = encodedData.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(encodedData.length / 4) * 4, '=');
+  const binary = window.atob(paddedData);
+  const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+  const payload = JSON.parse(new TextDecoder().decode(bytes));
+  return Array.isArray(payload.movies)
+    ? payload.movies.filter((movie) => movie?.id && movie?.title)
+    : [];
+}
+
+function getSavedListShareUrl(options = {}) {
   const url = new URL(window.location.href);
-  url.searchParams.set('list', state.savedListId);
+  if (options.embedded) {
+    url.searchParams.delete('list');
+    url.searchParams.set(SAVED_LIST_DATA_PARAM, encodeSavedListData());
+  } else {
+    url.searchParams.delete(SAVED_LIST_DATA_PARAM);
+    url.searchParams.set('list', state.savedListId);
+  }
   return url.toString();
 }
 
@@ -572,8 +617,15 @@ async function saveSharedList(options = {}) {
     updateSavedMovieUi();
     return data;
   } catch (error) {
-    if (!options.silent) showSavedListStatus(error.message || 'Could not save list link.', { error: true });
-    return null;
+    const shareUrl = getSavedListShareUrl({ embedded: true });
+    const copied = options.copy !== false && await copyTextToClipboard(shareUrl);
+    if (!options.silent) {
+      showSavedListStatus(
+        copied ? 'List link copied.' : `List link: ${shareUrl}`,
+        { sticky: !copied }
+      );
+    }
+    return { embedded: true, error: error.message || 'List storage unavailable.' };
   } finally {
     setSavedListShareSaving(false);
   }
@@ -594,6 +646,21 @@ function scheduleSavedListSync() {
 }
 
 async function loadSharedListFromUrl() {
+  const listData = getSharedListDataFromUrl();
+  if (listData) {
+    try {
+      state.savedListId = '';
+      state.savedMovies = decodeSavedListData(listData);
+      persistSavedMovies({ sync: false });
+      state.sharedListLoaded = true;
+      showSavedListStatus('Private list loaded.');
+      return true;
+    } catch (error) {
+      showSavedListStatus('Could not load private list.', { error: true, sticky: true });
+      return false;
+    }
+  }
+
   const listId = getSharedListIdFromUrl();
   if (!listId) return false;
 
