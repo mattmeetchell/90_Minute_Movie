@@ -1779,7 +1779,7 @@ img {
 }
 
 .saved-movie-card.saved-movie-removing {
-  animation: savedMovieCrtCardFade 760ms cubic-bezier(0.7, 0, 0.84, 0) both;
+  animation: savedMovieCrtCardFade 520ms cubic-bezier(0.7, 0, 0.84, 0) both;
   pointer-events: none;
   z-index: 3;
 }
@@ -1801,12 +1801,12 @@ img {
   right: 0;
   top: 0;
   transform-origin: center;
-  animation: savedMovieCrtRectangle 540ms cubic-bezier(0.7, 0, 0.84, 0) both;
+  animation: savedMovieCrtRectangle 360ms cubic-bezier(0.7, 0, 0.84, 0) both;
   aspect-ratio: 2 / 3;
 }
 
 .saved-movie-card.saved-movie-removing .saved-movie-poster {
-  animation: savedMoviePosterCrtMask 540ms cubic-bezier(0.7, 0, 0.84, 0) both;
+  animation: savedMoviePosterCrtMask 360ms cubic-bezier(0.7, 0, 0.84, 0) both;
 }
 
 .saved-movie-card.saved-movie-removing .saved-movie-title,
@@ -1951,13 +1951,53 @@ img {
 }
 
 .saved-list-empty {
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.22);
   border-radius: 18px;
   color: var(--muted);
   font-size: 1rem;
   font-weight: 800;
   grid-column: 1 / -1;
+  overflow: hidden;
   padding: 34px;
+  position: relative;
+}
+
+.saved-list-empty::before {
+  background: radial-gradient(circle at 24% 0%, rgba(255, 255, 255, 0.1), transparent 42%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.saved-list-empty-message {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.98rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  margin: 0 0 30px;
+  position: relative;
+  z-index: 1;
+}
+
+.saved-list-empty-posters {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  position: relative;
+  z-index: 1;
+}
+
+.saved-list-empty-poster {
+  animation: savedMoviePlaceholderIn 360ms cubic-bezier(0.16, 1, 0.3, 1) var(--empty-poster-delay, 0ms) both;
+  aspect-ratio: 2 / 3;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.025)),
+    rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  box-shadow: inset 0 0 32px rgba(255, 255, 255, 0.025);
+  min-height: 132px;
 }
 
 .about-view {
@@ -4188,6 +4228,20 @@ button.result-filter-pill:focus-visible::after {
   .saved-movie-remove {
     opacity: 1;
     transform: none;
+  }
+
+  .saved-list-empty {
+    padding: 24px;
+  }
+
+  .saved-list-empty-posters {
+    gap: 14px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .saved-list-empty-poster {
+    border-radius: 12px;
+    min-height: 118px;
   }
 
   .about-view {

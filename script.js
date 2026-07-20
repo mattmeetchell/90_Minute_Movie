@@ -893,7 +893,22 @@ function renderSavedList(options = {}) {
   if (!state.savedMovies.length) {
     const empty = document.createElement('div');
     empty.className = 'saved-list-empty';
-    empty.textContent = 'No saved movies yet.';
+
+    const message = document.createElement('p');
+    message.className = 'saved-list-empty-message';
+    message.textContent = 'No saved movies yet.';
+
+    const posters = document.createElement('div');
+    posters.className = 'saved-list-empty-posters';
+
+    for (let index = 0; index < 6; index += 1) {
+      const poster = document.createElement('span');
+      poster.className = 'saved-list-empty-poster';
+      poster.style.setProperty('--empty-poster-delay', `${index * 48}ms`);
+      posters.appendChild(poster);
+    }
+
+    empty.append(message, posters);
     els.savedListGrid.appendChild(empty);
     return;
   }
