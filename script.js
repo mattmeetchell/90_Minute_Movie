@@ -445,7 +445,10 @@ function showView(viewName) {
   } else {
     els.landingView.classList.remove('landing-intro');
   }
-  if (viewName === 'savedList') renderSavedList();
+  if (viewName === 'savedList') {
+    renderSavedList();
+    requestAnimationFrame(resizeSavedListNameInputs);
+  }
   if (viewName === 'about') revealAboutSections();
   scheduleMobileActionOffsetUpdate();
 }
@@ -535,6 +538,7 @@ function updateSavedListNameUi() {
 function resizeSavedListNameInputs() {
   [els.savedListName, els.headerSavedListName].forEach((input) => {
     if (!input) return;
+    if (!input.getClientRects().length) return;
     input.value = input.value.slice(0, SAVED_LIST_NAME_MAX_LENGTH);
     const savedPanel = input.closest('.drawer-panel-saved');
     const actions = savedPanel?.querySelector('.header-drawer-actions');
