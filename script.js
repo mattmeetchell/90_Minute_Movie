@@ -10,11 +10,14 @@ const SECRET_SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SECRET_SH
 const SECRET_SHEET_JSONP_URL = `https://docs.google.com/spreadsheets/d/${SECRET_SHEET_ID}/gviz/tq?gid=0`;
 const SAVED_MOVIES_STORAGE_KEY = 'ninetyishSavedMovies';
 const SAVED_LIST_ID_STORAGE_KEY = 'ninetyishSavedListId';
+const SAVED_LIST_NAME_STORAGE_KEY = 'ninetyishSavedListName';
+const SAVED_LIST_NAME_MAX_LENGTH = 14;
 const LISTS_API_URL = '/api/lists';
 const SAVED_LIST_DATA_PARAM = 'listData';
 const NAV_OPEN_ICON = 'assets/nav/hamburger-open.svg';
 const NAV_CLOSE_ICON = 'assets/nav/hamburger-close.svg';
 const RESULT_RETURN_EXIT_MS = 760;
+const ABOUT_LONG_MOVIE_MIN_RUNTIME = 150;
 const ABOUT_LONG_MOVIES = [
   { id: 44012, title: 'Jeanne Dielman, 23 quai du Commerce, 1080 Bruxelles' },
   { id: 122, title: 'The Lord Of The Rings: The Return of the King' },
@@ -181,7 +184,14 @@ const TRY_AGAIN_HOVER_LABELS = [
   'HELL NO',
   'Nah fam',
   'YUCK',
-  'PASS'
+  'PASS',
+  'Not quite my tempo',
+  "We'll call you",
+  'Naur',
+  'NOT THE BEES',
+  'DO I FEEL LUCKY?',
+  'Thumbs down',
+  'WHAAT? NOOO?'
 ];
 
 const FOOTER_DVD_FILTERS = [
@@ -205,8 +215,13 @@ const state = {
   currentResultMovie: null,
   savedMovies: [],
   savedListId: '',
+  savedListName: 'My List',
   savedListSort: 'recent',
   savedListSortTimer: null,
+  undoRemovalTimer: null,
+  undoRemovalDeadline: 0,
+  undoRemovalRemaining: 0,
+  pendingRemovedMovie: null,
   savedListStatusTimer: null,
   savedListSyncTimer: null,
   savedListIsSaving: false,
@@ -301,6 +316,12 @@ const els = {
   savedListRandom: document.getElementById('savedListRandom'),
   savedListShare: document.getElementById('savedListShare'),
   savedListStatus: document.getElementById('savedListStatus'),
+  savedListName: document.getElementById('savedListName'),
+  headerSavedListName: document.getElementById('headerSavedListName'),
+  savedListNameCount: document.getElementById('savedListNameCount'),
+  headerSavedListNameCount: document.getElementById('headerSavedListNameCount'),
+  undoToast: document.getElementById('undoToast'),
+  undoRemoval: document.getElementById('undoRemoval'),
   savedSortOptions: document.querySelectorAll('.saved-sort-option'),
   movieResult: document.getElementById('movieResult'),
   posterButton: document.getElementById('posterButton'),
@@ -471,10 +492,12 @@ function loadSavedMovies() {
       ? saved.filter((movie) => movie?.id && movie?.title)
       : [];
     state.savedListId = window.localStorage.getItem(SAVED_LIST_ID_STORAGE_KEY) || '';
+    state.savedListName = normalizeSavedListName(window.localStorage.getItem(SAVED_LIST_NAME_STORAGE_KEY));
   } catch (error) {
     console.warn('Could not read saved movies.', error);
     state.savedMovies = [];
     state.savedListId = '';
+    state.savedListName = 'My List';
   }
 }
 
@@ -486,6 +509,7 @@ function persistSavedMovies(options = {}) {
     } else {
       window.localStorage.removeItem(SAVED_LIST_ID_STORAGE_KEY);
     }
+    window.localStorage.setItem(SAVED_LIST_NAME_STORAGE_KEY, state.savedListName);
   } catch (error) {
     console.warn('Could not save movies.', error);
   }
@@ -495,6 +519,107 @@ function persistSavedMovies(options = {}) {
 
 function getSharedListIdFromUrl() {
   return new URLSearchParams(window.location.search).get('list') || '';
+}
+
+function normalizeSavedListName(name) {
+  const normalized = typeof name === 'string' ? name.trim().replace(/\s+/g, ' ') : '';
+  return normalized.slice(0, SAVED_LIST_NAME_MAX_LENGTH) || 'My List';
+}
+
+function updateSavedListNameUi() {
+  if (els.savedListName && els.savedListName.value !== state.savedListName) els.savedListName.value = state.savedListName;
+  if (els.headerSavedListName && els.headerSavedListName.value !== state.savedListName) els.headerSavedListName.value = state.savedListName;
+  resizeSavedListNameInputs();
+}
+
+function resizeSavedListNameInputs() {
+  [els.savedListName, els.headerSavedListName].forEach((input) => {
+    if (!input) return;
+    input.value = input.value.slice(0, SAVED_LIST_NAME_MAX_LENGTH);
+    const savedPanel = input.closest('.drawer-panel-saved');
+    const actions = savedPanel?.querySelector('.header-drawer-actions');
+    const linkButton = input.closest('.saved-title-row')?.querySelector('.saved-link-button');
+    const maxWidth = mobileMediaQuery.matches
+      ? Math.max(180, window.innerWidth - 118)
+      : savedPanel && actions && linkButton
+        ? Math.max(24, savedPanel.clientWidth - actions.offsetWidth - linkButton.offsetWidth - 162)
+        : Math.min(420, Math.floor(window.innerWidth * 0.4));
+    input.style.setProperty('--saved-list-name-size', '1em');
+    input.style.width = '1px';
+    let naturalWidth = input.scrollWidth + 4;
+    const minimumReadableScale = 0.56;
+
+    if (naturalWidth * minimumReadableScale > maxWidth) {
+      const originalName = input.value;
+      let low = 0;
+      let high = originalName.length;
+      while (low < high) {
+        const middle = Math.ceil((low + high) / 2);
+        input.value = originalName.slice(0, middle);
+        input.style.width = '1px';
+        if ((input.scrollWidth + 4) * minimumReadableScale <= maxWidth) low = middle;
+        else high = middle - 1;
+      }
+      input.value = originalName.slice(0, low);
+      input.style.width = '1px';
+      naturalWidth = input.scrollWidth + 4;
+    }
+
+    const scale = Math.max(minimumReadableScale, Math.min(1, maxWidth / naturalWidth));
+    input.classList.toggle('is-constrained', scale < 1);
+    input.style.setProperty('--saved-list-name-size', `${scale}em`);
+    void input.offsetWidth;
+    input.style.width = '1px';
+    input.style.width = `${Math.min(maxWidth, Math.max(24, input.scrollWidth + 4))}px`;
+  });
+  updateSavedListNameCounters();
+}
+
+function updateSavedListNameCounters() {
+  const counters = [
+    [els.savedListName, els.savedListNameCount],
+    [els.headerSavedListName, els.headerSavedListNameCount]
+  ];
+  counters.forEach(([input, counter]) => {
+    if (input && counter) counter.textContent = `${input.value.length}/${SAVED_LIST_NAME_MAX_LENGTH}`;
+  });
+}
+
+function setSavedListName(name) {
+  const nextName = normalizeSavedListName(name);
+  if (state.savedListName === nextName) {
+    updateSavedListNameUi();
+    return;
+  }
+
+  state.savedListName = nextName;
+  persistSavedMovies();
+  updateSavedListNameUi();
+}
+
+function handleSavedListNameInput(input) {
+  resizeSavedListNameInputs();
+}
+
+function setSavedListNameEditing(input, isEditing) {
+  input.closest('.saved-title-row')?.classList.toggle('is-editing', isEditing);
+}
+
+function beginMobileSavedListRename(input) {
+  if (!mobileMediaQuery.matches || input.dataset.renameStarted === 'true') return;
+  input.dataset.renameStarted = 'true';
+  input.dataset.previousValue = input.value;
+  input.value = '';
+  resizeSavedListNameInputs();
+}
+
+function finishSavedListRename(input) {
+  if (input.dataset.renameStarted === 'true' && !input.value.trim()) {
+    input.value = input.dataset.previousValue || 'My List';
+  }
+  delete input.dataset.renameStarted;
+  delete input.dataset.previousValue;
+  setSavedListName(input.value);
 }
 
 function getSharedListDataFromUrl() {
@@ -516,7 +641,7 @@ function getShareableSavedMovies() {
 }
 
 function encodeSavedListData() {
-  const payload = JSON.stringify({ movies: getShareableSavedMovies() });
+  const payload = JSON.stringify({ name: state.savedListName, movies: getShareableSavedMovies() });
   const bytes = new TextEncoder().encode(payload);
   let binary = '';
   bytes.forEach((byte) => {
@@ -530,9 +655,10 @@ function decodeSavedListData(encodedData) {
   const binary = window.atob(paddedData);
   const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
   const payload = JSON.parse(new TextDecoder().decode(bytes));
-  return Array.isArray(payload.movies)
-    ? payload.movies.filter((movie) => movie?.id && movie?.title)
-    : [];
+  return {
+    name: normalizeSavedListName(payload.name),
+    movies: Array.isArray(payload.movies) ? payload.movies.filter((movie) => movie?.id && movie?.title) : []
+  };
 }
 
 function getSavedListShareUrl(options = {}) {
@@ -602,6 +728,7 @@ async function saveSharedList(options = {}) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         id: state.savedListId || undefined,
+        name: state.savedListName,
         movies: state.savedMovies
       })
     });
@@ -653,7 +780,9 @@ async function loadSharedListFromUrl() {
   if (listData) {
     try {
       state.savedListId = '';
-      state.savedMovies = decodeSavedListData(listData);
+      const list = decodeSavedListData(listData);
+      state.savedMovies = list.movies;
+      state.savedListName = list.name;
       persistSavedMovies({ sync: false });
       state.sharedListLoaded = true;
       showSavedListStatus('Private list loaded.');
@@ -675,6 +804,7 @@ async function loadSharedListFromUrl() {
     if (!response.ok) throw new Error(data.error || 'Could not load private list.');
 
     state.savedListId = data.id || listId;
+    state.savedListName = normalizeSavedListName(data.name);
     state.savedMovies = Array.isArray(data.movies)
       ? data.movies.filter((movie) => movie?.id && movie?.title)
       : [];
@@ -713,14 +843,16 @@ function toggleCurrentMovieSaved() {
   if (!state.currentResultMovie?.id) return;
 
   const movieId = getSavedMovieId();
+  let removedMovie = null;
   if (isMovieSaved()) {
-    state.savedMovies = state.savedMovies.filter((movie) => String(movie.id) !== movieId);
+    removedMovie = removeSavedMovieById(movieId, { render: false });
   } else {
     state.savedMovies = [getSavedMoviePayload(), ...state.savedMovies.filter((movie) => String(movie.id) !== movieId)];
+    persistSavedMovies();
   }
 
-  persistSavedMovies();
   if (state.activeView === 'savedList') renderSavedList();
+  if (removedMovie) showUndoRemoval(removedMovie);
 }
 
 function handleResultSaveAction() {
@@ -787,22 +919,90 @@ function removeSavedMovie(movieId, card = null) {
       if (event.target !== card || event.animationName !== 'savedMovieCrtCardFade') return;
       card.removeEventListener('animationend', finishRemoval);
       const beforeRects = getSavedMovieCardRects(card);
-      removeSavedMovieById(movieId, { render: false });
+      const removedMovie = removeSavedMovieById(movieId, { render: false });
       card.remove();
       animateSavedListReflow(beforeRects);
       if (!state.savedMovies.length) renderSavedList({ animateCards: false });
+      showUndoRemoval(removedMovie);
     };
     card.addEventListener('animationend', finishRemoval);
     return;
   }
 
-  removeSavedMovieById(movieId);
+  showUndoRemoval(removeSavedMovieById(movieId));
 }
 
 function removeSavedMovieById(movieId, options = {}) {
-  state.savedMovies = state.savedMovies.filter((movie) => String(movie.id) !== String(movieId));
+  const removedIndex = state.savedMovies.findIndex((movie) => String(movie.id) === String(movieId));
+  if (removedIndex === -1) return null;
+
+  const [movie] = state.savedMovies.splice(removedIndex, 1);
   persistSavedMovies();
   if (options.render !== false) renderSavedList();
+  return { movie, index: removedIndex };
+}
+
+function showUndoRemoval(removedMovie) {
+  if (!removedMovie?.movie || !els.undoToast) return;
+
+  window.clearTimeout(state.undoRemovalTimer);
+  state.pendingRemovedMovie = removedMovie;
+  els.undoToast.classList.remove('is-hiding');
+  els.undoToast.classList.add('is-visible');
+  els.undoToast.setAttribute('aria-hidden', 'false');
+
+  state.undoRemovalRemaining = 6000;
+  scheduleUndoRemovalHide();
+}
+
+function scheduleUndoRemovalHide() {
+  window.clearTimeout(state.undoRemovalTimer);
+  state.undoRemovalDeadline = Date.now() + state.undoRemovalRemaining;
+  state.undoRemovalTimer = window.setTimeout(hideUndoRemoval, state.undoRemovalRemaining);
+}
+
+function pauseUndoRemoval() {
+  if (!state.undoRemovalTimer) return;
+  state.undoRemovalRemaining = Math.max(0, state.undoRemovalDeadline - Date.now());
+  window.clearTimeout(state.undoRemovalTimer);
+  state.undoRemovalTimer = null;
+}
+
+function resumeUndoRemoval() {
+  if (!state.pendingRemovedMovie || state.undoRemovalTimer) return;
+  if (state.undoRemovalRemaining <= 0) {
+    hideUndoRemoval();
+    return;
+  }
+  scheduleUndoRemovalHide();
+}
+
+function hideUndoRemoval() {
+  window.clearTimeout(state.undoRemovalTimer);
+  state.undoRemovalTimer = null;
+  state.undoRemovalDeadline = 0;
+  state.undoRemovalRemaining = 0;
+  state.pendingRemovedMovie = null;
+  if (!els.undoToast?.classList.contains('is-visible')) return;
+
+  els.undoToast.classList.remove('is-visible');
+  els.undoToast.classList.add('is-hiding');
+  els.undoToast.setAttribute('aria-hidden', 'true');
+}
+
+function undoLastRemoval() {
+  const removedMovie = state.pendingRemovedMovie;
+  if (!removedMovie?.movie) return;
+
+  window.clearTimeout(state.undoRemovalTimer);
+  state.undoRemovalTimer = null;
+  state.pendingRemovedMovie = null;
+  hideUndoRemoval();
+
+  const insertAt = Math.min(removedMovie.index, state.savedMovies.length);
+  state.savedMovies.splice(insertAt, 0, removedMovie.movie);
+  persistSavedMovies();
+  renderSavedList({ animateCards: false, undoMovieId: removedMovie.movie.id });
 }
 
 function getSavedMovieCardRects(excludedCard = null) {
@@ -850,6 +1050,7 @@ function updateSavedMovieUi() {
   [els.savedListShare, els.headerSavedListShare].forEach((button) => {
     if (button) button.disabled = state.savedListIsSaving || savedCount === 0;
   });
+  updateSavedListNameUi();
   updateResultSaveButton();
 }
 
@@ -898,6 +1099,12 @@ function renderSavedList(options = {}) {
     message.className = 'saved-list-empty-message';
     message.textContent = 'No saved movies yet.';
 
+    const pickMovie = document.createElement('button');
+    pickMovie.className = 'saved-list-empty-pick button-primary';
+    pickMovie.type = 'button';
+    pickMovie.textContent = 'Find a movie';
+    pickMovie.addEventListener('click', () => showView(state.mode === 'monke' ? 'monkeFilter' : 'picker'));
+
     const posters = document.createElement('div');
     posters.className = 'saved-list-empty-posters';
 
@@ -905,10 +1112,10 @@ function renderSavedList(options = {}) {
       const poster = document.createElement('span');
       poster.className = 'saved-list-empty-poster';
       poster.style.setProperty('--empty-poster-delay', `${index * 48}ms`);
-      posters.appendChild(poster);
+    posters.appendChild(poster);
     }
 
-    empty.append(message, posters);
+    empty.append(message, posters, pickMovie);
     els.savedListGrid.appendChild(empty);
     return;
   }
@@ -920,6 +1127,7 @@ function renderSavedList(options = {}) {
       card.classList.add('saved-movie-card-enter');
       card.style.setProperty('--saved-card-delay', `${Math.min(index, 14) * 42}ms`);
     }
+    if (String(movie.id) === String(options.undoMovieId)) card.classList.add('saved-movie-card-undoing');
 
     const openButton = document.createElement('button');
     openButton.className = 'saved-movie-open';
@@ -1167,16 +1375,38 @@ function showAboutFromNav() {
   showView('about');
 }
 
-function randomizeAboutLongMovie() {
-  if (!els.aboutLongMovie) return;
-
-  const options = ABOUT_LONG_MOVIES.filter((movie) => movie.title !== state.lastAboutLongMovie);
-  const movie = options[Math.floor(Math.random() * options.length)] || ABOUT_LONG_MOVIES[0];
+function setCurrentAboutLongMovie(movie) {
   state.currentAboutLongMovie = movie;
   state.lastAboutLongMovie = movie.title;
   els.aboutLongMovie.textContent = movie.title;
   els.aboutLongMovie.dataset.movieId = String(movie.id);
   hideAboutLongMoviePoster();
+}
+
+async function randomizeAboutLongMovie() {
+  if (!els.aboutLongMovie) return;
+
+  const options = ABOUT_LONG_MOVIES.filter((movie) => movie.title !== state.lastAboutLongMovie);
+  const fallbackMovie = options[Math.floor(Math.random() * options.length)] || ABOUT_LONG_MOVIES[0];
+  setCurrentAboutLongMovie(fallbackMovie);
+
+  try {
+    const page = Math.floor(Math.random() * 30) + 1;
+    const data = await tmdbFetch('/discover/movie', {
+      language: 'en-US',
+      page,
+      sort_by: 'popularity.desc',
+      'with_runtime.gte': ABOUT_LONG_MOVIE_MIN_RUNTIME,
+      'vote_count.gte': 50
+    });
+    const movies = (data.results || [])
+      .filter((movie) => movie?.id && (movie.title || movie.name) && (movie.title || movie.name) !== state.lastAboutLongMovie)
+      .map((movie) => ({ id: movie.id, title: movie.title || movie.name }));
+    const movie = movies[Math.floor(Math.random() * movies.length)];
+    if (movie) setCurrentAboutLongMovie(movie);
+  } catch (error) {
+    console.warn('Could not refresh the long-movie suggestion.', error);
+  }
 }
 
 function getAboutPosterPreview() {
@@ -1208,6 +1438,10 @@ function setAboutPosterPreviewImage(preview, posterPath) {
 }
 
 async function showAboutLongMoviePoster(event = null) {
+  if (mobileMediaQuery.matches) {
+    hideAboutLongMoviePoster();
+    return;
+  }
   if (!state.currentAboutLongMovie?.id) return;
 
   const preview = getAboutPosterPreview();
@@ -1437,7 +1671,17 @@ function clearScreenTransitionClasses() {
 async function loadGenres() {
   const data = await tmdbFetch('/genre/movie/list', { language: 'en-US' });
   state.genres = data.genres.filter((genre) => !EXCLUDED_GENRES.has(genre.name));
+  await preloadGenreIcons();
   renderGenrePills();
+}
+
+function preloadGenreIcons() {
+  const iconPaths = [...new Set([...Object.values(GENRE_ICONS), ...Object.values(GENRE_FILLED_ICONS)])];
+  return Promise.all(iconPaths.map((iconPath) => new Promise((resolve) => {
+    const image = new Image();
+    image.onload = image.onerror = resolve;
+    image.src = iconPath;
+  })));
 }
 
 async function loadFloatingPosters() {
@@ -3307,7 +3551,7 @@ function stopTryAgainHoverLabels() {
     els.tryAgain.classList.remove('try-again-leaving');
     delete els.tryAgain.dataset.hoverLabel;
     state.tryAgainExitTimer = null;
-  }, 240);
+  }, 360);
 }
 
 function openTrailer() {
@@ -3563,12 +3807,35 @@ function wireEvents() {
   els.savedSortOptions.forEach((button) => {
     button.addEventListener('click', () => setSavedListSort(button.dataset.sort || 'recent'));
   });
+  els.savedListName.addEventListener('change', () => finishSavedListRename(els.savedListName));
+  els.savedListName.addEventListener('focus', () => {
+    setSavedListNameEditing(els.savedListName, true);
+    beginMobileSavedListRename(els.savedListName);
+  });
+  els.savedListName.addEventListener('blur', () => {
+    finishSavedListRename(els.savedListName);
+    setSavedListNameEditing(els.savedListName, false);
+  });
+  els.savedListName.addEventListener('input', () => handleSavedListNameInput(els.savedListName));
+  els.headerSavedListName.addEventListener('change', () => finishSavedListRename(els.headerSavedListName));
+  els.headerSavedListName.addEventListener('focus', () => {
+    setSavedListNameEditing(els.headerSavedListName, true);
+    beginMobileSavedListRename(els.headerSavedListName);
+  });
+  els.headerSavedListName.addEventListener('blur', () => {
+    finishSavedListRename(els.headerSavedListName);
+    setSavedListNameEditing(els.headerSavedListName, false);
+  });
+  els.headerSavedListName.addEventListener('input', () => handleSavedListNameInput(els.headerSavedListName));
+  els.undoRemoval.addEventListener('click', undoLastRemoval);
+  els.undoToast.addEventListener('pointerenter', pauseUndoRemoval);
+  els.undoToast.addEventListener('pointerleave', resumeUndoRemoval);
   els.footerLogoButton.addEventListener('click', toggleFooterBounce);
   els.secretFlowTrigger.addEventListener('click', startSecretFlow);
   if (els.physicalFlowTrigger) els.physicalFlowTrigger.addEventListener('click', startPhysicalFlow);
   if (els.aboutLongMovie) {
-    els.aboutLongMovie.addEventListener('click', () => {
-      randomizeAboutLongMovie();
+    els.aboutLongMovie.addEventListener('click', async () => {
+      await randomizeAboutLongMovie();
       showAboutLongMoviePoster();
     });
     els.aboutLongMovie.addEventListener('mouseenter', showAboutLongMoviePoster);
@@ -3581,6 +3848,7 @@ function wireEvents() {
   window.addEventListener('scroll', updateMobileActionOffset, { passive: true });
   window.addEventListener('resize', () => {
     scheduleMobileActionOffsetUpdate();
+    resizeSavedListNameInputs();
     updatePosterLoopWidth();
     updatePosterLoopWidth(els.aboutPosterTrack);
     updateTitleSize();

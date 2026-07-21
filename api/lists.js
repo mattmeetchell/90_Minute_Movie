@@ -79,6 +79,10 @@ function normalizeMovies(movies) {
     }));
 }
 
+function normalizeListName(name) {
+  return typeof name === 'string' ? name.trim().replace(/\s+/g, ' ').slice(0, 14) : '';
+}
+
 async function readJsonBody(request) {
   if (request.body && typeof request.body === 'object') return request.body;
 
@@ -112,17 +116,18 @@ module.exports = async function handler(request, response) {
       if (!storedList) return json(response, 404, { error: 'List not found.' });
 
       const list = typeof storedList === 'string' ? JSON.parse(storedList) : storedList;
-      return json(response, 200, { id, movies: normalizeMovies(list.movies), updatedAt: list.updatedAt || null });
+      return json(response, 200, { id, name: normalizeListName(list.name), movies: normalizeMovies(list.movies), updatedAt: list.updatedAt || null });
     }
 
     if (request.method === 'POST') {
       const body = await readJsonBody(request);
       const id = normalizeListId(body.id) || createListId();
+      const name = normalizeListName(body.name);
       const movies = normalizeMovies(body.movies);
       const updatedAt = new Date().toISOString();
 
-      await kvCommand(['SET', `${LIST_KEY_PREFIX}${id}`, JSON.stringify({ movies, updatedAt }), 'EX', LIST_TTL_SECONDS]);
-      return json(response, 200, { id, movies, updatedAt });
+      await kvCommand(['SET', `${LIST_KEY_PREFIX}${id}`, JSON.stringify({ name, movies, updatedAt }), 'EX', LIST_TTL_SECONDS]);
+      return json(response, 200, { id, name, movies, updatedAt });
     }
 
     response.setHeader('Allow', 'GET, POST');
