@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    if (window.location.protocol === 'file:') {
+      window.location.replace('http://localhost:8001/');
+    }
+  </script>
   <title>90 Minute Movie Picker</title>
   <meta name="description" content="Choose your favorite genre, choose your era, and get a comfy 90 minute movie." />
   <link rel="icon" type="image/png" sizes="512x512" href="assets/brand/Favicon_512x512.png?v=20260712-social-01" />
@@ -20,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260723-mobile-scroll-controls-02" />
+  <link rel="stylesheet" href="styles.css?v=20260723-mobile-reroll-controls-01" />
   <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
@@ -339,6 +344,6 @@
   </div>
 
   <script src="personal-movies.js?v=20260713-era-full-grid-01"></script>
-  <script src="script.js?v=20260723-mobile-scroll-controls-02"></script>
+  <script src="script.js?v=20260723-mobile-reroll-controls-01"></script>
 </body>
 </html>

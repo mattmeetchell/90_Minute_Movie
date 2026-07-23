@@ -251,7 +251,8 @@ const state = {
   footerBounceLastTime: null,
   footerBounce: null,
   footerDvdColorIndex: 0,
-  resultHeaderCanReveal: false
+  resultHeaderCanReveal: false,
+  resultActionsPreserved: false
 };
 
 let currentPosterSamples = [];
@@ -390,6 +391,14 @@ async function tmdbFetch(path, params = {}) {
 function showView(viewName) {
   closeTrailer();
   const previousView = state.activeView;
+  const preserveHiddenResultHeader =
+    mobileMediaQuery.matches &&
+    viewName === 'result' &&
+    previousView === 'result' &&
+    els.appShell.dataset.resultHeaderHidden === 'true';
+  const preserveVisibleResultActions =
+    preserveHiddenResultHeader &&
+    els.appShell.dataset.resultActionsVisible === 'true';
   const filterViews = ['picker', 'rating', 'decade'];
   const isFilterTransition =
     previousView !== viewName &&
@@ -405,10 +414,12 @@ function showView(viewName) {
   els.appShell.dataset.view = viewName;
   if (mobileMediaQuery.matches && viewName === 'result' && previousView !== 'result') {
     state.resultHeaderCanReveal = false;
+    state.resultActionsPreserved = false;
     els.appShell.dataset.resultHeaderHidden = 'true';
     els.appShell.dataset.resultActionsVisible = 'false';
   } else if (viewName !== 'result') {
     state.resultHeaderCanReveal = false;
+    state.resultActionsPreserved = false;
     els.appShell.dataset.resultHeaderHidden = 'false';
     els.appShell.dataset.resultActionsVisible = 'false';
   }
@@ -456,6 +467,12 @@ function showView(viewName) {
     }
   }
 
+  if (preserveHiddenResultHeader) {
+    state.resultHeaderCanReveal = false;
+    state.resultActionsPreserved = preserveVisibleResultActions;
+    els.appShell.dataset.resultHeaderHidden = 'true';
+    els.appShell.dataset.resultActionsVisible = preserveVisibleResultActions ? 'true' : 'false';
+  }
   window.scrollTo(0, 0);
   if (viewName === 'landing') {
     resumePosterWallAnimation();
@@ -502,13 +519,21 @@ function scheduleMobileActionOffsetUpdate() {
 
 function updateMobileResultHeader() {
   if (!mobileMediaQuery.matches || state.activeView !== 'result') {
+    state.resultActionsPreserved = false;
     els.appShell.dataset.resultHeaderHidden = 'false';
     els.appShell.dataset.resultActionsVisible = 'false';
     return;
   }
 
   if (window.scrollY > 40) {
+    state.resultActionsPreserved = false;
     state.resultHeaderCanReveal = true;
+    els.appShell.dataset.resultHeaderHidden = 'true';
+    els.appShell.dataset.resultActionsVisible = 'true';
+    return;
+  }
+
+  if (state.resultActionsPreserved) {
     els.appShell.dataset.resultHeaderHidden = 'true';
     els.appShell.dataset.resultActionsVisible = 'true';
     return;
