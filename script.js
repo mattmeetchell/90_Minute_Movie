@@ -17,6 +17,7 @@ const SAVED_LIST_DATA_PARAM = 'listData';
 const NAV_OPEN_ICON = 'assets/nav/hamburger-open.svg';
 const NAV_CLOSE_ICON = 'assets/nav/hamburger-close.svg';
 const RESULT_RETURN_EXIT_MS = 760;
+const MOBILE_RESULT_RETURN_GROW_MS = 440;
 const ABOUT_LONG_MOVIE_MIN_RUNTIME = 150;
 const ABOUT_LONG_MOVIES = [
   { id: 44012, title: 'Jeanne Dielman, 23 quai du Commerce, 1080 Bruxelles' },
@@ -235,6 +236,7 @@ const state = {
   aboutPosterPreview: null,
   transitionTimer: null,
   trailerUrl: '',
+  mobileTrailerArmed: false,
   hasShownResult: false,
   secretMovies: null,
   secretActive: false,
@@ -329,6 +331,9 @@ const els = {
   movieResult: document.getElementById('movieResult'),
   posterButton: document.getElementById('posterButton'),
   posterHint: document.getElementById('posterHint'),
+  posterMobileActions: document.getElementById('posterMobileActions'),
+  seePosterAction: document.getElementById('seePosterAction'),
+  playTrailerAction: document.getElementById('playTrailerAction'),
   poster: document.getElementById('poster'),
   movieCopy: document.querySelector('.movie-copy'),
   titleHeading: document.getElementById('titleHeading'),
@@ -346,6 +351,9 @@ const els = {
   trailerModal: document.getElementById('trailerModal'),
   closeTrailer: document.getElementById('closeTrailer'),
   trailer: document.getElementById('trailer'),
+  posterLightbox: document.getElementById('posterLightbox'),
+  closePosterLightbox: document.getElementById('closePosterLightbox'),
+  posterLightboxImage: document.getElementById('posterLightboxImage'),
   selectionSummary: document.getElementById('selectionSummary'),
   genreHeaderResultCount: document.getElementById('genreHeaderResultCount'),
   ratingSummary: document.getElementById('ratingSummary'),
@@ -423,6 +431,7 @@ function showView(viewName) {
     els.appShell.dataset.resultHeaderHidden = 'true';
     els.appShell.dataset.resultActionsVisible = 'true';
     els.appShell.dataset.resultActionsReady = 'false';
+    els.appShell.dataset.resultActionsFooterLocked = 'false';
   } else if (viewName !== 'result') {
     if (state.resultActionsRevealTimer) {
       window.clearTimeout(state.resultActionsRevealTimer);
@@ -433,6 +442,7 @@ function showView(viewName) {
     els.appShell.dataset.resultHeaderHidden = 'false';
     els.appShell.dataset.resultActionsVisible = 'false';
     els.appShell.dataset.resultActionsReady = 'false';
+    els.appShell.dataset.resultActionsFooterLocked = 'false';
   }
   clearScreenTransitionClasses();
 
@@ -492,7 +502,7 @@ function showView(viewName) {
     els.landingView.classList.remove('landing-intro');
   }
   if (viewName === 'savedList') {
-    renderSavedList();
+    renderSavedList({ entrance: true });
     requestAnimationFrame(resizeSavedListNameInputs);
   }
   if (viewName === 'about') revealAboutSections();
@@ -510,6 +520,7 @@ function updateMobileActionOffset() {
     els.appShell.style.setProperty('--mobile-action-footer-offset', '0px');
     els.appShell.style.setProperty('--mobile-heading-action-footer-offset', '0px');
     els.appShell.dataset.mobileActionsLocked = 'false';
+    els.appShell.dataset.resultActionsFooterLocked = 'false';
     return;
   }
 
@@ -519,6 +530,10 @@ function updateMobileActionOffset() {
   els.appShell.style.setProperty('--mobile-action-footer-offset', `${Math.ceil(overlap + resultFooterGap)}px`);
   els.appShell.style.setProperty('--mobile-heading-action-footer-offset', `${Math.ceil(overlap)}px`);
   els.appShell.dataset.mobileActionsLocked = overlap > 0 ? 'true' : 'false';
+  const resultActionsFooterLocked =
+    state.activeView === 'result' &&
+    overlap > 0;
+  els.appShell.dataset.resultActionsFooterLocked = resultActionsFooterLocked ? 'true' : 'false';
 }
 
 function scheduleMobileActionOffsetUpdate() {
@@ -539,10 +554,15 @@ function updateMobileResultHeader() {
   }
 
   if (window.scrollY > 40) {
+    const isCollapsingRevealedHeader = els.appShell.dataset.resultHeaderHidden === 'false';
     state.resultActionsPreserved = false;
     state.resultHeaderCanReveal = true;
     els.appShell.dataset.resultHeaderHidden = 'true';
     els.appShell.dataset.resultActionsVisible = 'true';
+    if (isCollapsingRevealedHeader) {
+      state.resultHeaderCanReveal = false;
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    }
     return;
   }
 
@@ -1171,9 +1191,11 @@ function updateResultSaveButton() {
 function renderSavedList(options = {}) {
   if (!els.savedListGrid) return;
 
+  const isPageEntrance = options.entrance === true;
   els.savedListCount.textContent = String(state.savedMovies.length);
   updateSavedSortControls();
   els.savedListGrid.classList.toggle('is-refreshing', false);
+  els.savedListGrid.classList.toggle('saved-list-entrance', isPageEntrance);
   els.savedListGrid.replaceChildren();
 
   if (!state.savedMovies.length) {
@@ -1210,7 +1232,12 @@ function renderSavedList(options = {}) {
     card.className = 'saved-movie-card';
     if (options.animateCards !== false) {
       card.classList.add('saved-movie-card-enter');
-      card.style.setProperty('--saved-card-delay', `${Math.min(index, 14) * 42}ms`);
+      const entranceDelay = 160 + (Math.min(index, 10) * 90);
+      const interactionDelay = Math.min(index, 14) * 42;
+      card.style.setProperty(
+        '--saved-card-delay',
+        `${isPageEntrance ? entranceDelay : interactionDelay}ms`
+      );
     }
     if (String(movie.id) === String(options.undoMovieId)) card.classList.add('saved-movie-card-undoing');
 
@@ -1265,6 +1292,7 @@ function renderSavedListPlaceholders() {
   if (!els.savedListGrid) return;
 
   els.savedListGrid.replaceChildren();
+  els.savedListGrid.classList.remove('saved-list-entrance');
   els.savedListGrid.classList.add('is-refreshing');
 
   const placeholderCount = Math.min(Math.max(state.savedMovies.length, 4), 8);
@@ -1613,34 +1641,69 @@ function toggleNav() {
   }
 }
 
-function returnFromFloatingResult() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    state.hasShownResult = false;
-    showView('landing');
-    return;
-  }
+async function prepareMobilePosterReturn() {
+  if (!mobileMediaQuery.matches) return;
 
-  els.movieResult.classList.add('sample-result-exit');
-  wait(RESULT_RETURN_EXIT_MS).then(() => {
-    els.movieResult.classList.remove('sample-result-exit');
-    state.hasShownResult = false;
-    showView('landing');
-  });
+  const currentWidth = els.posterButton.getBoundingClientRect().width;
+  els.posterButton.style.width = `${currentWidth}px`;
+  els.posterButton.style.maxWidth = `${currentWidth}px`;
+  els.posterButton.classList.remove(
+    'result-poster-enter',
+    'result-poster-fanfare',
+    'poster-cycle-in',
+    'personal-poster-reveal'
+  );
+  els.posterButton.classList.add('mobile-result-return-grow');
+  void els.posterButton.offsetWidth;
+
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  els.posterButton.style.width = 'var(--mobile-result-poster-old-width)';
+  els.posterButton.style.maxWidth = 'var(--mobile-result-poster-old-width)';
+  await wait(MOBILE_RESULT_RETURN_GROW_MS);
 }
 
-function returnFromSavedResult() {
+function clearMobilePosterReturn() {
+  els.posterButton.classList.remove('mobile-result-return-grow');
+  els.posterButton.style.removeProperty('width');
+  els.posterButton.style.removeProperty('max-width');
+}
+
+async function returnFromFloatingResult() {
+  if (els.movieResult.classList.contains('sample-result-exit') ||
+      els.posterButton.classList.contains('mobile-result-return-grow')) return;
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    state.hasShownResult = false;
+    showView('landing');
+    return;
+  }
+
+  await prepareMobilePosterReturn();
+  els.movieResult.classList.add('sample-result-exit');
+  await wait(RESULT_RETURN_EXIT_MS);
+  els.movieResult.classList.remove('sample-result-exit');
+  clearMobilePosterReturn();
+  state.hasShownResult = false;
+  showView('landing');
+}
+
+async function returnFromSavedResult() {
+  if (els.movieResult.classList.contains('sample-result-exit') ||
+      els.posterButton.classList.contains('mobile-result-return-grow')) return;
+
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     state.hasShownResult = false;
     showView('savedList');
     return;
   }
 
+  await prepareMobilePosterReturn();
   els.movieResult.classList.add('sample-result-exit');
-  wait(RESULT_RETURN_EXIT_MS).then(() => {
-    els.movieResult.classList.remove('sample-result-exit');
-    state.hasShownResult = false;
-    showView('savedList');
-  });
+  await wait(RESULT_RETURN_EXIT_MS);
+  els.movieResult.classList.remove('sample-result-exit');
+  clearMobilePosterReturn();
+  state.hasShownResult = false;
+  showView('savedList');
 }
 
 function getFooterBounceBounds() {
@@ -2041,7 +2104,7 @@ function renderDecadePills() {
   const decades = mobileMediaQuery.matches ? [...DECADES].reverse() : DESKTOP_DECADE_ORDER;
   decades.forEach((decade) => {
     const active = state.selectedDecades.includes(decade.label);
-    const disabled = !active && state.selectedDecades.length >= 2;
+    const disabled = !mobileMediaQuery.matches && !active && state.selectedDecades.length >= 2;
     const button = document.createElement('button');
     const useIcon = !mobileMediaQuery.matches && YEAR_ICONS[decade.label];
     button.className = `decade-pill ${useIcon ? 'decade-card has-art' : ''} ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`.trim();
@@ -2294,7 +2357,7 @@ function toggleDecade(label) {
   state.anyEraSelected = false;
   if (state.selectedDecades.includes(label)) {
     state.selectedDecades = state.selectedDecades.filter((decade) => decade !== label);
-  } else if (state.selectedDecades.length < 2) {
+  } else if (mobileMediaQuery.matches || state.selectedDecades.length < 2) {
     state.selectedDecades = [...state.selectedDecades, label];
   }
 
@@ -3032,7 +3095,7 @@ async function runResultAnticipationReveal(details, credits, videos, providers, 
   els.posterButton.classList.remove('personal-card-rest');
   els.posterButton.classList.add('personal-poster-reveal');
 
-  await wait(1240);
+  await wait(mobileMediaQuery.matches ? 1600 : 1240);
   await revealPersonalPosterStroke();
   await wait(220);
   anticipation.then(() => {});
@@ -3157,14 +3220,17 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
   renderResultFilters(details);
 
   renderProviders(providerData.results?.US || providerData.results?.GB || null, details);
+  resetMobileTrailerArm();
 
   if (trailer?.key) {
     state.trailerUrl = `https://www.youtube.com/embed/${trailer.key}?autoplay=1`;
     els.posterButton.disabled = false;
+    els.playTrailerAction.classList.remove('hidden');
     els.posterHint.textContent = 'Play trailer';
   } else {
     state.trailerUrl = '';
-    els.posterButton.disabled = true;
+    els.posterButton.disabled = !mobileMediaQuery.matches;
+    els.playTrailerAction.classList.add('hidden');
     els.posterHint.textContent = 'No trailer';
   }
 
@@ -3670,6 +3736,128 @@ function openTrailer() {
   }, 420);
 }
 
+function resetMobileTrailerArm() {
+  state.mobileTrailerArmed = false;
+  els.posterButton.classList.remove('mobile-trailer-armed');
+  els.posterMobileActions.setAttribute('aria-hidden', 'true');
+  els.posterButton.setAttribute('aria-label', 'Play trailer');
+}
+
+function handlePosterTrailerClick(event) {
+  if (!mobileMediaQuery.matches) {
+    openTrailer();
+    return;
+  }
+
+  if (event.target.closest('#seePosterAction')) {
+    openPosterLightbox();
+    return;
+  }
+
+  if (event.target.closest('#playTrailerAction')) {
+    resetMobileTrailerArm();
+    openTrailer();
+    return;
+  }
+
+  if (!state.mobileTrailerArmed) {
+    state.mobileTrailerArmed = true;
+    els.posterButton.classList.add('mobile-trailer-armed');
+    els.posterMobileActions.setAttribute('aria-hidden', 'false');
+    els.posterButton.setAttribute('aria-label', 'Poster actions: see poster or play trailer');
+    return;
+  }
+
+  resetMobileTrailerArm();
+  openTrailer();
+}
+
+function openPosterLightbox() {
+  const posterSrc = els.poster.currentSrc || els.poster.src;
+  if (!posterSrc) return;
+
+  resetMobileTrailerArm();
+  els.posterLightbox.classList.remove('is-closing');
+  els.posterLightbox.classList.add('is-opening');
+  els.posterLightboxImage.src = posterSrc;
+  els.posterLightboxImage.alt = els.poster.alt;
+  els.posterLightboxImage.style.opacity = '0';
+  els.posterLightbox.classList.remove('hidden');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      animatePosterLightboxImage(true);
+      els.posterLightboxImage.style.opacity = '';
+      window.setTimeout(() => els.posterLightbox.classList.remove('is-opening'), 440);
+    });
+  });
+}
+
+function closePosterLightbox() {
+  if (
+    els.posterLightbox.classList.contains('hidden') ||
+    els.posterLightbox.classList.contains('is-closing')
+  ) {
+    return;
+  }
+
+  els.posterLightbox.classList.remove('is-opening');
+  els.posterLightbox.classList.add('is-closing');
+  const animation = animatePosterLightboxImage(false);
+  const finish = () => {
+    els.posterLightbox.classList.remove('is-closing');
+    els.posterLightbox.classList.add('hidden');
+    els.posterLightboxImage.src = '';
+    els.posterLightboxImage.alt = '';
+  };
+
+  if (!animation) {
+    finish();
+    return;
+  }
+
+  animation.finished.then(finish).catch(finish);
+}
+
+function animatePosterLightboxImage(opening) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
+
+  const sourceRect = els.poster.getBoundingClientRect();
+  const targetRect = els.posterLightboxImage.getBoundingClientRect();
+  if (!sourceRect.width || !targetRect.width) return null;
+
+  els.posterLightboxImage.getAnimations().forEach((animation) => animation.cancel());
+  const translateX =
+    sourceRect.left + sourceRect.width / 2 -
+    (targetRect.left + targetRect.width / 2);
+  const translateY =
+    sourceRect.top + sourceRect.height / 2 -
+    (targetRect.top + targetRect.height / 2);
+  const scaleX = sourceRect.width / targetRect.width;
+  const scaleY = sourceRect.height / targetRect.height;
+  const collapsed = {
+    borderRadius: '16px',
+    opacity: 0.94,
+    transform: `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`
+  };
+  const expanded = {
+    borderRadius: '18px',
+    opacity: 1,
+    transform: 'translate(0, 0) scale(1)'
+  };
+
+  return els.posterLightboxImage.animate(
+    opening ? [collapsed, expanded] : [expanded, collapsed],
+    {
+      duration: opening ? 440 : 360,
+      easing: opening
+        ? 'cubic-bezier(0.16, 1, 0.3, 1)'
+        : 'cubic-bezier(0.7, 0, 0.84, 0)',
+      fill: 'both'
+    }
+  );
+}
+
 function closeTrailer() {
   if (els.trailerModal.classList.contains('hidden') || els.trailerModal.classList.contains('is-closing')) return;
 
@@ -3880,7 +4068,20 @@ function wireEvents() {
     els.toggleOverview.textContent = expanded ? 'See less' : 'See more';
     updateResultLayoutGuards();
   });
-  els.posterButton.addEventListener('click', openTrailer);
+  els.posterButton.addEventListener('click', handlePosterTrailerClick);
+  els.closePosterLightbox.addEventListener('click', closePosterLightbox);
+  els.posterLightbox.addEventListener('click', (event) => {
+    if (event.target === els.posterLightbox) closePosterLightbox();
+  });
+  document.addEventListener('pointerdown', (event) => {
+    if (
+      mobileMediaQuery.matches &&
+      state.mobileTrailerArmed &&
+      !els.posterButton.contains(event.target)
+    ) {
+      resetMobileTrailerArm();
+    }
+  });
   els.title.addEventListener('click', handleTitleLetterboxdClick);
   els.resultFilters.addEventListener('click', handleResultFilterDismiss);
   els.closeTrailer.addEventListener('click', closeTrailer);
@@ -3890,6 +4091,7 @@ function wireEvents() {
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       closeTrailer();
+      closePosterLightbox();
       closeNav();
     }
   });
@@ -3963,6 +4165,7 @@ function wireEvents() {
     updateTitleSize();
   });
   mobileMediaQuery.addEventListener('change', () => {
+    resetMobileTrailerArm();
     scheduleMobileActionOffsetUpdate();
     renderFloatingPosterTracks(currentPosterSamples);
     renderDecadePills();
