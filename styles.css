@@ -1622,6 +1622,10 @@ img {
   color: #050505;
 }
 
+.decade-pill.disabled {
+  opacity: 0.32;
+}
+
 .genre-name,
 .rating-name,
 .monke-format-name {
@@ -4002,7 +4006,7 @@ button.result-filter-pill:focus-visible::after {
 
 @media (max-width: 760px) {
   :root {
-    --mobile-result-poster-width: min(237px, calc((100vw - 44px) * 0.846));
+    --mobile-result-poster-width: min(225px, calc((100vw - 44px) * 0.804));
   }
 
   .app-shell {
@@ -4013,6 +4017,12 @@ button.result-filter-pill:focus-visible::after {
   .topbar {
     height: 88px;
     padding: 0;
+  }
+
+  .app-shell[data-view="result"][data-result-header-hidden="true"] .topbar {
+    border-bottom-color: transparent;
+    height: 0;
+    overflow: hidden;
   }
 
   .placeholder-nav {
@@ -4652,30 +4662,36 @@ button.result-filter-pill:focus-visible::after {
     position: fixed !important;
     top: auto !important;
     transform: translate3d(0, 0, 0);
-    transition: background 180ms ease, opacity 240ms ease;
+    transition: background 180ms ease, opacity 240ms ease, transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
     will-change: transform, opacity;
     width: 100%;
     z-index: 1000;
   }
 
   .app-shell[data-view="result"] .result-actions {
+    animation: none;
     opacity: 0;
     pointer-events: none;
+    transform: translate3d(0, 24px, 0);
   }
 
-  .app-shell[data-view="result"] .movie-copy.result-copy-enter .result-actions {
-    animation: resultActionsFadeIn 420ms ease-out both;
+  .app-shell[data-view="result"][data-result-actions-visible="true"] .movie-copy.result-copy-enter .result-actions {
+    animation: none;
     opacity: 1;
     pointer-events: auto;
+    transform: translate3d(0, 0, 0);
   }
 
   .app-shell[data-view="result"] .movie-copy.result-copy-enter .result-actions .button-primary,
   .app-shell[data-view="result"] .movie-copy.result-copy-enter .result-actions .button-secondary {
-    animation: resultActionButtonUp 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: none;
   }
 
-  .app-shell[data-view="result"] .movie-copy.result-copy-enter .result-actions .button-secondary {
-    animation-delay: 80ms;
+  .poster-frame.personal-stroke-reveal:not(:disabled):hover,
+  .poster-frame.personal-stroke-reveal:not(:disabled):focus-visible,
+  .poster-frame.personal-stroke-visible:not(:disabled):hover,
+  .poster-frame.personal-stroke-visible:not(:disabled):focus-visible {
+    border-color: transparent;
   }
 
   .app-shell[data-mobile-actions-locked="true"] .result-actions {
@@ -4867,5 +4883,14 @@ button.result-filter-pill:focus-visible::after {
   .footer-social-link {
     height: 34px;
     width: 34px;
+  }
+}
+
+@media (max-width: 760px) and (hover: none) {
+  .decade-pill:not(.active):not(.disabled):hover,
+  .decade-pill:not(.active):not(.disabled):focus-visible {
+    background: transparent;
+    color: var(--text);
+    transform: none;
   }
 }

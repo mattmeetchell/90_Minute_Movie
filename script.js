@@ -250,7 +250,8 @@ const state = {
   footerBounceFrame: null,
   footerBounceLastTime: null,
   footerBounce: null,
-  footerDvdColorIndex: 0
+  footerDvdColorIndex: 0,
+  resultHeaderCanReveal: false
 };
 
 let currentPosterSamples = [];
@@ -402,6 +403,15 @@ function showView(viewName) {
 
   state.activeView = viewName;
   els.appShell.dataset.view = viewName;
+  if (mobileMediaQuery.matches && viewName === 'result' && previousView !== 'result') {
+    state.resultHeaderCanReveal = false;
+    els.appShell.dataset.resultHeaderHidden = 'true';
+    els.appShell.dataset.resultActionsVisible = 'false';
+  } else if (viewName !== 'result') {
+    state.resultHeaderCanReveal = false;
+    els.appShell.dataset.resultHeaderHidden = 'false';
+    els.appShell.dataset.resultActionsVisible = 'false';
+  }
   clearScreenTransitionClasses();
 
   if (isFilterTransition) {
@@ -488,6 +498,30 @@ function scheduleMobileActionOffsetUpdate() {
   setTimeout(updateMobileActionOffset, 120);
   setTimeout(updateMobileActionOffset, 420);
   setTimeout(updateMobileActionOffset, 720);
+}
+
+function updateMobileResultHeader() {
+  if (!mobileMediaQuery.matches || state.activeView !== 'result') {
+    els.appShell.dataset.resultHeaderHidden = 'false';
+    els.appShell.dataset.resultActionsVisible = 'false';
+    return;
+  }
+
+  if (window.scrollY > 40) {
+    state.resultHeaderCanReveal = true;
+    els.appShell.dataset.resultHeaderHidden = 'true';
+    els.appShell.dataset.resultActionsVisible = 'true';
+    return;
+  }
+
+  if (state.resultHeaderCanReveal && window.scrollY <= 4) {
+    els.appShell.dataset.resultHeaderHidden = 'false';
+    els.appShell.dataset.resultActionsVisible = 'false';
+    return;
+  }
+
+  els.appShell.dataset.resultHeaderHidden = 'true';
+  els.appShell.dataset.resultActionsVisible = state.resultHeaderCanReveal ? 'true' : 'false';
 }
 
 function resumePosterWallAnimation() {
@@ -1969,10 +2003,12 @@ function renderDecadePills() {
   const decades = mobileMediaQuery.matches ? [...DECADES].reverse() : DESKTOP_DECADE_ORDER;
   decades.forEach((decade) => {
     const active = state.selectedDecades.includes(decade.label);
+    const disabled = !active && state.selectedDecades.length >= 2;
     const button = document.createElement('button');
     const useIcon = !mobileMediaQuery.matches && YEAR_ICONS[decade.label];
-    button.className = `decade-pill ${useIcon ? 'decade-card has-art' : ''} ${active ? 'active' : ''}`.trim();
+    button.className = `decade-pill ${useIcon ? 'decade-card has-art' : ''} ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`.trim();
     button.type = 'button';
+    button.disabled = disabled;
     button.setAttribute('aria-pressed', String(active));
     button.addEventListener('click', () => toggleDecade(decade.label));
     if (useIcon) {
@@ -2220,7 +2256,7 @@ function toggleDecade(label) {
   state.anyEraSelected = false;
   if (state.selectedDecades.includes(label)) {
     state.selectedDecades = state.selectedDecades.filter((decade) => decade !== label);
-  } else {
+  } else if (state.selectedDecades.length < 2) {
     state.selectedDecades = [...state.selectedDecades, label];
   }
 
@@ -3867,7 +3903,10 @@ function wireEvents() {
     els.aboutLongMovie.addEventListener('blur', hideAboutLongMoviePoster);
   }
   els.modeToggle.addEventListener('click', cycleAppMode);
-  window.addEventListener('scroll', updateMobileActionOffset, { passive: true });
+  window.addEventListener('scroll', () => {
+    updateMobileActionOffset();
+    updateMobileResultHeader();
+  }, { passive: true });
   window.addEventListener('resize', () => {
     scheduleMobileActionOffsetUpdate();
     resizeSavedListNameInputs();
