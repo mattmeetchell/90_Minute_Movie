@@ -4391,6 +4391,11 @@ button.result-filter-pill:focus-visible::after {
     min-height: calc(100dvh - 88px + 180px);
   }
 
+  #pickerView,
+  #decadeView {
+    min-height: calc(100dvh - 88px);
+  }
+
   .saved-list-view {
     min-height: calc(100dvh - 88px);
     padding-bottom: 132px;
@@ -4632,7 +4637,7 @@ button.result-filter-pill:focus-visible::after {
   .heading-actions {
     background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.78) 36%, #000000 100%);
     border-top: 0;
-    bottom: 0;
+    bottom: var(--mobile-heading-action-footer-offset, 0px);
     contain: layout paint;
     display: grid;
     gap: 12px;
@@ -4675,7 +4680,7 @@ button.result-filter-pill:focus-visible::after {
     transform: translate3d(0, 24px, 0);
   }
 
-  .app-shell[data-view="result"][data-result-actions-visible="true"] .movie-copy.result-copy-enter .result-actions {
+  .app-shell[data-view="result"][data-result-actions-visible="true"][data-result-actions-ready="true"] .movie-copy.result-copy-enter .result-actions {
     animation: none;
     opacity: 1;
     pointer-events: auto;
@@ -4695,6 +4700,10 @@ button.result-filter-pill:focus-visible::after {
   }
 
   .app-shell[data-mobile-actions-locked="true"] .result-actions {
+    background: transparent;
+  }
+
+  .app-shell[data-mobile-actions-locked="true"] .heading-actions {
     background: transparent;
   }
 
