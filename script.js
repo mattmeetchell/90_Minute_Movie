@@ -416,7 +416,7 @@ function showView(viewName) {
     state.resultHeaderCanReveal = false;
     state.resultActionsPreserved = false;
     els.appShell.dataset.resultHeaderHidden = 'true';
-    els.appShell.dataset.resultActionsVisible = 'false';
+    els.appShell.dataset.resultActionsVisible = 'true';
   } else if (viewName !== 'result') {
     state.resultHeaderCanReveal = false;
     state.resultActionsPreserved = false;
@@ -546,7 +546,7 @@ function updateMobileResultHeader() {
   }
 
   els.appShell.dataset.resultHeaderHidden = 'true';
-  els.appShell.dataset.resultActionsVisible = state.resultHeaderCanReveal ? 'true' : 'false';
+  els.appShell.dataset.resultActionsVisible = 'true';
 }
 
 function resumePosterWallAnimation() {
