@@ -43,6 +43,8 @@ body::before {
   min-height: 100vh;
   pointer-events: none;
   position: fixed;
+  transform: translateZ(0);
+  will-change: transform;
   z-index: 0;
 }
 
@@ -55,6 +57,8 @@ body::after {
   position: fixed;
   right: 0;
   top: 0;
+  transform: translateZ(0);
+  will-change: transform;
   z-index: 0;
 }
 
@@ -120,31 +124,16 @@ img {
   position: fixed;
   top: 0;
   transition: opacity 260ms ease;
+  will-change: opacity;
   width: 100vw;
   z-index: 0;
 }
 
-.app-shell[data-view="picker"][data-genre-count="1"]::before {
+.app-shell[data-filter-strength="1"]::before {
   opacity: 0.3;
 }
 
-.app-shell[data-view="picker"][data-genre-count="2"]::before {
-  opacity: 0.5;
-}
-
-.app-shell[data-view="rating"][data-rating-count="1"]::before {
-  opacity: 0.3;
-}
-
-.app-shell[data-view="rating"][data-rating-count="2"]::before {
-  opacity: 0.5;
-}
-
-.app-shell[data-view="decade"][data-decade-count="1"]::before {
-  opacity: 0.3;
-}
-
-.app-shell[data-view="decade"][data-decade-count="2"]::before {
+.app-shell[data-filter-strength="2"]::before {
   opacity: 0.5;
 }
 
@@ -352,6 +341,10 @@ img {
   animation: screenEnterLeft 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+.screen-enter-up {
+  animation: screenEnterUp 460ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .screen-exit-left {
   animation: screenExitLeft 360ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
@@ -362,7 +355,7 @@ img {
 
 @keyframes screenEnterRight {
   from {
-    opacity: 0;
+    opacity: 1;
     transform: translateX(72px);
   }
   to {
@@ -371,9 +364,20 @@ img {
   }
 }
 
-@keyframes screenEnterLeft {
+@keyframes screenEnterUp {
   from {
     opacity: 0;
+    transform: translateY(72px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes screenEnterLeft {
+  from {
+    opacity: 1;
     transform: translateX(-72px);
   }
   to {
@@ -2984,6 +2988,26 @@ img {
   }
 }
 
+@keyframes resultActionsFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes resultActionButtonUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes resultLockupUp {
   from {
     opacity: 0;
@@ -3201,6 +3225,8 @@ img {
   .result-copy-enter .result-filter-pills,
   .result-copy-enter .watch-block,
   .result-copy-enter .result-actions,
+  .result-copy-enter .result-actions .button-primary,
+  .result-copy-enter .result-actions .button-secondary,
   .result-lockup-enter .year-pill,
   .result-lockup-enter h1,
   .result-lockup-cycle .year-pill,
@@ -3215,6 +3241,7 @@ img {
   .nav-overlay.is-closing .nav-panel,
   .screen-enter-right,
   .screen-enter-left,
+  .screen-enter-up,
   .screen-exit-left,
   .screen-exit-right,
   .undo-toast {
@@ -3975,7 +4002,7 @@ button.result-filter-pill:focus-visible::after {
 
 @media (max-width: 760px) {
   :root {
-    --mobile-result-poster-width: min(280px, calc(100vw - 44px));
+    --mobile-result-poster-width: min(237px, calc((100vw - 44px) * 0.846));
   }
 
   .app-shell {
@@ -4324,8 +4351,14 @@ button.result-filter-pill:focus-visible::after {
 
   .section-heading h1,
   .drawer-panel h1 {
-    font-size: 2.6rem;
+    font-size: 38px;
     line-height: 1.08;
+  }
+
+  .heading-availability,
+  .drawer-availability {
+    font-size: 18px;
+    line-height: 22px;
   }
 
   .header-drawer {
@@ -4565,15 +4598,31 @@ button.result-filter-pill:focus-visible::after {
     margin-top: 20px;
   }
 
-  .result-actions {
-    gap: 14px;
-    width: 100%;
+  .screen-enter-right,
+  .screen-enter-left,
+  .screen-enter-up {
+    animation: none;
+  }
+
+  .screen-enter-right > .section-heading > .heading-copy,
+  .screen-enter-right > :not(.section-heading) {
+    animation: screenEnterRight 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .screen-enter-left > .section-heading > .heading-copy,
+  .screen-enter-left > :not(.section-heading) {
+    animation: screenEnterLeft 360ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .screen-enter-up > .section-heading > .heading-copy,
+  .screen-enter-up > :not(.section-heading) {
+    animation: screenEnterUp 460ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .heading-actions {
     background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.78) 36%, #000000 100%);
     border-top: 0;
-    bottom: var(--mobile-action-footer-offset, 0px);
+    bottom: 0;
     contain: layout paint;
     display: grid;
     gap: 12px;
@@ -4590,17 +4639,46 @@ button.result-filter-pill:focus-visible::after {
   }
 
   .result-actions {
-    background: transparent;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.78) 36%, #000000 100%);
     border-top: 0;
+    bottom: var(--mobile-action-footer-offset, 0px);
+    contain: layout paint;
     display: grid;
+    gap: 12px;
     grid-template-columns: 1fr;
+    left: 0;
     margin-top: 34px;
-    padding: 0;
-    position: static !important;
+    padding: 24px 22px max(16px, env(safe-area-inset-bottom));
+    position: fixed !important;
+    top: auto !important;
+    transform: translate3d(0, 0, 0);
+    transition: background 180ms ease, opacity 240ms ease;
+    will-change: transform, opacity;
     width: 100%;
+    z-index: 1000;
   }
 
-  .app-shell[data-mobile-actions-locked="true"] .heading-actions {
+  .app-shell[data-view="result"] .result-actions {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .app-shell[data-view="result"] .movie-copy.result-copy-enter .result-actions {
+    animation: resultActionsFadeIn 420ms ease-out both;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .app-shell[data-view="result"] .movie-copy.result-copy-enter .result-actions .button-primary,
+  .app-shell[data-view="result"] .movie-copy.result-copy-enter .result-actions .button-secondary {
+    animation: resultActionButtonUp 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .app-shell[data-view="result"] .movie-copy.result-copy-enter .result-actions .button-secondary {
+    animation-delay: 80ms;
+  }
+
+  .app-shell[data-mobile-actions-locked="true"] .result-actions {
     background: transparent;
   }
 
@@ -4624,6 +4702,20 @@ button.result-filter-pill:focus-visible::after {
   .rating-grid,
   .monke-format-grid {
     grid-template-columns: repeat(2, minmax(116px, 1fr));
+  }
+
+  .genre-grid {
+    gap: 34px 28px;
+  }
+
+  .genre-card {
+    gap: 0;
+    min-height: 114px;
+  }
+
+  .genre-card.has-art .genre-icon {
+    height: 110px;
+    width: 93px;
   }
 
   .rating-grid,
@@ -4663,6 +4755,7 @@ button.result-filter-pill:focus-visible::after {
   }
 
   .movie-result {
+    gap: 30px;
     grid-template-columns: 1fr;
     max-width: calc(100vw - 48px);
     min-width: 0;
@@ -4670,6 +4763,7 @@ button.result-filter-pill:focus-visible::after {
   }
 
   .result-view {
+    padding-bottom: 180px;
     padding-top: 28px;
   }
 
@@ -4694,9 +4788,10 @@ button.result-filter-pill:focus-visible::after {
   }
 
   .movie-copy h1 {
-    font-size: 2.55rem;
+    font-size: clamp(2.5rem, 12vw, 3.25rem);
+    line-height: 1.08;
     max-width: 100%;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
     word-break: normal;
   }
 
@@ -4713,18 +4808,19 @@ button.result-filter-pill:focus-visible::after {
   }
 
   .movie-copy h1.long-title {
-    font-size: 2rem;
+    font-size: 2.5rem;
+    line-height: 1.1;
   }
 
   .movie-copy h1.mobile-edge-title {
-    font-size: clamp(1.42rem, 6.65vw, 1.72rem);
-    line-height: 1.05;
+    font-size: clamp(2.5rem, 10vw, 3rem);
+    line-height: 1.1;
     text-wrap: wrap;
   }
 
   .movie-copy h1.mobile-ultra-title {
-    font-size: clamp(1.28rem, 6vw, 1.55rem);
-    line-height: 1.06;
+    font-size: 2.5rem;
+    line-height: 1.1;
   }
 
   .site-footer {

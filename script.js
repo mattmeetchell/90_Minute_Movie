@@ -436,6 +436,14 @@ function showView(viewName) {
     els.savedListView.classList.toggle('hidden', viewName !== 'savedList');
     els.aboutView.classList.toggle('hidden', viewName !== 'about');
     els.resultView.classList.toggle('hidden', viewName !== 'result');
+
+    if (mobileMediaQuery.matches && previousView === 'landing' && viewName === 'picker') {
+      els.pickerView.classList.add('screen-enter-up');
+      state.transitionTimer = setTimeout(() => {
+        els.pickerView.classList.remove('screen-enter-up');
+        state.transitionTimer = null;
+      }, 460);
+    }
   }
 
   window.scrollTo(0, 0);
@@ -468,7 +476,8 @@ function updateMobileActionOffset() {
 
   const footerTop = els.footer.getBoundingClientRect().top;
   const overlap = Math.max(0, window.innerHeight - footerTop);
-  els.appShell.style.setProperty('--mobile-action-footer-offset', `${Math.ceil(overlap)}px`);
+  const resultFooterGap = state.activeView === 'result' && overlap > 0 ? 28 : 0;
+  els.appShell.style.setProperty('--mobile-action-footer-offset', `${Math.ceil(overlap + resultFooterGap)}px`);
   els.appShell.dataset.mobileActionsLocked = overlap > 0 ? 'true' : 'false';
 }
 
@@ -1668,7 +1677,7 @@ function toggleFooterBounce() {
 
 function clearScreenTransitionClasses() {
   [els.pickerView, els.ratingView, els.decadeView, els.monkeFilterView].forEach((view) => {
-    view.classList.remove('screen-enter-right', 'screen-enter-left', 'screen-exit-left', 'screen-exit-right');
+    view.classList.remove('screen-enter-right', 'screen-enter-left', 'screen-enter-up', 'screen-exit-left', 'screen-exit-right');
   });
 }
 
@@ -1957,7 +1966,7 @@ function renderDecadePills() {
     els.decadesTray.appendChild(createAnyEraButton({ label: 'All eras', useIcon: true }));
   }
 
-  const decades = mobileMediaQuery.matches ? DECADES : DESKTOP_DECADE_ORDER;
+  const decades = mobileMediaQuery.matches ? [...DECADES].reverse() : DESKTOP_DECADE_ORDER;
   decades.forEach((decade) => {
     const active = state.selectedDecades.includes(decade.label);
     const button = document.createElement('button');
@@ -1982,7 +1991,7 @@ function renderDecadePills() {
   });
 
   if (mobileMediaQuery.matches) {
-    els.decadesTray.appendChild(createAnyEraButton({ label: 'Any era ∞', useIcon: false }));
+    els.decadesTray.appendChild(createAnyEraButton({ label: 'Any era', useIcon: false }));
   }
 }
 
@@ -2130,17 +2139,26 @@ function renderMonkeFormatPills() {
 
 function updateGenreStage() {
   els.appShell.dataset.genreCount = String(Math.min(state.selectedGenreIds.length, 2));
+  updateFilterBackdrop();
   updateGenreBackClearButtons();
 }
 
 function updateRatingStage() {
   const ratingCount = state.anyRatingSelected ? 1 : Math.min(state.selectedRatings.length, 2);
   els.appShell.dataset.ratingCount = String(ratingCount);
+  updateFilterBackdrop();
 }
 
 function updateDecadeStage() {
   const decadeCount = state.anyEraSelected ? 1 : Math.min(state.selectedDecades.length, 2);
   els.appShell.dataset.decadeCount = String(decadeCount);
+  updateFilterBackdrop();
+}
+
+function updateFilterBackdrop() {
+  const selectedCount = state.selectedGenreIds.length + state.selectedRatings.length + state.selectedDecades.length +
+    (state.anyRatingSelected ? 1 : 0) + (state.anyEraSelected ? 1 : 0);
+  els.appShell.dataset.filterStrength = String(Math.min(selectedCount, 2));
 }
 
 function updateGenreBackClearButtons() {
@@ -2810,11 +2828,11 @@ function updatePhysicalModeCopy() {
   } else if (state.physicalMode) {
     els.heroEyebrow.textContent = 'Got 90ish min? Own a blu-ray player?';
     els.heroSupport.textContent = "Choose your favorite genre, choose your era, and let's pick a comfy 90ish minute movie for you. It's up to you to go find it at your local physical media store....or you can support a blood thirsty corporate giant, I'm not your dad.";
-    els.startPicking.textContent = 'Lets Go';
+    els.startPicking.textContent = "Let's Go";
   } else {
     els.heroEyebrow.textContent = 'Got 90ish min?';
     els.heroSupport.innerHTML = "Choose your favorite genre, choose your era, and let's pick a comfy 90ish minute movie for&nbsp;you.";
-    els.startPicking.textContent = 'Lets Go';
+    els.startPicking.textContent = "Let's Go";
   }
 }
 
@@ -2962,7 +2980,7 @@ function animateResultReveal({ animateCopy = false, cyclePoster = false, persona
   if (!personalReveal) {
     els.posterButton.classList.remove('personal-poster-reveal', 'personal-stroke-visible');
   }
-  els.movieCopy.classList.remove('result-copy-enter');
+  if (!cyclePoster) els.movieCopy.classList.remove('result-copy-enter');
   els.movieCopy.classList.remove('result-lockup-enter');
   els.movieCopy.classList.remove('result-lockup-cycle');
   void els.posterButton.offsetWidth;
