@@ -151,7 +151,7 @@ const GENRE_ICONS = {
   Family: 'assets/genre-icons/Family.svg',
   Fantasy: 'assets/genre-icons/Fantasy.svg',
   Horror: 'assets/genre-icons/Horror.svg',
-  Music: 'assets/genre-icons/Music.svg',
+  Music: 'assets/genre-icons/Music.svg?v=20260723-fixed-01',
   Mystery: 'assets/genre-icons/Mystery.svg',
   Romance: 'assets/genre-icons/Romance.svg',
   'Science Fiction': 'assets/genre-icons/Science%20Fiction.svg',
@@ -506,6 +506,7 @@ function showView(viewName) {
     requestAnimationFrame(resizeSavedListNameInputs);
   }
   if (viewName === 'about') revealAboutSections();
+  updateFilterBackdrop();
   scheduleMobileActionOffsetUpdate();
 }
 
@@ -2104,12 +2105,10 @@ function renderDecadePills() {
   const decades = mobileMediaQuery.matches ? [...DECADES].reverse() : DESKTOP_DECADE_ORDER;
   decades.forEach((decade) => {
     const active = state.selectedDecades.includes(decade.label);
-    const disabled = !mobileMediaQuery.matches && !active && state.selectedDecades.length >= 2;
     const button = document.createElement('button');
     const useIcon = !mobileMediaQuery.matches && YEAR_ICONS[decade.label];
-    button.className = `decade-pill ${useIcon ? 'decade-card has-art' : ''} ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`.trim();
+    button.className = `decade-pill ${useIcon ? 'decade-card has-art' : ''} ${active ? 'active' : ''}`.trim();
     button.type = 'button';
-    button.disabled = disabled;
     button.setAttribute('aria-pressed', String(active));
     button.addEventListener('click', () => toggleDecade(decade.label));
     if (useIcon) {
@@ -2293,8 +2292,25 @@ function updateDecadeStage() {
 }
 
 function updateFilterBackdrop() {
-  const selectedCount = state.selectedGenreIds.length + state.selectedRatings.length + state.selectedDecades.length +
-    (state.anyRatingSelected ? 1 : 0) + (state.anyEraSelected ? 1 : 0);
+  let selectedCount = 0;
+
+  switch (state.activeView) {
+    case 'picker':
+      selectedCount = state.selectedGenreIds.length;
+      break;
+    case 'rating':
+      selectedCount = state.selectedRatings.length + (state.anyRatingSelected ? 1 : 0);
+      break;
+    case 'decade':
+      selectedCount = state.selectedDecades.length + (state.anyEraSelected ? 1 : 0);
+      break;
+    case 'monkeFilter':
+      selectedCount = state.monkeFormats.length;
+      break;
+    default:
+      selectedCount = 0;
+  }
+
   els.appShell.dataset.filterStrength = String(Math.min(selectedCount, 2));
 }
 
@@ -2357,7 +2373,7 @@ function toggleDecade(label) {
   state.anyEraSelected = false;
   if (state.selectedDecades.includes(label)) {
     state.selectedDecades = state.selectedDecades.filter((decade) => decade !== label);
-  } else if (mobileMediaQuery.matches || state.selectedDecades.length < 2) {
+  } else {
     state.selectedDecades = [...state.selectedDecades, label];
   }
 
@@ -2918,11 +2934,48 @@ async function findValidMovieBundle(candidates) {
 
     const hasStreamers = hasStreamingProviders(providers.results?.US || providers.results?.GB || null);
     if (state.physicalMode ? !hasStreamers : hasStreamers) {
+      if (!await isEligibleFranchiseEntry(details)) continue;
       return bundle;
     }
   }
 
   return null;
+}
+
+async function isEligibleFranchiseEntry(details) {
+  const collectionId = details.belongs_to_collection?.id;
+  if (!collectionId) return !looksLikeNumberedSequel(details.title);
+
+  try {
+    const collection = await tmdbFetch(`/collection/${collectionId}`, { language: 'en-US' });
+    const candidateRelease = getMovieReleaseTimestamp(details);
+    if (!candidateRelease) return !looksLikeNumberedSequel(details.title);
+
+    const hasEarlierInstallment = (collection.parts || []).some((part) => {
+      if (String(part.id) === String(details.id)) return false;
+      const partRelease = getMovieReleaseTimestamp(part);
+      return partRelease && partRelease < candidateRelease;
+    });
+
+    return !hasEarlierInstallment;
+  } catch (error) {
+    console.warn(`Could not verify collection order for "${details.title}".`, error);
+    return !looksLikeNumberedSequel(details.title);
+  }
+}
+
+function getMovieReleaseTimestamp(movie) {
+  if (!movie?.release_date) return 0;
+  const timestamp = Date.parse(`${movie.release_date}T00:00:00Z`);
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
+function looksLikeNumberedSequel(title = '') {
+  const normalizedTitle = title.normalize().trim();
+  return (
+    /\b(?:part|chapter|volume|vol\.?)\s*(?:[2-9]|\d{2,}|ii|iii|iv|v|vi|vii|viii|ix|x)\b/i.test(normalizedTitle) ||
+    /(?:\s|:)(?:[2-9]|ii|iii|iv|v|vi|vii|viii|ix|x)$/i.test(normalizedTitle)
+  );
 }
 
 function isValidRuntime(runtime) {
