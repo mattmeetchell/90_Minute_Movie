@@ -4256,7 +4256,7 @@ button.result-filter-pill:focus-visible::after {
 
   .hero-copy {
     left: 22px;
-    top: 112px;
+    top: 56px;
     width: min(290px, calc(100vw - 44px));
   }
 
@@ -4595,6 +4595,7 @@ button.result-filter-pill:focus-visible::after {
   #ratingView,
   #decadeView {
     min-height: calc(100dvh - 88px);
+    padding-top: 34px;
   }
 
   .saved-list-view {
