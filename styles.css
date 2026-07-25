@@ -3375,7 +3375,7 @@ img {
   margin: 0;
 }
 
-.meta-line span:not(:empty) + span:not(:empty)::before {
+.meta-line > span:not(:empty) + span:not(:empty)::before {
   content: "•";
   margin: 0 8px;
 }
@@ -3529,6 +3529,146 @@ button.result-filter-pill:focus-visible::after {
 .cast-member:focus-visible .cast-headshot {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+@media (min-width: 761px) {
+  .meta-line {
+    overflow: visible;
+    position: relative;
+    z-index: 30;
+  }
+
+  .cast-line {
+    position: relative;
+    z-index: 20;
+  }
+
+  .cast-line:has(.cast-member:hover),
+  .cast-line:focus-within {
+    z-index: 40;
+  }
+
+  .director-member {
+    color: rgba(255, 255, 255, 0.78);
+    cursor: default;
+    display: inline-flex;
+    position: relative;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.28);
+    text-underline-offset: 3px;
+    z-index: 20;
+  }
+
+  .director-member::after {
+    content: "";
+    height: 10px;
+    left: -8px;
+    position: absolute;
+    right: -8px;
+    top: 100%;
+  }
+
+  .director-known-for {
+    background: #050505;
+    border: 1px solid rgba(255, 255, 255, 0.58);
+    border-radius: 14px;
+    bottom: auto;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+    display: block;
+    opacity: 0;
+    padding: 14px;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    transform: translateY(8px);
+    transition: opacity 160ms ease, transform 160ms ease;
+    width: min(360px, 44vw);
+    z-index: 8;
+  }
+
+  .director-known-for::before {
+    content: "";
+    height: 10px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: -10px;
+  }
+
+  .director-known-for-label {
+    color: rgba(255, 255, 255, 0.72);
+    display: block;
+    font-size: 0.58rem;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    line-height: 1;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .director-known-for-movies {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .director-known-for-movie {
+    background: transparent;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    display: block;
+    min-width: 0;
+    padding: 0;
+    text-align: left;
+  }
+
+  .director-known-for-poster {
+    aspect-ratio: 2 / 3;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    display: block;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .director-known-for-poster img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .director-known-for-title {
+    color: rgba(255, 255, 255, 0.82);
+    display: -webkit-box;
+    font-size: 0.58rem;
+    font-weight: 650;
+    line-height: 1.25;
+    margin-top: 7px;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .director-member:hover .director-known-for,
+  .director-member:focus-within .director-known-for,
+  .director-known-for:hover,
+  .director-known-for:focus-within {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .director-known-for-movie:hover .director-known-for-poster,
+  .director-known-for-movie:focus-visible .director-known-for-poster {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+  }
+
+  .director-known-for-poster {
+    transition: box-shadow 140ms ease, transform 140ms ease;
+  }
 }
 
 .watch-block {
@@ -4058,7 +4198,7 @@ button.result-filter-pill:focus-visible::after {
 
 @media (max-width: 760px) {
   :root {
-    --mobile-result-poster-old-width: min(225px, calc((100vw - 44px) * 0.804));
+    --mobile-result-poster-old-width: min(280px, calc(100vw - 64px));
     --mobile-result-poster-width: min(180px, calc((100vw - 44px) * 0.643));
   }
 
@@ -4410,6 +4550,13 @@ button.result-filter-pill:focus-visible::after {
   .poster-track .blank-card:nth-child(11n + 7) {
     height: 74px;
     width: 50px;
+  }
+
+  .float-card:is(button, [role="button"]):hover,
+  .float-card:is(button, [role="button"]):focus-visible,
+  .float-card:is(button, [role="button"]):hover img,
+  .float-card:is(button, [role="button"]):focus-visible img {
+    transform: none;
   }
 
   .section-heading h1,

@@ -1,8 +1,10 @@
 const TMDB_PROXY_URL = '/api/tmdb';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w780';
 const PROFILE_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w185';
+const POSTER_THUMBNAIL_BASE_URL = 'https://image.tmdb.org/t/p/w185';
 const PROVIDER_LOGO_BASE = 'https://image.tmdb.org/t/p/original';
 const PHYSICAL_MEDIA_LOGO = 'assets/media/Blu-ray.svg';
+const MIN_RUNTIME_MINUTES = 60;
 const MAX_RUNTIME_MINUTES = 105;
 const SECRET_PASSWORD = 'Monke';
 const SECRET_SHEET_ID = '16xflKfxJMpwWbKOXNPsQA7RjO8ta4K6EO9AOzdp7UXU';
@@ -12,6 +14,8 @@ const SAVED_MOVIES_STORAGE_KEY = 'ninetyishSavedMovies';
 const SAVED_LIST_ID_STORAGE_KEY = 'ninetyishSavedListId';
 const SAVED_LIST_NAME_STORAGE_KEY = 'ninetyishSavedListName';
 const SAVED_LIST_NAME_MAX_LENGTH = 14;
+const MONKE_RECENT_STORAGE_KEY = 'ninetyishMonkeRecent';
+const MONKE_RECENT_LIMIT = 6;
 const LISTS_API_URL = '/api/lists';
 const SAVED_LIST_DATA_PARAM = 'listData';
 const NAV_OPEN_ICON = 'assets/nav/hamburger-open.svg';
@@ -214,6 +218,8 @@ const state = {
   activeView: 'landing',
   resultSource: 'filtered',
   currentResultMovie: null,
+  currentResultBundle: null,
+  directorResultHistory: [],
   savedMovies: [],
   savedListId: '',
   savedListName: 'My List',
@@ -243,6 +249,8 @@ const state = {
   physicalMode: false,
   mode: 'streamer',
   monkeFormats: [],
+  monkeShuffleBags: new Map(),
+  monkeRecentIds: null,
   tryAgainLabelBag: [],
   lastTryAgainLabel: '',
   tryAgainExitTimer: null,
@@ -255,7 +263,8 @@ const state = {
   footerDvdColorIndex: 0,
   resultHeaderCanReveal: false,
   resultActionsPreserved: false,
-  resultActionsRevealTimer: null
+  resultActionsRevealTimer: null,
+  directorCreditsToken: 0
 };
 
 let currentPosterSamples = [];
@@ -400,6 +409,9 @@ async function tmdbFetch(path, params = {}) {
 function showView(viewName) {
   closeTrailer();
   const previousView = state.activeView;
+  if (viewName !== 'result') {
+    state.directorResultHistory = [];
+  }
   const preserveHiddenResultHeader =
     mobileMediaQuery.matches &&
     viewName === 'result' &&
@@ -1669,9 +1681,37 @@ function clearMobilePosterReturn() {
   els.posterButton.style.removeProperty('max-width');
 }
 
+function hideMobileResultActionsForReturn() {
+  if (!mobileMediaQuery.matches) return;
+
+  if (state.resultActionsRevealTimer) {
+    window.clearTimeout(state.resultActionsRevealTimer);
+    state.resultActionsRevealTimer = null;
+  }
+
+  els.appShell.dataset.resultActionsReady = 'false';
+}
+
 async function returnFromFloatingResult() {
   if (els.movieResult.classList.contains('sample-result-exit') ||
       els.posterButton.classList.contains('mobile-result-return-grow')) return;
+
+  if (state.directorResultHistory.length) {
+    const previousResult = state.directorResultHistory.pop();
+    animatePosterExit();
+    await wait(320);
+    setResultSource(previousResult.resultSource);
+    renderMovie(
+      previousResult.details,
+      previousResult.credits,
+      previousResult.videos,
+      previousResult.providerData,
+      previousResult.releaseDates
+    );
+    animateResultReveal({ cyclePoster: true });
+    state.hasShownResult = true;
+    return;
+  }
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     state.hasShownResult = false;
@@ -1679,6 +1719,7 @@ async function returnFromFloatingResult() {
     return;
   }
 
+  hideMobileResultActionsForReturn();
   await prepareMobilePosterReturn();
   els.movieResult.classList.add('sample-result-exit');
   await wait(RESULT_RETURN_EXIT_MS);
@@ -1698,6 +1739,7 @@ async function returnFromSavedResult() {
     return;
   }
 
+  hideMobileResultActionsForReturn();
   await prepareMobilePosterReturn();
   els.movieResult.classList.add('sample-result-exit');
   await wait(RESULT_RETURN_EXIT_MS);
@@ -2075,7 +2117,7 @@ async function getRuntimeValidPosterSamples(movies, limit = 5) {
   const settled = await Promise.allSettled(
     candidates.map(async (movie) => {
       const details = await tmdbFetch(`/movie/${movie.id}`, { language: 'en-US' });
-      return isValidRuntime(details.runtime) ? { ...movie, runtime: details.runtime } : null;
+      return isValidPickerRuntime(details.runtime) ? { ...movie, runtime: details.runtime } : null;
     })
   );
 
@@ -2484,6 +2526,7 @@ function buildDiscoverParams(page = 1, decadeLabel = null) {
     page,
     sort_by: 'popularity.desc',
     'vote_count.gte': 60,
+    'with_runtime.gte': MIN_RUNTIME_MINUTES,
     'with_runtime.lte': MAX_RUNTIME_MINUTES
   };
 
@@ -2615,15 +2658,21 @@ async function getRandomCandidateMovies(firstPage, decade) {
   return shuffle(candidates);
 }
 
-async function showFloatingMovie(movieId) {
+async function showFloatingMovie(movieId, options = {}) {
+  const previousResult = options.returnToCurrent ? state.currentResultBundle : null;
   setLoading(true);
 
   try {
     const [details, credits, videos, providers, releaseDates] = await fetchMovieBundle(movieId);
-    if (!isValidRuntime(details.runtime)) {
-      throw new Error('That sample is longer than 1h 45m, so it is not available in this picker.');
+    if (!options.allowAnyRuntime && !isValidPickerRuntime(details.runtime)) {
+      throw new Error('That sample is outside the 1h–1h 45m range, so it is not available in this picker.');
     }
     await preloadPoster(details.poster_path);
+    if (previousResult) {
+      state.directorResultHistory.push(previousResult);
+    } else {
+      state.directorResultHistory = [];
+    }
     setResultSource('sample');
     renderMovie(details, credits, videos, providers, releaseDates);
     showView('result');
@@ -2671,10 +2720,11 @@ async function pickSecretMovie(options = {}) {
       throw new Error('The personal list is empty, or I could not read any usable movie rows from it.');
     }
 
-    const row = chooseRandomMovieWithoutImmediateRepeat(rows, getSecretMovieRowId);
+    const row = drawRandomSecretMovie(rows);
     const [details, credits, videos, providers, releaseDates] = await fetchSecretMovieBundle(row);
     details.ownedPhysical = Boolean(row.ownedPhysical);
     details.physicalNote = row.physicalNote || '';
+    rememberSecretMovie(row);
 
     await preloadPoster(details.poster_path);
     if (shouldAnticipate) {
@@ -2701,7 +2751,92 @@ async function pickSecretMovie(options = {}) {
 }
 
 function getSecretMovieRowId(row) {
-  return row?.tmdbId || '';
+  return String(
+    row?.tmdbId ||
+    row?.imdbId ||
+    `${row?.title || ''}:${row?.year || ''}`
+  ).normalize().trim().toLowerCase();
+}
+
+function drawRandomSecretMovie(rows) {
+  const rowsById = new Map();
+  rows.forEach((row) => {
+    const id = getSecretMovieRowId(row);
+    if (id && !rowsById.has(id)) rowsById.set(id, row);
+  });
+
+  const ids = [...rowsById.keys()];
+  if (!ids.length) return rows[0];
+
+  const poolKey = [...ids].sort().join('|');
+  const currentMovieId = getCurrentResultMovieId();
+  let bag = state.monkeShuffleBags.get(poolKey) || [];
+  bag = bag.filter((id) => rowsById.has(id) && id !== currentMovieId);
+
+  if (!bag.length) {
+    const recentIds = new Set(getRecentSecretMovieIds());
+    const availableIds = ids.filter((id) => id !== currentMovieId);
+    const refillIds = availableIds.length ? availableIds : ids;
+    const freshIds = refillIds.filter((id) => !recentIds.has(id));
+    const deferredIds = refillIds.filter((id) => recentIds.has(id));
+    bag = [
+      ...shuffleWithBrowserEntropy(freshIds),
+      ...shuffleWithBrowserEntropy(deferredIds)
+    ];
+  }
+
+  const nextId = bag.shift();
+  state.monkeShuffleBags.set(poolKey, bag);
+  return rowsById.get(nextId) || rows[0];
+}
+
+function shuffleWithBrowserEntropy(items) {
+  const shuffled = [...items];
+  const randomValues = new Uint32Array(Math.max(shuffled.length - 1, 0));
+  const hasBrowserEntropy = Boolean(randomValues.length && window.crypto?.getRandomValues);
+  if (hasBrowserEntropy) {
+    window.crypto.getRandomValues(randomValues);
+  }
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomValue = hasBrowserEntropy
+      ? randomValues[index - 1]
+      : Math.floor(Math.random() * 0x100000000);
+    const swapIndex = randomValue % (index + 1);
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+
+  return shuffled;
+}
+
+function getRecentSecretMovieIds() {
+  if (Array.isArray(state.monkeRecentIds)) return state.monkeRecentIds;
+
+  try {
+    const storedIds = JSON.parse(window.localStorage.getItem(MONKE_RECENT_STORAGE_KEY) || '[]');
+    state.monkeRecentIds = Array.isArray(storedIds)
+      ? storedIds.map((id) => String(id)).filter(Boolean).slice(0, MONKE_RECENT_LIMIT)
+      : [];
+  } catch (error) {
+    state.monkeRecentIds = [];
+  }
+
+  return state.monkeRecentIds;
+}
+
+function rememberSecretMovie(row) {
+  const id = getSecretMovieRowId(row);
+  if (!id) return;
+
+  const recentIds = getRecentSecretMovieIds();
+  state.monkeRecentIds = [id, ...recentIds.filter((recentId) => recentId !== id)]
+    .slice(0, MONKE_RECENT_LIMIT);
+
+  try {
+    window.localStorage.setItem(MONKE_RECENT_STORAGE_KEY, JSON.stringify(state.monkeRecentIds));
+  } catch (error) {
+    // The in-memory shuffled deck still prevents repeats when storage is unavailable.
+  }
 }
 
 function getFilteredSecretMovies(rows) {
@@ -2930,7 +3065,7 @@ async function findValidMovieBundle(candidates) {
     const bundle = await fetchMovieBundle(movie.id);
     const [details, , , providers] = bundle;
 
-    if (!isValidRuntime(details.runtime)) continue;
+    if (!isValidPickerRuntime(details.runtime)) continue;
 
     const hasStreamers = hasStreamingProviders(providers.results?.US || providers.results?.GB || null);
     if (state.physicalMode ? !hasStreamers : hasStreamers) {
@@ -2982,8 +3117,12 @@ function isValidRuntime(runtime) {
   return runtime && runtime <= MAX_RUNTIME_MINUTES;
 }
 
+function isValidPickerRuntime(runtime) {
+  return runtime && runtime >= MIN_RUNTIME_MINUTES && runtime <= MAX_RUNTIME_MINUTES;
+}
+
 function isValidSampleMovie(details, providers) {
-  if (!isValidRuntime(details.runtime)) return false;
+  if (!isValidPickerRuntime(details.runtime)) return false;
 
   const hasStreamers = hasStreamingProviders(providers.results?.US || providers.results?.GB || null);
   return state.physicalMode ? !hasStreamers : hasStreamers;
@@ -3244,13 +3383,21 @@ function updateResultLayoutGuards() {
 }
 
 function renderMovie(details, credits, videos, providerData, releaseDates) {
-  const director = credits.crew.find((person) => person.job === 'Director')?.name || '-';
+  const director = credits.crew.find((person) => person.job === 'Director') || null;
   const cast = credits.cast.slice(0, 5);
   const trailer = videos.results.find(
     (video) => video.site === 'YouTube' && video.type === 'Trailer'
   );
   const certification = getCertification(releaseDates);
   state.currentResultMovie = details;
+  state.currentResultBundle = {
+    details,
+    credits,
+    videos,
+    providerData,
+    releaseDates,
+    resultSource: state.resultSource
+  };
 
   els.poster.src = details.poster_path ? `${IMAGE_BASE_URL}${details.poster_path}` : '';
   els.poster.alt = `${details.title} poster`;
@@ -3263,7 +3410,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
   els.runtime.textContent = formatRuntime(details.runtime);
   els.rating.textContent = certification;
   els.rating.classList.toggle('hidden', !certification);
-  els.director.textContent = director;
+  renderDirector(director, details.id);
   els.overview.textContent = details.overview || '';
   els.movieCopy.classList.remove('compact-overview');
   els.overview.classList.remove('expanded');
@@ -3404,6 +3551,101 @@ function renderCast(cast) {
 
     els.cast.appendChild(member);
   });
+}
+
+async function renderDirector(director, currentMovieId) {
+  const requestToken = ++state.directorCreditsToken;
+  els.director.replaceChildren();
+  els.director.classList.remove('director-member', 'director-member-ready');
+  els.director.removeAttribute('tabindex');
+  els.director.removeAttribute('aria-label');
+  els.director.textContent = director?.name || '-';
+
+  if (!director?.id || mobileMediaQuery.matches) return;
+
+  try {
+    const credits = await tmdbFetch(`/person/${director.id}/movie_credits`, { language: 'en-US' });
+    if (requestToken !== state.directorCreditsToken) return;
+
+    const knownFor = getDirectorKnownForMovies(credits.crew, currentMovieId);
+    if (!knownFor.length) return;
+
+    const popover = document.createElement('span');
+    popover.className = 'director-known-for';
+    popover.setAttribute('role', 'group');
+    popover.setAttribute('aria-label', 'Also known for');
+
+    const label = document.createElement('span');
+    label.className = 'director-known-for-label';
+    label.textContent = 'Also known for';
+
+    const movies = document.createElement('span');
+    movies.className = 'director-known-for-movies';
+
+    knownFor.forEach((movie) => {
+      const item = document.createElement('button');
+      item.className = 'director-known-for-movie';
+      item.type = 'button';
+      item.setAttribute('aria-label', `Show ${movie.title}`);
+      item.addEventListener('click', (event) => {
+        event.stopPropagation();
+        showFloatingMovie(movie.id, {
+          allowAnyRuntime: true,
+          returnToCurrent: true
+        });
+      });
+
+      const poster = document.createElement('span');
+      poster.className = 'director-known-for-poster';
+      if (movie.poster_path) {
+        const image = document.createElement('img');
+        image.src = `${POSTER_THUMBNAIL_BASE_URL}${movie.poster_path}`;
+        image.alt = '';
+        image.decoding = 'async';
+        image.loading = 'lazy';
+        poster.appendChild(image);
+      }
+
+      const title = document.createElement('span');
+      title.className = 'director-known-for-title';
+      title.textContent = movie.title;
+
+      item.append(poster, title);
+      movies.appendChild(item);
+    });
+
+    popover.append(label, movies);
+    els.director.appendChild(popover);
+    els.director.classList.add('director-member', 'director-member-ready');
+  } catch (error) {
+    console.warn(`Could not load directing credits for "${director.name}".`, error);
+  }
+}
+
+function getDirectorKnownForMovies(credits, currentMovieId) {
+  const seen = new Set();
+  const currentTimestamp = Date.now();
+
+  return (credits || [])
+    .filter((movie) => {
+      if (movie.job !== 'Director' || String(movie.id) === String(currentMovieId) || seen.has(movie.id)) {
+        return false;
+      }
+
+      const releaseTimestamp = movie.release_date
+        ? Date.parse(`${movie.release_date}T00:00:00Z`)
+        : 0;
+      if (releaseTimestamp > currentTimestamp) return false;
+
+      seen.add(movie.id);
+      return Boolean(movie.title);
+    })
+    .sort((movieA, movieB) => {
+      const voteDifference = (movieB.vote_count || 0) - (movieA.vote_count || 0);
+      if (voteDifference) return voteDifference;
+      return (movieB.popularity || 0) - (movieA.popularity || 0);
+    })
+    .slice(0, 3);
 }
 
 function getCertification(releaseDates) {
