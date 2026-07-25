@@ -1498,21 +1498,29 @@ img {
 
 @media (hover: hover) and (pointer: fine) and (min-width: 761px) {
   .genre-card:not(.disabled):not(.settling):hover .genre-icon,
-  .genre-card:not(.disabled):not(.settling):focus-visible .genre-icon {
+  .genre-card:not(.disabled):not(.settling):focus-visible .genre-icon,
+  .monke-format-card:not(.settling):hover .monke-format-icon,
+  .monke-format-card:not(.settling):focus-visible .monke-format-icon {
     transform: scale(1.2);
     transition-duration: 140ms;
   }
 
   .genre-card.settling-on .genre-icon,
   .genre-card.settling-on:hover .genre-icon,
-  .genre-card.settling-on:focus-visible .genre-icon {
+  .genre-card.settling-on:focus-visible .genre-icon,
+  .monke-format-card.settling-on .monke-format-icon,
+  .monke-format-card.settling-on:hover .monke-format-icon,
+  .monke-format-card.settling-on:focus-visible .monke-format-icon {
     animation: genreIconSettle 260ms cubic-bezier(0.2, 0.9, 0.28, 1) both;
     transform: scale(1);
   }
 
   .genre-card.settling-off .genre-icon,
   .genre-card.settling-off:hover .genre-icon,
-  .genre-card.settling-off:focus-visible .genre-icon {
+  .genre-card.settling-off:focus-visible .genre-icon,
+  .monke-format-card.settling-off .monke-format-icon,
+  .monke-format-card.settling-off:hover .monke-format-icon,
+  .monke-format-card.settling-off:focus-visible .monke-format-icon {
     animation: genreIconSettleReverse 260ms cubic-bezier(0.2, 0.9, 0.28, 1) both;
     transform: scale(1);
   }
@@ -1520,6 +1528,16 @@ img {
   .genre-card.disabled .genre-icon {
     transform: scale(1);
     transition-duration: 80ms;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .monke-format-card.settling-on .monke-format-icon {
+    animation: monkeFormatTouchSettle 260ms cubic-bezier(0.2, 0.9, 0.28, 1) both;
+  }
+
+  .monke-format-card.settling-off .monke-format-icon {
+    animation: monkeFormatTouchSettleReverse 260ms cubic-bezier(0.2, 0.9, 0.28, 1) both;
   }
 }
 
@@ -1543,6 +1561,34 @@ img {
   }
 
   58% {
+    transform: scale(1.06);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes monkeFormatTouchSettle {
+  0% {
+    transform: scale(1);
+  }
+
+  48% {
+    transform: scale(0.94);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes monkeFormatTouchSettleReverse {
+  0% {
+    transform: scale(1);
+  }
+
+  48% {
     transform: scale(1.06);
   }
 

@@ -35,13 +35,19 @@ module.exports = async function handler(request, response) {
   try {
     const tmdbResponse = await fetch(tmdbUrl, { headers });
     const body = await tmdbResponse.text();
+    const cacheControl = tmdbResponse.ok
+      ? 's-maxage=3600, stale-while-revalidate=86400'
+      : 'no-store';
 
     response
       .status(tmdbResponse.status)
-      .setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400')
+      .setHeader('Cache-Control', cacheControl)
       .setHeader('Content-Type', tmdbResponse.headers.get('content-type') || 'application/json')
       .send(body);
   } catch (error) {
-    response.status(502).json({ error: 'TMDb request failed.' });
+    response
+      .status(502)
+      .setHeader('Cache-Control', 'no-store')
+      .json({ error: 'TMDb request failed.' });
   }
 };

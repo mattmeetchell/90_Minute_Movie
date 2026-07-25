@@ -38,6 +38,7 @@ const ABOUT_LONG_MOVIES = [
   { id: 895, title: 'Andrei Rublev' }
 ];
 const tmdbResponseCache = new Map();
+const tmdbInFlightCache = new Map();
 const aboutPosterCache = new Map();
 
 const EXCLUDED_GENRES = new Set(['History', 'TV Movie', 'War', 'Western']);
@@ -257,6 +258,9 @@ const state = {
   genreSettleId: null,
   genreSettleDirection: '',
   genreHoverLockId: null,
+  monkeFormatSettleId: null,
+  monkeFormatSettleDirection: '',
+  monkeFormatHoverLockId: null,
   footerBounceFrame: null,
   footerBounceLastTime: null,
   footerBounce: null,
@@ -397,13 +401,54 @@ async function tmdbFetch(path, params = {}) {
     return tmdbResponseCache.get(cacheKey);
   }
 
-  const response = await fetch(cacheKey, { headers: { accept: 'application/json' } });
-  if (!response.ok) {
-    throw new Error(`TMDb request failed: ${response.status}`);
+  if (tmdbInFlightCache.has(cacheKey)) {
+    return tmdbInFlightCache.get(cacheKey);
   }
-  const data = await response.json();
-  tmdbResponseCache.set(cacheKey, data);
-  return data;
+
+  const request = fetchTmdbWithRetry(cacheKey)
+    .then((data) => {
+      tmdbResponseCache.set(cacheKey, data);
+      return data;
+    })
+    .finally(() => {
+      tmdbInFlightCache.delete(cacheKey);
+    });
+
+  tmdbInFlightCache.set(cacheKey, request);
+  return request;
+}
+
+async function fetchTmdbWithRetry(url, maxAttempts = 3) {
+  let lastError = null;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    try {
+      const response = await fetch(url, { headers: { accept: 'application/json' } });
+      if (response.ok) {
+        return response.json();
+      }
+
+      const error = new Error(`TMDb request failed: ${response.status}`);
+      error.status = response.status;
+      lastError = error;
+
+      const shouldRetry = [429, 500, 502, 503, 504].includes(response.status);
+      if (!shouldRetry || attempt === maxAttempts - 1) throw error;
+
+      const retryAfter = Number.parseFloat(response.headers.get('retry-after') || '');
+      const retryDelay = Number.isFinite(retryAfter)
+        ? retryAfter * 1000
+        : (280 * (2 ** attempt)) + Math.floor(Math.random() * 180);
+      await wait(retryDelay);
+    } catch (error) {
+      lastError = error;
+      const isNetworkError = !Number.isInteger(error?.status);
+      if (!isNetworkError || attempt === maxAttempts - 1) throw error;
+      await wait((280 * (2 ** attempt)) + Math.floor(Math.random() * 180));
+    }
+  }
+
+  throw lastError || new Error('TMDb request failed.');
 }
 
 function showView(viewName) {
@@ -1882,7 +1927,7 @@ async function loadFloatingPosters() {
 
   try {
     if (state.mode === 'monke') {
-      const posters = await getPersonalPosterSamples(10);
+      const posters = await getPersonalPosterSamples(10, loadToken);
       if (loadToken !== floatingPosterLoadToken) return;
       renderFloatingPosterTracks(posters, { animateIn: true });
       return;
@@ -1914,30 +1959,34 @@ async function loadFloatingPosters() {
   }
 }
 
-async function getPersonalPosterSamples(limit = 10) {
+async function getPersonalPosterSamples(limit = 10, loadToken = floatingPosterLoadToken) {
   const rows = shuffle(getFilteredSecretMovies(await loadSecretMovies()));
-  const settled = await Promise.allSettled(
-    rows.slice(0, limit * 2).map(async (row) => {
-      const details = row.tmdbId
-        ? await tmdbFetch(`/movie/${row.tmdbId}`, { language: 'en-US' })
-        : (await fetchSecretMovieBundle(row))[0];
+  const samples = await mapWithConcurrency(
+    rows.slice(0, limit * 2),
+    4,
+    async (row) => {
+      if (loadToken !== floatingPosterLoadToken) return null;
 
-      return details?.id && details.poster_path && isValidRuntime(details.runtime)
-        ? { ...details, ownedPhysical: Boolean(row.ownedPhysical) }
-        : null;
-    })
+      try {
+        const details = row.tmdbId
+          ? await tmdbFetch(`/movie/${row.tmdbId}`, { language: 'en-US' })
+          : (await fetchSecretMovieBundle(row))[0];
+
+        return details?.id && details.poster_path && isValidRuntime(details.runtime)
+          ? { ...details, ownedPhysical: Boolean(row.ownedPhysical) }
+          : null;
+      } catch (error) {
+        console.warn(`Could not load Monke poster sample "${row.title || row.tmdbId || 'unknown'}".`, error);
+        return null;
+      }
+    }
   );
 
-  settled
-    .filter((result) => result.status === 'rejected')
-    .forEach((result) => console.error(result.reason));
-
-  const samples = settled
-    .filter((result) => result.status === 'fulfilled' && result.value)
-    .map((result) => result.value)
+  const validSamples = samples
+    .filter(Boolean)
     .slice(0, limit);
 
-  return samples.length ? samples : getFallbackPosterSamples();
+  return validSamples.length ? validSamples : getFallbackPosterSamples();
 }
 
 function getFloatingPosterDiscoverParams(page) {
@@ -2290,11 +2339,15 @@ function renderMonkeFormatPills() {
 
   MONKE_FORMATS.forEach((format) => {
     const active = state.monkeFormats.includes(format.id);
+    const settling = state.monkeFormatSettleId === format.id;
+    const settleClass = settling ? `settling settling-${state.monkeFormatSettleDirection || 'on'}` : '';
     const button = document.createElement('button');
-    button.className = `monke-format-card ${active ? 'active' : ''}`.trim();
+    button.className = `monke-format-card ${active ? 'active' : ''} ${settleClass}`.trim();
     button.type = 'button';
     button.setAttribute('aria-pressed', String(active));
     button.addEventListener('click', () => toggleMonkeFormat(format.id));
+    button.addEventListener('mouseleave', () => clearMonkeFormatHoverLock(format.id));
+    button.addEventListener('blur', () => clearMonkeFormatHoverLock(format.id));
 
     const icon = document.createElement('span');
     icon.className = 'monke-format-icon';
@@ -2425,7 +2478,12 @@ function toggleDecade(label) {
 }
 
 function toggleMonkeFormat(formatId) {
-  if (state.monkeFormats.includes(formatId)) {
+  const wasActive = state.monkeFormats.includes(formatId);
+  state.monkeFormatSettleId = formatId;
+  state.monkeFormatSettleDirection = wasActive ? 'off' : 'on';
+  state.monkeFormatHoverLockId = formatId;
+
+  if (wasActive) {
     state.monkeFormats = state.monkeFormats.filter((format) => format !== formatId);
   } else {
     state.monkeFormats = [...state.monkeFormats, formatId];
@@ -2433,6 +2491,15 @@ function toggleMonkeFormat(formatId) {
 
   renderMonkeFormatPills();
   loadFloatingPosters();
+}
+
+function clearMonkeFormatHoverLock(formatId) {
+  if (state.monkeFormatHoverLockId !== formatId) return;
+
+  state.monkeFormatSettleId = null;
+  state.monkeFormatSettleDirection = '';
+  state.monkeFormatHoverLockId = null;
+  renderMonkeFormatPills();
 }
 
 function getSelectedRatingLabels() {
@@ -2720,8 +2787,10 @@ async function pickSecretMovie(options = {}) {
       throw new Error('The personal list is empty, or I could not read any usable movie rows from it.');
     }
 
-    const row = drawRandomSecretMovie(rows);
-    const [details, credits, videos, providers, releaseDates] = await fetchSecretMovieBundle(row);
+    const {
+      row,
+      bundle: [details, credits, videos, providers, releaseDates]
+    } = await fetchSecretMovieWithFallback(rows);
     details.ownedPhysical = Boolean(row.ownedPhysical);
     details.physicalNote = row.physicalNote || '';
     rememberSecretMovie(row);
@@ -3033,14 +3102,66 @@ async function fetchSecretMovieBundle(row) {
   return fetchMovieBundle(match.id);
 }
 
-function fetchMovieBundle(movieId) {
-  return Promise.all([
+async function fetchSecretMovieWithFallback(rows) {
+  const maxAttempts = Math.min(rows.length, 3);
+  let lastError = null;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const row = drawRandomSecretMovie(rows);
+    try {
+      return { row, bundle: await fetchSecretMovieBundle(row) };
+    } catch (error) {
+      lastError = error;
+      if (error?.status !== 404) throw error;
+      console.warn(`Skipping unavailable Monke movie "${row.title || row.tmdbId || 'unknown'}".`, error);
+    }
+  }
+
+  throw lastError || new Error('I could not load a movie from the personal list.');
+}
+
+async function fetchMovieBundle(movieId) {
+  const requests = await Promise.allSettled([
     tmdbFetch(`/movie/${movieId}`, { language: 'en-US' }),
     tmdbFetch(`/movie/${movieId}/credits`, { language: 'en-US' }),
     tmdbFetch(`/movie/${movieId}/videos`, { language: 'en-US' }),
     tmdbFetch(`/movie/${movieId}/watch/providers`),
     tmdbFetch(`/movie/${movieId}/release_dates`)
   ]);
+  const [detailsResult, ...optionalRequests] = requests;
+  if (detailsResult.status === 'rejected') throw detailsResult.reason;
+
+  const details = detailsResult.value;
+  const fallbacks = [
+    { crew: [], cast: [] },
+    { results: [] },
+    { results: {} },
+    { results: [] }
+  ];
+  const optionalData = optionalRequests.map((result, index) => {
+    if (result.status === 'fulfilled') return result.value;
+    console.warn(`Optional TMDb movie data request ${index + 1} failed for ${movieId}.`, result.reason);
+    return fallbacks[index];
+  });
+
+  return [details, ...optionalData];
+}
+
+async function mapWithConcurrency(items, concurrency, mapper) {
+  const results = new Array(items.length);
+  let nextIndex = 0;
+
+  async function worker() {
+    while (nextIndex < items.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      results[index] = await mapper(items[index], index);
+    }
+  }
+
+  const workerCount = Math.min(Math.max(concurrency, 1), items.length);
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+  return results;
 }
 
 async function fetchValidMovieBundle(candidates) {
@@ -3964,6 +4085,10 @@ function formatRuntime(runtime) {
 }
 
 function setLoading(isLoading) {
+  if (isLoading) {
+    resetTryAgainHoverLabels();
+  }
+
   els.pickMovie.disabled = isLoading;
   els.headerPickMovie.disabled = isLoading;
   els.pickMonkeMovie.disabled = isLoading;
@@ -3976,6 +4101,16 @@ function setLoading(isLoading) {
   els.headerPickMonkeMovie.textContent = isLoading ? 'Picking...' : 'OK Precious';
   els.tryAgain.textContent = isLoading ? 'Picking...' : 'Try Again';
   if (!isLoading) updateResultSaveButton();
+}
+
+function resetTryAgainHoverLabels() {
+  if (state.tryAgainExitTimer) {
+    window.clearTimeout(state.tryAgainExitTimer);
+    state.tryAgainExitTimer = null;
+  }
+
+  els.tryAgain.classList.remove('try-again-hovering', 'try-again-leaving');
+  delete els.tryAgain.dataset.hoverLabel;
 }
 
 function getRandomTryAgainLabel() {
