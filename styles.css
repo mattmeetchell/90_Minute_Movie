@@ -2711,7 +2711,9 @@ img {
   perspective: 900px;
   padding: 18px;
   position: relative;
-  transition: transform 180ms ease, border-color 180ms ease;
+  scale: 1;
+  translate: 0 0;
+  transition: scale 200ms ease, translate 200ms ease, border-color 180ms ease;
 }
 
 .poster-frame::after {
@@ -2758,7 +2760,21 @@ img {
 
 .poster-frame:not(:disabled):hover {
   border-color: #fff;
-  transform: translateY(-2px);
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 761px) {
+  .poster-frame:not(:disabled):hover,
+  .poster-frame:not(:disabled):focus-visible {
+    scale: 1.0225;
+    translate: 0 -3px;
+  }
+
+  .poster-frame.personal-stroke-reveal:not(:disabled):hover,
+  .poster-frame.personal-stroke-reveal:not(:disabled):focus-visible,
+  .poster-frame.personal-stroke-visible:not(:disabled):hover,
+  .poster-frame.personal-stroke-visible:not(:disabled):focus-visible {
+    border-color: transparent;
+  }
 }
 
 .result-poster-enter,
@@ -3337,6 +3353,20 @@ img {
 .poster-frame:not(:disabled):focus-visible .poster-hint {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 761px) {
+  .poster-hint {
+    pointer-events: auto;
+  }
+
+  .poster-frame:not(:disabled) .poster-hint:hover {
+    background: #fff;
+    border-color: #fff;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.38);
+    color: #050505;
+    transform: translateX(-50%) translateY(-2px) scale(1.04);
+  }
 }
 
 .poster-mobile-actions {
@@ -4397,13 +4427,13 @@ button.result-filter-pill:focus-visible::after {
     overflow: visible;
     right: 0;
     padding: 0 22px;
-    top: 450px;
+    top: 420px;
     transform: none;
     width: auto;
   }
 
   .app-shell[data-physical-mode="true"] .poster-marquee {
-    top: 490px;
+    top: 460px;
   }
 
   .poster-track {
