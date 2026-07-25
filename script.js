@@ -2554,7 +2554,7 @@ function scheduleMobileSettleClear(type, id) {
     if (String(state[idKey] || '') !== String(id)) return;
     state[idKey] = null;
     state[directionKey] = '';
-  }, 420);
+  }, 620);
 }
 
 function clearFilterSelectionMotion() {
