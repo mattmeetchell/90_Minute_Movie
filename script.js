@@ -1918,9 +1918,28 @@ async function loadGenres() {
 
 function preloadGenreIcons() {
   const iconPaths = [...new Set([...Object.values(GENRE_ICONS), ...Object.values(GENRE_FILLED_ICONS)])];
+  return preloadImagePaths(iconPaths);
+}
+
+function preloadSelectorStateIcons() {
+  const iconPaths = [
+    ...RATINGS.flatMap((rating) => [rating.icon, rating.activeIcon]),
+    ...MONKE_FORMATS.flatMap((format) => [format.icon, format.activeIcon])
+  ];
+  return preloadImagePaths([...new Set(iconPaths)]);
+}
+
+function preloadImagePaths(iconPaths) {
   return Promise.all(iconPaths.map((iconPath) => new Promise((resolve) => {
     const image = new Image();
-    image.onload = image.onerror = resolve;
+    image.onload = () => {
+      if (typeof image.decode !== 'function') {
+        resolve();
+        return;
+      }
+      image.decode().catch(() => {}).finally(resolve);
+    };
+    image.onerror = resolve;
     image.src = iconPath;
   })));
 }
@@ -2242,7 +2261,7 @@ function createAnyEraButton({ label, useIcon }) {
     state.anyEraSelected = !state.anyEraSelected;
     renderDecadePills();
     updateDecadeSummary();
-    refreshCount();
+    runAfterFilterTap(refreshCount);
   });
   return anyEraButton;
 }
@@ -2446,7 +2465,7 @@ function toggleGenre(id) {
   renderGenrePills();
   updateGenreStage();
   updateSelectionSummary();
-  refreshCount();
+  runAfterFilterTap(refreshCount);
   scheduleMobileSettleClear('genre', id);
 }
 
@@ -2480,7 +2499,7 @@ function toggleRating(certification) {
 
   renderRatingPills();
   updateRatingSummary();
-  refreshCount();
+  runAfterFilterTap(refreshCount);
   scheduleMobileSettleClear('rating', certification);
 }
 
@@ -2494,7 +2513,7 @@ function toggleDecade(label) {
 
   renderDecadePills();
   updateDecadeSummary();
-  refreshCount();
+  runAfterFilterTap(refreshCount);
 }
 
 function toggleMonkeFormat(formatId) {
@@ -2510,8 +2529,14 @@ function toggleMonkeFormat(formatId) {
   }
 
   renderMonkeFormatPills();
-  loadFloatingPosters();
+  runAfterFilterTap(loadFloatingPosters);
   scheduleMobileSettleClear('monkeFormat', formatId);
+}
+
+function runAfterFilterTap(callback) {
+  requestAnimationFrame(() => {
+    window.setTimeout(callback, 0);
+  });
 }
 
 function clearRatingSettle(certification) {
@@ -4668,6 +4693,7 @@ async function init() {
   els.appShell.dataset.view = state.activeView;
   els.appShell.dataset.resultSource = state.resultSource;
   els.appShell.dataset.navOpen = 'false';
+  await preloadSelectorStateIcons();
   loadSavedMovies();
   randomizeAboutLongMovie();
   await loadSharedListFromUrl();
