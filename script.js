@@ -258,6 +258,8 @@ const state = {
   genreSettleId: null,
   genreSettleDirection: '',
   genreHoverLockId: null,
+  ratingSettleId: null,
+  ratingSettleDirection: '',
   monkeFormatSettleId: null,
   monkeFormatSettleDirection: '',
   monkeFormatHoverLockId: null,
@@ -454,6 +456,9 @@ async function fetchTmdbWithRetry(url, maxAttempts = 3) {
 function showView(viewName) {
   closeTrailer();
   const previousView = state.activeView;
+  if (previousView !== viewName) {
+    clearFilterSelectionMotion();
+  }
   if (viewName !== 'result') {
     state.directorResultHistory = [];
   }
@@ -2277,8 +2282,9 @@ function renderGenrePills() {
     button.disabled = disable;
     button.setAttribute('aria-pressed', String(active));
     button.addEventListener('click', () => toggleGenre(genre.id));
-    button.addEventListener('mouseleave', () => clearGenreHoverLock(genre.id));
-    button.addEventListener('blur', () => clearGenreHoverLock(genre.id));
+    if (!mobileMediaQuery.matches) {
+      button.addEventListener('mouseleave', () => clearGenreHoverLock(genre.id));
+    }
 
     const icon = document.createElement('span');
     icon.className = 'genre-icon';
@@ -2311,11 +2317,16 @@ function renderRatingPills() {
       ? state.anyRatingSelected
       : state.selectedRatings.includes(rating.certification);
     const iconPath = active ? rating.activeIcon : rating.icon;
+    const settling = state.ratingSettleId === rating.certification;
+    const settleClass = settling ? `settling settling-${state.ratingSettleDirection || 'on'}` : '';
     const button = document.createElement('button');
-    button.className = `rating-card ${active ? 'active' : ''}`.trim();
+    button.className = `rating-card ${active ? 'active' : ''} ${settleClass}`.trim();
     button.type = 'button';
     button.setAttribute('aria-pressed', String(active));
     button.addEventListener('click', () => toggleRating(rating.certification));
+    if (!mobileMediaQuery.matches) {
+      button.addEventListener('mouseleave', () => clearRatingSettle(rating.certification));
+    }
 
     const icon = document.createElement('span');
     icon.className = 'rating-icon';
@@ -2346,8 +2357,9 @@ function renderMonkeFormatPills() {
     button.type = 'button';
     button.setAttribute('aria-pressed', String(active));
     button.addEventListener('click', () => toggleMonkeFormat(format.id));
-    button.addEventListener('mouseleave', () => clearMonkeFormatHoverLock(format.id));
-    button.addEventListener('blur', () => clearMonkeFormatHoverLock(format.id));
+    if (!mobileMediaQuery.matches) {
+      button.addEventListener('mouseleave', () => clearMonkeFormatHoverLock(format.id));
+    }
 
     const icon = document.createElement('span');
     icon.className = 'monke-format-icon';
@@ -2435,6 +2447,7 @@ function toggleGenre(id) {
   updateGenreStage();
   updateSelectionSummary();
   refreshCount();
+  scheduleMobileSettleClear('genre', id);
 }
 
 function clearGenreHoverLock(id) {
@@ -2447,6 +2460,12 @@ function clearGenreHoverLock(id) {
 }
 
 function toggleRating(certification) {
+  const wasActive = certification === 'ANY'
+    ? state.anyRatingSelected
+    : state.selectedRatings.includes(certification);
+  state.ratingSettleId = certification;
+  state.ratingSettleDirection = wasActive ? 'off' : 'on';
+
   if (certification === 'ANY') {
     state.selectedRatings = [];
     state.anyRatingSelected = !state.anyRatingSelected;
@@ -2462,6 +2481,7 @@ function toggleRating(certification) {
   renderRatingPills();
   updateRatingSummary();
   refreshCount();
+  scheduleMobileSettleClear('rating', certification);
 }
 
 function toggleDecade(label) {
@@ -2491,6 +2511,46 @@ function toggleMonkeFormat(formatId) {
 
   renderMonkeFormatPills();
   loadFloatingPosters();
+  scheduleMobileSettleClear('monkeFormat', formatId);
+}
+
+function clearRatingSettle(certification) {
+  if (state.ratingSettleId !== certification) return;
+  state.ratingSettleId = null;
+  state.ratingSettleDirection = '';
+}
+
+function scheduleMobileSettleClear(type, id) {
+  if (!mobileMediaQuery.matches) return;
+
+  window.setTimeout(() => {
+    const idKey = `${type}SettleId`;
+    const directionKey = `${type}SettleDirection`;
+    if (String(state[idKey] || '') !== String(id)) return;
+    state[idKey] = null;
+    state[directionKey] = '';
+  }, 420);
+}
+
+function clearFilterSelectionMotion() {
+  state.genreSettleId = null;
+  state.genreSettleDirection = '';
+  state.genreHoverLockId = null;
+  state.ratingSettleId = null;
+  state.ratingSettleDirection = '';
+  state.monkeFormatSettleId = null;
+  state.monkeFormatSettleDirection = '';
+  state.monkeFormatHoverLockId = null;
+
+  [
+    els.genresTray,
+    els.ratingsTray,
+    els.monkeFormatTray
+  ].forEach((tray) => {
+    tray?.querySelectorAll('.settling').forEach((button) => {
+      button.classList.remove('settling', 'settling-on', 'settling-off');
+    });
+  });
 }
 
 function clearMonkeFormatHoverLock(formatId) {
@@ -3556,6 +3616,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
   }
 
   updateResultSaveButton();
+  scheduleMobileActionOffsetUpdate();
 }
 
 function updateTitleSize() {
