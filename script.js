@@ -268,6 +268,7 @@ const state = {
   footerBounce: null,
   footerDvdColorIndex: 0,
   resultHeaderCanReveal: false,
+  resultHeaderPullStartY: null,
   resultActionsPreserved: false,
   resultActionsRevealTimer: null,
   directorCreditsToken: 0
@@ -589,7 +590,7 @@ function updateMobileActionOffset() {
 
   const footerTop = els.footer.getBoundingClientRect().top;
   const overlap = Math.max(0, window.innerHeight - footerTop);
-  const resultFooterGap = state.activeView === 'result' && overlap > 0 ? 28 : 0;
+  const resultFooterGap = state.activeView === 'result' && overlap > 0 ? 36 : 0;
   els.appShell.style.setProperty('--mobile-action-footer-offset', `${Math.ceil(overlap + resultFooterGap)}px`);
   els.appShell.style.setProperty('--mobile-heading-action-footer-offset', `${Math.ceil(overlap)}px`);
   els.appShell.dataset.mobileActionsLocked = overlap > 0 ? 'true' : 'false';
@@ -643,6 +644,41 @@ function updateMobileResultHeader() {
 
   els.appShell.dataset.resultHeaderHidden = 'true';
   els.appShell.dataset.resultActionsVisible = 'true';
+}
+
+function startMobileResultHeaderPull(event) {
+  const touch = event.touches?.[0];
+  const canStartPull =
+    mobileMediaQuery.matches &&
+    state.activeView === 'result' &&
+    window.scrollY <= 4 &&
+    els.appShell.dataset.resultHeaderHidden === 'true' &&
+    touch;
+
+  state.resultHeaderPullStartY = canStartPull ? touch.clientY : null;
+}
+
+function updateMobileResultHeaderPull(event) {
+  if (state.resultHeaderPullStartY === null) return;
+
+  const touch = event.touches?.[0];
+  if (!touch) {
+    state.resultHeaderPullStartY = null;
+    return;
+  }
+
+  const pullDistance = touch.clientY - state.resultHeaderPullStartY;
+  if (pullDistance < 18 || window.scrollY > 4) return;
+
+  state.resultHeaderPullStartY = null;
+  state.resultActionsPreserved = false;
+  state.resultHeaderCanReveal = true;
+  els.appShell.dataset.resultHeaderHidden = 'false';
+  els.appShell.dataset.resultActionsVisible = 'false';
+}
+
+function endMobileResultHeaderPull() {
+  state.resultHeaderPullStartY = null;
 }
 
 function resumePosterWallAnimation() {
@@ -4673,6 +4709,10 @@ function wireEvents() {
     updateMobileActionOffset();
     updateMobileResultHeader();
   }, { passive: true });
+  window.addEventListener('touchstart', startMobileResultHeaderPull, { passive: true });
+  window.addEventListener('touchmove', updateMobileResultHeaderPull, { passive: true });
+  window.addEventListener('touchend', endMobileResultHeaderPull, { passive: true });
+  window.addEventListener('touchcancel', endMobileResultHeaderPull, { passive: true });
   window.addEventListener('resize', () => {
     scheduleMobileActionOffsetUpdate();
     resizeSavedListNameInputs();
