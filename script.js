@@ -255,6 +255,7 @@ const state = {
   tryAgainLabelBag: [],
   lastTryAgainLabel: '',
   tryAgainExitTimer: null,
+  tryAgainMobileLabelTimer: null,
   genreSettleId: null,
   genreSettleDirection: '',
   genreHoverLockId: null,
@@ -500,6 +501,7 @@ function showView(viewName) {
       window.clearTimeout(state.resultActionsRevealTimer);
       state.resultActionsRevealTimer = null;
     }
+    resetTryAgainHoverLabels();
     state.resultHeaderCanReveal = false;
     state.resultActionsPreserved = false;
     els.appShell.dataset.resultHeaderHidden = 'false';
@@ -4222,10 +4224,18 @@ function setLoading(isLoading) {
   els.pickMonkeMovie.textContent = isLoading ? 'Picking...' : 'OK Precious';
   els.headerPickMonkeMovie.textContent = isLoading ? 'Picking...' : 'OK Precious';
   els.tryAgain.textContent = isLoading ? 'Picking...' : 'Try Again';
-  if (!isLoading) updateResultSaveButton();
+  if (!isLoading) {
+    updateResultSaveButton();
+    scheduleMobileTryAgainLabel();
+  }
 }
 
 function resetTryAgainHoverLabels() {
+  if (state.tryAgainMobileLabelTimer) {
+    window.clearTimeout(state.tryAgainMobileLabelTimer);
+    state.tryAgainMobileLabelTimer = null;
+  }
+
   if (state.tryAgainExitTimer) {
     window.clearTimeout(state.tryAgainExitTimer);
     state.tryAgainExitTimer = null;
@@ -4233,6 +4243,37 @@ function resetTryAgainHoverLabels() {
 
   els.tryAgain.classList.remove('try-again-hovering', 'try-again-leaving');
   delete els.tryAgain.dataset.hoverLabel;
+}
+
+function scheduleMobileTryAgainLabel() {
+  if (state.tryAgainMobileLabelTimer) {
+    window.clearTimeout(state.tryAgainMobileLabelTimer);
+    state.tryAgainMobileLabelTimer = null;
+  }
+
+  if (
+    !mobileMediaQuery.matches ||
+    state.activeView !== 'result' ||
+    state.resultSource === 'sample' ||
+    els.tryAgain.disabled
+  ) {
+    return;
+  }
+
+  const delay = els.appShell.dataset.resultActionsReady === 'true' ? 1800 : 2800;
+  state.tryAgainMobileLabelTimer = window.setTimeout(() => {
+    state.tryAgainMobileLabelTimer = null;
+    if (
+      !mobileMediaQuery.matches ||
+      state.activeView !== 'result' ||
+      state.resultSource === 'sample' ||
+      els.tryAgain.disabled
+    ) {
+      return;
+    }
+
+    startTryAgainHoverLabels({ force: true });
+  }, delay);
 }
 
 function getRandomTryAgainLabel() {
@@ -4260,11 +4301,6 @@ function startTryAgainHoverLabels({ force = false } = {}) {
   els.tryAgain.classList.remove('try-again-leaving');
   els.tryAgain.classList.add('try-again-hovering');
   els.tryAgain.dataset.hoverLabel = getRandomTryAgainLabel();
-}
-
-function rotateTryAgainTouchLabel(event) {
-  if (state.resultSource === 'sample' || event.pointerType === 'mouse' || els.tryAgain.disabled) return;
-  startTryAgainHoverLabels({ force: true });
 }
 
 function stopTryAgainHoverLabels() {
@@ -4606,7 +4642,6 @@ function wireEvents() {
 
     pickRandomMovie({ cyclePosterOnly: true });
   });
-  els.tryAgain.addEventListener('pointerdown', rotateTryAgainTouchLabel);
   els.tryAgain.addEventListener('mouseenter', () => {
     if (state.resultSource !== 'sample') startTryAgainHoverLabels();
   });
