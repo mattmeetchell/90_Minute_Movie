@@ -3052,20 +3052,6 @@ function getFilteredSecretMovies(rows) {
 async function loadSecretMovies() {
   if (state.secretMovies) return state.secretMovies;
 
-  if (Array.isArray(window.PERSONAL_MOVIE_FEED) && window.PERSONAL_MOVIE_FEED.length) {
-    state.secretMovies = window.PERSONAL_MOVIE_FEED
-      .map((movie) => ({
-        ...movie,
-        tmdbId: String(movie.tmdbId || '').trim(),
-        imdbId: String(movie.imdbId || '').trim(),
-        title: String(movie.title || '').trim(),
-        ownedPhysical: Boolean(movie.ownedPhysical),
-        physicalNote: String(movie.physicalNote || '').trim()
-      }))
-      .filter((movie) => movie.tmdbId || movie.imdbId || movie.title);
-    return state.secretMovies;
-  }
-
   const rows = await loadSecretSheetRows();
   const [headers = [], ...dataRows] = rows;
   const normalizedHeaders = headers.map(normalizeSheetHeader);

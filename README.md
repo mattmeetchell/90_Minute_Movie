@@ -9,7 +9,7 @@ A static TMDb-powered movie picker for finding movies around 90 minutes, with ge
 - `script.js` - TMDb fetching, filters, result rendering, and interactions
 - `api/tmdb.js` - Vercel serverless proxy for TMDb requests
 - `api/lists.js` - anonymous saved-list API for private list links
-- `personal-movies.js` - private movie feed used by the hidden footer flow
+- Google Sheet - single source of truth for the hidden Monke movie feed (the sheet ID is configured in `script.js`)
 - `assets/` - logos, media icons, and genre artwork
 - `vercel.json` - static hosting config for Vercel
 
@@ -72,4 +72,5 @@ Then add `TMDB_API_KEY` in the Vercel project settings under `Settings -> Enviro
 - TMDb requests are routed through `/api/tmdb`, so the TMDb key should live in Vercel Environment Variables and should not be committed to GitHub.
 - Saved list links are routed through `/api/lists`, so KV/Redis REST credentials should live in Vercel Environment Variables and should not be committed to GitHub.
 - The private flow password is an affordance, not real security. Anyone inspecting source can find it.
+- Update the Monke list in its Google Sheet. The app loads that sheet directly, so no code change is needed for additions, removals, or Blu-ray status updates.
 - For a more secure future version, move the private list and password check behind a serverless API route too.
