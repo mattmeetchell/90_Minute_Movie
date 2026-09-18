@@ -458,6 +458,9 @@ async function fetchTmdbWithRetry(url, maxAttempts = 3) {
 function showView(viewName) {
   closeTrailer();
   const previousView = state.activeView;
+  if (viewName !== 'result' && state.currentResultMovie?.id) {
+    clearSharedMovieUrl();
+  }
   if (previousView !== viewName) {
     clearFilterSelectionMotion();
   }
@@ -724,6 +727,46 @@ function persistSavedMovies(options = {}) {
 
 function getSharedListIdFromUrl() {
   return new URLSearchParams(window.location.search).get('list') || '';
+}
+
+function getSharedMovieIdFromUrl() {
+  const movieId = new URLSearchParams(window.location.search).get('movie') || '';
+  return /^\d{1,12}$/.test(movieId) ? movieId : '';
+}
+
+function updateSharedMovieUrl(movieId) {
+  if (!movieId) return;
+
+  const url = new URL(window.location.href);
+  url.searchParams.set('movie', String(movieId));
+  window.history.replaceState({}, '', url);
+}
+
+function clearSharedMovieUrl() {
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has('movie')) return;
+
+  url.searchParams.delete('movie');
+  window.history.replaceState({}, '', url);
+}
+
+async function openSharedMovieFromUrl(movieId) {
+  setLoading(true);
+
+  try {
+    const [details, credits, videos, providers, releaseDates] = await fetchMovieBundle(movieId);
+    await preloadPoster(details.poster_path);
+    setResultSource('shared');
+    renderMovie(details, credits, videos, providers, releaseDates);
+    showView('result');
+    animateResultReveal({ animateCopy: false });
+    state.hasShownResult = true;
+  } catch (error) {
+    console.error(error);
+    clearSharedMovieUrl();
+  } finally {
+    setLoading(false);
+  }
 }
 
 function normalizeSavedListName(name) {
@@ -3628,6 +3671,7 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
     releaseDates,
     resultSource: state.resultSource
   };
+  updateSharedMovieUrl(details.id);
 
   els.poster.src = details.poster_path ? `${IMAGE_BASE_URL}${details.poster_path}` : '';
   els.poster.alt = `${details.title} poster`;
@@ -4769,7 +4813,10 @@ async function init() {
   renderMonkeFormatPills();
   wireEvents();
   setupAboutSectionObserver();
-  if (state.sharedListLoaded) {
+  const sharedMovieId = getSharedMovieIdFromUrl();
+  if (sharedMovieId) {
+    await openSharedMovieFromUrl(sharedMovieId);
+  } else if (state.sharedListLoaded) {
     showView('savedList');
   } else {
     playLandingIntro();

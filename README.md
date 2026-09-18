@@ -73,4 +73,5 @@ Then add `TMDB_API_KEY` in the Vercel project settings under `Settings -> Enviro
 - Saved list links are routed through `/api/lists`, so KV/Redis REST credentials should live in Vercel Environment Variables and should not be committed to GitHub.
 - The private flow password is an affordance, not real security. Anyone inspecting source can find it.
 - Update the Monke list in its Google Sheet. The app loads that sheet directly, so no code change is needed for additions, removals, or Blu-ray status updates.
+- Every served movie updates the URL with its TMDb ID (for example, `?movie=603`), so the result page can be shared and reopened directly.
 - For a more secure future version, move the private list and password check behind a serverless API route too.
