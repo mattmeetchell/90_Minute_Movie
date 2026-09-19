@@ -2,6 +2,10 @@
 
 This folder is deliberately separate from the website. It contains the future X bot and its dry-run card generator.
 
+The workflow downloads the official Google Fonts release of Roboto Flex before
+rendering, so exported cards use the same typeface as the served site without
+adding a font binary to the repository.
+
 ## Dry run
 
 The GitHub Action can be started manually. It uses TMDb to select a streamable US movie around 90 minutes and creates these downloadable artifacts:

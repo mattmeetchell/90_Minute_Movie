@@ -6,4 +6,5 @@ node_modules/
 .env.local
 local-preview-server.js
 bot-output/
+bot/fonts/
 *.log

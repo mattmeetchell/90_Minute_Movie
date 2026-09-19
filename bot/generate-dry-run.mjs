@@ -107,13 +107,13 @@ const main = async () => {
     <defs>
       <linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050608"/><stop offset=".48" stop-color="#183042"/><stop offset="1" stop-color="#159b82"/></linearGradient>
       <radialGradient id="glow" cx="0" cy="1" r=".75"><stop stop-color="#96002e"/><stop offset="1" stop-color="#96002e" stop-opacity="0"/></radialGradient>
-      <style>.title { fill: #fff; font-family: Arial Black, Arial, sans-serif; font-size: ${titleFontSize}px; font-weight: 900; letter-spacing: -4px; } .copy { fill: #fff; font-family: Arial, sans-serif; font-size: 28px; } .label { fill: #fff; font-family: Arial, sans-serif; font-size: 23px; font-weight: 700; letter-spacing: 2px; }</style>
+      <style>.title { fill: #fff; font-family: 'Roboto Flex', Arial, sans-serif; font-size: ${titleFontSize}px; font-weight: 900; letter-spacing: -4px; } .copy { fill: #fff; font-family: 'Roboto Flex', Arial, sans-serif; font-size: 28px; font-weight: 400; } .label { fill: #fff; font-family: 'Roboto Flex', Arial, sans-serif; font-size: 23px; font-weight: 700; letter-spacing: 2px; }</style>
     </defs>
     <rect width="1680" height="945" fill="url(#background)"/><rect width="820" height="945" fill="url(#glow)"/>
     <rect x="158" y="64" width="560" height="816" rx="35" fill="none" stroke="#fff" stroke-width="4"/>
     <image href="${toDataUri(poster, 'image/jpeg')}" x="184" y="89" width="510" height="765" preserveAspectRatio="xMidYMid slice" clip-path="url(#poster-clip)"/>
     <clipPath id="poster-clip"><rect x="184" y="89" width="510" height="765" rx="31"/></clipPath>
-    <rect x="806" y="129" width="136" height="70" rx="35" fill="#fff"/><text x="874" y="175" text-anchor="middle" fill="#111" font-family="Arial, sans-serif" font-size="35">${year}</text>
+    <rect x="806" y="129" width="136" height="70" rx="35" fill="#fff"/><text x="874" y="175" text-anchor="middle" fill="#111" font-family="Roboto Flex, Arial, sans-serif" font-size="35">${year}</text>
     ${titleSvg}
     <text x="806" y="611" class="copy">${xmlEscape(meta)}</text>
     <text x="806" y="708" class="label">WATCH IT ON</text><line x1="806" y1="746" x2="1602" y2="746" stroke="#fff" stroke-width="4"/>
