@@ -101,7 +101,7 @@ const main = async () => {
   const providerSvg = providerImages.map((image, index) => image
     ? `<clipPath id="provider-${index}"><circle cx="${846 + index * 118}" cy="813" r="40" /></clipPath><image href="${toDataUri(image)}" x="${806 + index * 118}" y="773" width="80" height="80" preserveAspectRatio="xMidYMid slice" clip-path="url(#provider-${index})" />`
     : '').join('');
-  const titleTracking = (titleFontSize * 0.06).toFixed(2);
+  const titleTracking = (titleFontSize * 0.02).toFixed(2);
   const titleSvg = titleLines.map((line, index) => {
     const trackedCharacters = Array.from(line).map((character, characterIndex) => (
       `<tspan dx="${characterIndex === 0 ? 0 : titleTracking}">${xmlEscape(character)}</tspan>`
@@ -109,6 +109,9 @@ const main = async () => {
     return `<text x="806" y="${titleY + index * (titleFontSize + 14)}" class="title" xml:space="preserve">${trackedCharacters}</text>`;
   }).join('');
   const meta = `${Math.floor(details.runtime / 60)}h ${details.runtime % 60}m • ${details.certification || 'NR'} • Director: ${director}`;
+  const lastTitleBaseline = titleY + ((titleLines.length - 1) * (titleFontSize + 14));
+  // The metadata baseline is 40px below the visual bottom of the final title line.
+  const metadataY = lastTitleBaseline + 62;
   const cardSvg = `<svg width="1680" height="945" viewBox="0 0 1680 945" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050608"/><stop offset=".48" stop-color="#183042"/><stop offset="1" stop-color="#159b82"/></linearGradient>
@@ -121,7 +124,7 @@ const main = async () => {
     <clipPath id="poster-clip"><rect x="184" y="89" width="510" height="765" rx="31"/></clipPath>
     <rect x="806" y="129" width="136" height="70" rx="35" fill="#fff"/><text x="874" y="175" text-anchor="middle" fill="#111" font-family="Roboto Flex, Arial, sans-serif" font-size="35">${year}</text>
     ${titleSvg}
-    <text x="806" y="611" class="copy">${xmlEscape(meta)}</text>
+    <text x="806" y="${metadataY}" class="copy">${xmlEscape(meta)}</text>
     <text x="806" y="708" class="label">WATCH IT ON</text><line x1="806" y1="746" x2="1602" y2="746" stroke="#fff" stroke-width="4"/>
     ${providerSvg || '<text x="806" y="817" class="copy">Check local availability</text>'}
     <image href="${toDataUri(logo, 'image/svg+xml')}" x="1502" y="68" width="112" height="112" />
