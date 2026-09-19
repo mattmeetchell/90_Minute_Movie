@@ -1,0 +1,11 @@
+{
+  "name": "90-minute-movie-bot",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bot:dry-run": "node bot/generate-dry-run.mjs"
+  },
+  "dependencies": {
+    "sharp": "^0.34.3"
+  }
+}

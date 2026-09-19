@@ -1,0 +1,39 @@
+name: Movie bot dry run
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-preview:
+    name: Generate movie post preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+      TMDB_BEARER_TOKEN: ${{ secrets.TMDB_BEARER_TOKEN }}
+      WEBSITE_URL: https://90minutemovie.com
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install bot dependencies
+        run: npm ci
+
+      - name: Generate social card and post copy
+        run: npm run bot:dry-run
+
+      - name: Upload preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: movie-post-preview
+          path: bot-output/
+          if-no-files-found: error
