@@ -224,6 +224,7 @@ const state = {
   currentResultBundle: null,
   shareCardBlob: null,
   shareCardObjectUrl: '',
+  shareCardIsGenerating: false,
   directorResultHistory: [],
   savedMovies: [],
   savedListId: '',
@@ -4301,10 +4302,11 @@ function formatRuntime(runtime) {
 }
 
 async function downloadShareCard() {
-  if (!state.currentResultBundle?.details) return;
+  if (!state.currentResultBundle?.details || state.shareCardIsGenerating) return;
 
   const originalLabel = els.downloadShareCard.textContent;
-  els.downloadShareCard.disabled = true;
+  state.shareCardIsGenerating = true;
+  els.downloadShareCard.classList.add('is-generating');
   els.downloadShareCard.textContent = 'Making…';
 
   try {
@@ -4314,8 +4316,9 @@ async function downloadShareCard() {
     console.error('Could not create share card.', error);
     window.alert('The card could not be created just now. Please try again.');
   } finally {
+    state.shareCardIsGenerating = false;
+    els.downloadShareCard.classList.remove('is-generating');
     els.downloadShareCard.textContent = originalLabel;
-    els.downloadShareCard.disabled = false;
   }
 }
 
