@@ -1,4 +1,6 @@
 const TMDB_PROXY_URL = '/api/tmdb';
+const IMAGE_PROXY_URL = '/api/image';
+const API_REQUEST_TIMEOUT_MS = 12000;
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w780';
 const PROFILE_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w185';
 const POSTER_THUMBNAIL_BASE_URL = 'https://image.tmdb.org/t/p/w185';
@@ -220,6 +222,8 @@ const state = {
   resultSource: 'filtered',
   currentResultMovie: null,
   currentResultBundle: null,
+  shareCardBlob: null,
+  shareCardObjectUrl: '',
   directorResultHistory: [],
   savedMovies: [],
   savedListId: '',
@@ -272,6 +276,9 @@ const state = {
   resultHeaderPullStartY: null,
   resultActionsPreserved: false,
   resultActionsRevealTimer: null,
+  resultFilterEditState: null,
+  initialPosterLoadTimer: null,
+  initialPosterLoadIdleId: null,
   directorCreditsToken: 0
 };
 
@@ -331,6 +338,8 @@ const els = {
   clearFilters: document.getElementById('clearFilters'),
   clearResultFilters: document.getElementById('clearResultFilters'),
   tryAgain: document.getElementById('tryAgain'),
+  downloadShareCard: document.getElementById('downloadShareCard'),
+  addResultFilter: document.getElementById('addResultFilter'),
   resultCount: document.getElementById('resultCount'),
   savedListGrid: document.getElementById('savedListGrid'),
   savedListCount: document.getElementById('savedListCount'),
@@ -351,6 +360,7 @@ const els = {
   posterMobileActions: document.getElementById('posterMobileActions'),
   seePosterAction: document.getElementById('seePosterAction'),
   playTrailerAction: document.getElementById('playTrailerAction'),
+  downloadCardAction: document.getElementById('downloadCardAction'),
   poster: document.getElementById('poster'),
   movieCopy: document.querySelector('.movie-copy'),
   titleHeading: document.getElementById('titleHeading'),
@@ -371,6 +381,13 @@ const els = {
   posterLightbox: document.getElementById('posterLightbox'),
   closePosterLightbox: document.getElementById('closePosterLightbox'),
   posterLightboxImage: document.getElementById('posterLightboxImage'),
+  shareCardModal: document.getElementById('shareCardModal'),
+  closeShareCardModal: document.getElementById('closeShareCardModal'),
+  shareCardImage: document.getElementById('shareCardImage'),
+  copyShareCard: document.getElementById('copyShareCard'),
+  copyShareLink: document.getElementById('copyShareLink'),
+  downloadShareCardFile: document.getElementById('downloadShareCardFile'),
+  shareCardStatus: document.getElementById('shareCardStatus'),
   selectionSummary: document.getElementById('selectionSummary'),
   genreHeaderResultCount: document.getElementById('genreHeaderResultCount'),
   ratingSummary: document.getElementById('ratingSummary'),
@@ -427,7 +444,17 @@ async function fetchTmdbWithRetry(url, maxAttempts = 3) {
 
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     try {
-      const response = await fetch(url, { headers: { accept: 'application/json' } });
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
+      let response;
+      try {
+        response = await fetch(url, {
+          headers: { accept: 'application/json' },
+          signal: controller.signal
+        });
+      } finally {
+        window.clearTimeout(timeoutId);
+      }
       if (response.ok) {
         return response.json();
       }
@@ -458,7 +485,7 @@ async function fetchTmdbWithRetry(url, maxAttempts = 3) {
 function showView(viewName) {
   closeTrailer();
   const previousView = state.activeView;
-  if (viewName !== 'result' && state.currentResultMovie?.id) {
+  if (viewName !== 'result' && state.currentResultMovie?.id && !state.resultFilterEditState) {
     clearSharedMovieUrl();
   }
   if (previousView !== viewName) {
@@ -759,7 +786,7 @@ async function openSharedMovieFromUrl(movieId) {
     setResultSource('shared');
     renderMovie(details, credits, videos, providers, releaseDates);
     showView('result');
-    animateResultReveal({ animateCopy: false });
+    animateResultReveal({ animateCopy: true });
     state.hasShownResult = true;
   } catch (error) {
     console.error(error);
@@ -1328,8 +1355,11 @@ function updateResultSaveButton() {
     return;
   }
 
-  els.tryAgain.textContent = 'Try Again';
-  els.tryAgain.setAttribute('aria-label', state.resultSource === 'savedRandom' ? 'Try another movie from my list' : 'Try another movie');
+  const isSharedMovie = state.resultSource === 'shared';
+  const tryAgainLabel = isSharedMovie ? 'Find another' : 'Try Again';
+  els.tryAgain.textContent = tryAgainLabel;
+  els.tryAgain.dataset.defaultLabel = tryAgainLabel;
+  els.tryAgain.setAttribute('aria-label', isSharedMovie ? 'Find another movie with no filters' : state.resultSource === 'savedRandom' ? 'Try another movie from my list' : 'Try another movie');
 }
 
 function renderSavedList(options = {}) {
@@ -2061,6 +2091,36 @@ async function loadFloatingPosters() {
     renderFloatingPosterTracks(posters, { animateIn: true });
   } catch (error) {
     console.error(error);
+  }
+}
+
+function scheduleInitialFloatingPosterLoad() {
+  if (!els.posterTrack && !els.aboutPosterTrack) return;
+
+  renderFloatingPosterTracks(getFallbackPosterSamples(), { loading: true });
+  cancelInitialFloatingPosterLoad();
+
+  const load = () => {
+    state.initialPosterLoadTimer = null;
+    state.initialPosterLoadIdleId = null;
+    loadFloatingPosters();
+  };
+
+  if ('requestIdleCallback' in window) {
+    state.initialPosterLoadIdleId = window.requestIdleCallback(load, { timeout: 1800 });
+  } else {
+    state.initialPosterLoadTimer = window.setTimeout(load, 1200);
+  }
+}
+
+function cancelInitialFloatingPosterLoad() {
+  if (state.initialPosterLoadTimer) {
+    window.clearTimeout(state.initialPosterLoadTimer);
+    state.initialPosterLoadTimer = null;
+  }
+  if (state.initialPosterLoadIdleId !== null && 'cancelIdleCallback' in window) {
+    window.cancelIdleCallback(state.initialPosterLoadIdleId);
+    state.initialPosterLoadIdleId = null;
   }
 }
 
@@ -2842,6 +2902,7 @@ async function pickRandomMovie(options = {}) {
     const [details, credits, videos, providers, releaseDates] = await fetchValidMovieBundle(validResults);
 
     await preloadPoster(details.poster_path);
+    finishResultFilterEditing();
     if (shouldAnticipate) {
       await posterExitDelay;
       await runResultAnticipationReveal(details, credits, videos, providers, releaseDates, state.physicalMode ? 'physical' : 'filtered');
@@ -2962,6 +3023,7 @@ async function pickSecretMovie(options = {}) {
     rememberSecretMovie(row);
 
     await preloadPoster(details.poster_path);
+    finishResultFilterEditing();
     if (shouldAnticipate) {
       await posterExitDelay;
       await runResultAnticipationReveal(details, credits, videos, providers, releaseDates, 'secret');
@@ -4238,6 +4300,293 @@ function formatRuntime(runtime) {
   return `${hours}h ${minutes}m`;
 }
 
+async function downloadShareCard() {
+  if (!state.currentResultBundle?.details) return;
+
+  const originalLabel = els.downloadShareCard.textContent;
+  els.downloadShareCard.disabled = true;
+  els.downloadShareCard.textContent = 'Making…';
+
+  try {
+    const blob = await createShareCardPng(state.currentResultBundle);
+    openShareCardModal(blob);
+  } catch (error) {
+    console.error('Could not create share card.', error);
+    window.alert('The card could not be created just now. Please try again.');
+  } finally {
+    els.downloadShareCard.textContent = originalLabel;
+    els.downloadShareCard.disabled = false;
+  }
+}
+
+function openShareCardModal(blob) {
+  if (state.shareCardObjectUrl) URL.revokeObjectURL(state.shareCardObjectUrl);
+  state.shareCardBlob = blob;
+  state.shareCardObjectUrl = URL.createObjectURL(blob);
+  els.shareCardImage.src = state.shareCardObjectUrl;
+  els.shareCardStatus.textContent = 'Share this on social media, make sure to include the link';
+  els.copyShareCard.textContent = 'Copy image';
+  els.copyShareLink.textContent = 'Copy link';
+  els.shareCardModal.classList.remove('hidden');
+  els.copyShareCard.focus();
+}
+
+function closeShareCardModal() {
+  if (els.shareCardModal.classList.contains('hidden')) return;
+  els.shareCardModal.classList.add('hidden');
+  els.shareCardImage.src = '';
+  if (state.shareCardObjectUrl) URL.revokeObjectURL(state.shareCardObjectUrl);
+  state.shareCardObjectUrl = '';
+  state.shareCardBlob = null;
+}
+
+async function copyShareCardImage() {
+  if (!state.shareCardBlob || !navigator.clipboard?.write || !window.ClipboardItem) {
+    els.shareCardStatus.textContent = 'Copying images is not available here — use Download instead.';
+    return;
+  }
+
+  try {
+    await navigator.clipboard.write([new window.ClipboardItem({ 'image/png': state.shareCardBlob })]);
+    els.copyShareCard.textContent = 'Copied';
+    els.shareCardStatus.textContent = 'Copied — paste it wherever you’d like.';
+  } catch (error) {
+    console.error('Could not copy share card.', error);
+    els.shareCardStatus.textContent = 'Couldn’t copy the image — use Download instead.';
+  }
+}
+
+async function copyShareCardLink() {
+  if (!navigator.clipboard?.writeText) {
+    els.shareCardStatus.textContent = 'Copying links is not available here.';
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    els.copyShareLink.textContent = 'Copied';
+    els.shareCardStatus.textContent = 'Copied — share the link wherever you’d like.';
+  } catch (error) {
+    console.error('Could not copy share link.', error);
+    els.shareCardStatus.textContent = 'Couldn’t copy the link just now.';
+  }
+}
+
+function saveShareCardImage() {
+  if (!state.shareCardBlob) return;
+  const titleSlug = (state.currentResultBundle?.details?.title || 'movie')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(state.shareCardBlob);
+  link.download = `90-min-${titleSlug || 'movie'}.png`;
+  link.click();
+  window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+}
+
+async function createShareCardPng(bundle) {
+  const { details, credits = {}, providerData, releaseDates } = bundle;
+  const canvas = document.createElement('canvas');
+  canvas.width = 1680;
+  canvas.height = 945;
+  const context = canvas.getContext('2d');
+  await document.fonts?.ready;
+
+  drawShareCardBackground(context);
+  await drawShareCardPoster(context, details);
+  await drawShareCardLogo(context);
+  drawShareCardCopy(context, details, credits, releaseDates);
+  await drawShareCardProviders(context, providerData, details);
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('PNG export failed.')), 'image/png');
+  });
+}
+
+function drawShareCardBackground(context) {
+  context.fillStyle = '#000';
+  context.fillRect(0, 0, 1680, 945);
+
+  const gradients = [
+    [1380, 565, 780, 'rgba(87, 211, 169, .82)', 'rgba(63, 170, 132, 0)'],
+    [900, 650, 870, 'rgba(88, 156, 214, .56)', 'rgba(50, 92, 146, 0)'],
+    [40, 870, 640, 'rgba(153, 0, 54, .72)', 'rgba(125, 37, 86, 0)'],
+    [610, 760, 430, 'rgba(116, 122, 191, .34)', 'rgba(116, 122, 191, 0)']
+  ];
+  gradients.forEach(([x, y, radius, inner, outer]) => {
+    const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
+    gradient.addColorStop(0, inner);
+    gradient.addColorStop(1, outer);
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, 1680, 945);
+  });
+}
+
+async function drawShareCardPoster(context, details) {
+  const x = 160;
+  const y = 65;
+  const width = 557;
+  const height = 812;
+  drawRoundedRect(context, x, y, width, height, 33);
+  context.strokeStyle = '#f7f7f7';
+  context.lineWidth = 4;
+  context.stroke();
+
+  const posterX = 184;
+  const posterY = 89;
+  const posterWidth = 510;
+  const posterHeight = 765;
+  drawRoundedRect(context, posterX, posterY, posterWidth, posterHeight, 30);
+  context.save();
+  context.clip();
+  context.fillStyle = '#151923';
+  context.fillRect(posterX, posterY, posterWidth, posterHeight);
+
+  if (details.poster_path) {
+    try {
+      const poster = await loadCanvasImage(getShareCardImageUrl(details.poster_path, 'w780'));
+      drawImageCover(context, poster, posterX, posterY, posterWidth, posterHeight);
+    } catch (error) {
+      console.warn('Could not load card poster.', error);
+    }
+  }
+  context.restore();
+}
+
+async function drawShareCardLogo(context) {
+  try {
+    const logo = await loadCanvasImage('assets/brand/90_M_Logo.svg');
+    context.drawImage(logo, 1493, 60, 127, 127);
+  } catch (error) {
+    console.warn('Could not load share card logo.', error);
+  }
+}
+
+function drawShareCardCopy(context, details, credits, releaseDates) {
+  const year = (details.release_date || '').slice(0, 4) || '—';
+  drawRoundedRect(context, 807, 129, 135, 70, 36);
+  context.fillStyle = '#f7f7f7';
+  context.fill();
+  context.fillStyle = '#050505';
+  context.font = '500 34px "Roboto Flex", Arial, sans-serif';
+  context.textBaseline = 'middle';
+  context.textAlign = 'center';
+  context.fillText(year, 874.5, 164);
+
+  const titleLayout = getShareCardTitleLines(context, details.title || 'Untitled');
+  context.fillStyle = '#f7f7f7';
+  context.font = `900 ${titleLayout.fontSize}px "Roboto Flex", Inter, Arial, sans-serif`;
+  context.textAlign = 'left';
+  context.textBaseline = 'alphabetic';
+  titleLayout.lines.forEach((line, index) => context.fillText(line, 807, 350 + (index * titleLayout.lineHeight)));
+
+  const director = (credits.crew || []).find((person) => person.job === 'Director')?.name || '—';
+  const metadata = [formatRuntime(details.runtime), getCertification(releaseDates), `Director: ${director}`]
+    .filter(Boolean)
+    .join(' • ');
+  const titleBottom = 350 + ((titleLayout.lines.length - 1) * titleLayout.lineHeight);
+  const metadataY = titleBottom + 148;
+  context.fillStyle = '#f7f7f7';
+  context.font = '400 28px "Roboto Flex", Arial, sans-serif';
+  context.fillText(metadata, 807, metadataY);
+
+  context.font = '500 24px "Roboto Flex", Arial, sans-serif';
+  context.fillText('WATCH IT ON', 807, 727);
+  context.strokeStyle = '#f7f7f7';
+  context.lineWidth = 4;
+  context.beginPath();
+  context.moveTo(807, 766);
+  context.lineTo(1602, 766);
+  context.stroke();
+}
+
+function getShareCardTitleLines(context, title) {
+  const maxWidth = 790;
+  const normalizedTitle = formatTitleForBalancedWrap(title);
+  const words = normalizedTitle.split(/\s+/).filter(Boolean);
+  const baseFontSize = 124;
+  context.font = `900 ${baseFontSize}px "Roboto Flex", Inter, Arial, sans-serif`;
+
+  if (words.length < 2) {
+    const width = context.measureText(normalizedTitle).width;
+    const fontSize = Math.max(68, Math.min(baseFontSize, Math.floor((baseFontSize * maxWidth) / width)));
+    return { lines: [normalizedTitle], fontSize, lineHeight: Math.round(fontSize * 1.21) };
+  }
+
+  let bestLines = [normalizedTitle];
+  let bestScore = Number.POSITIVE_INFINITY;
+  for (let breakIndex = 1; breakIndex < words.length; breakIndex += 1) {
+    const lines = [words.slice(0, breakIndex).join(' '), words.slice(breakIndex).join(' ')];
+    const widths = lines.map((line) => context.measureText(line).width);
+    const score = Math.max(...widths) + (Math.abs(widths[0] - widths[1]) * 0.18);
+    if (score < bestScore) {
+      bestScore = score;
+      bestLines = lines;
+    }
+  }
+
+  const widestLine = Math.max(...bestLines.map((line) => context.measureText(line).width));
+  const fontSize = Math.max(68, Math.min(baseFontSize, Math.floor((baseFontSize * maxWidth) / widestLine)));
+  return { lines: bestLines, fontSize, lineHeight: Math.round(fontSize * 1.21) };
+}
+
+async function drawShareCardProviders(context, providerData, details) {
+  const region = providerData?.results?.US || providerData?.results?.GB || {};
+  const providers = details.ownedPhysical
+    ? [{ logo_path: PHYSICAL_MEDIA_LOGO }]
+    : (region.flatrate || []).slice(0, 5);
+  const positions = [847, 967, 1088, 1209, 1330];
+
+  for (const [index, provider] of providers.slice(0, 5).entries()) {
+    const x = positions[index];
+    const y = 838;
+    context.save();
+    context.beginPath();
+    context.arc(x, y, 39, 0, Math.PI * 2);
+    context.clip();
+    context.fillStyle = '#dedede';
+    context.fill();
+    try {
+      const src = provider.logo_path?.startsWith('assets/')
+        ? provider.logo_path
+        : getShareCardImageUrl(provider.logo_path, 'original');
+      const logo = await loadCanvasImage(src);
+      drawImageCover(context, logo, x - 40, y - 40, 80, 80);
+    } catch (error) {
+      console.warn('Could not load card provider logo.', error);
+    }
+    context.restore();
+  }
+}
+
+function getShareCardImageUrl(imagePath, size) {
+  const query = new URLSearchParams({ path: imagePath, size });
+  return `${IMAGE_PROXY_URL}?${query.toString()}`;
+}
+
+function loadCanvasImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Image failed to load: ${src}`));
+    image.src = src;
+  });
+}
+
+function drawRoundedRect(context, x, y, width, height, radius) {
+  context.beginPath();
+  context.roundRect(x, y, width, height, radius);
+}
+
+function drawImageCover(context, image, x, y, width, height) {
+  const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+  const drawWidth = image.naturalWidth * scale;
+  const drawHeight = image.naturalHeight * scale;
+  context.drawImage(image, x + ((width - drawWidth) / 2), y + ((height - drawHeight) / 2), drawWidth, drawHeight);
+}
+
 function setLoading(isLoading) {
   if (isLoading) {
     resetTryAgainHoverLabels();
@@ -4249,6 +4598,7 @@ function setLoading(isLoading) {
   els.headerPickMonkeMovie.disabled = isLoading;
   els.tryAgain.disabled = isLoading;
   els.clearResultFilters.disabled = isLoading || !state.currentResultMovie?.id;
+  els.downloadShareCard.disabled = isLoading || !state.currentResultBundle?.details;
   els.pickMovie.textContent = isLoading ? 'Picking...' : "Let's do it";
   els.headerPickMovie.textContent = isLoading ? 'Picking...' : "Let's do it";
   els.pickMonkeMovie.textContent = isLoading ? 'Picking...' : 'OK Precious';
@@ -4378,6 +4728,12 @@ function handlePosterTrailerClick(event) {
     return;
   }
 
+  if (event.target.closest('#downloadCardAction')) {
+    resetMobileTrailerArm();
+    downloadShareCard();
+    return;
+  }
+
   if (!state.mobileTrailerArmed) {
     state.mobileTrailerArmed = true;
     els.posterButton.classList.add('mobile-trailer-armed');
@@ -4503,6 +4859,77 @@ function clearFilters() {
   refreshCount();
 }
 
+function beginResultFilterEditing() {
+  if (state.resultFilterEditState || !state.currentResultMovie?.id) return;
+
+  state.resultFilterEditState = {
+    selectedGenreIds: [...state.selectedGenreIds],
+    selectedRatings: [...state.selectedRatings],
+    anyRatingSelected: state.anyRatingSelected,
+    selectedDecades: [...state.selectedDecades],
+    anyEraSelected: state.anyEraSelected,
+    monkeFormats: [...state.monkeFormats]
+  };
+  if (state.resultSource === 'shared') {
+    state.anyRatingSelected = true;
+    state.anyEraSelected = true;
+  }
+  updateResultFilterEditingControls();
+  showView(state.resultSource === 'secret' ? 'monkeFilter' : 'picker');
+}
+
+function dismissResultFilterEditing() {
+  const previousState = state.resultFilterEditState;
+  if (!previousState) return;
+
+  state.selectedGenreIds = previousState.selectedGenreIds;
+  state.selectedRatings = previousState.selectedRatings;
+  state.anyRatingSelected = previousState.anyRatingSelected;
+  state.selectedDecades = previousState.selectedDecades;
+  state.anyEraSelected = previousState.anyEraSelected;
+  state.monkeFormats = previousState.monkeFormats;
+  state.resultFilterEditState = null;
+  updateResultFilterEditingControls();
+  syncFilterControls();
+  renderResultFilters(state.currentResultMovie);
+  showView('result');
+}
+
+function finishResultFilterEditing() {
+  if (!state.resultFilterEditState) return;
+  state.resultFilterEditState = null;
+  updateResultFilterEditingControls();
+}
+
+function applyResultFilterEditing() {
+  if (!state.resultFilterEditState) return false;
+
+  const wasSharedOrSavedResult = ['shared', 'saved', 'savedRandom'].includes(state.resultSource);
+  state.resultFilterEditState = null;
+  updateResultFilterEditingControls();
+  if (wasSharedOrSavedResult) {
+    setResultSource(state.physicalMode ? 'physical' : 'filtered');
+  }
+  syncFilterControls();
+  renderResultFilters(state.currentResultMovie);
+  showView('result');
+  return true;
+}
+
+function updateResultFilterEditingControls() {
+  const isEditing = Boolean(state.resultFilterEditState);
+  [els.clearFilters, els.headerClearFilters, els.backToMonkeHome, els.headerBackToMonkeHome].forEach((button) => {
+    if (!button) return;
+    button.textContent = isEditing ? 'Cancel' : button === els.clearFilters || button === els.headerClearFilters ? 'Clear' : 'Back';
+  });
+  [els.pickMovie, els.headerPickMovie].forEach((button) => {
+    if (button) button.textContent = isEditing ? 'Done' : "Let's do it";
+  });
+  [els.pickMonkeMovie, els.headerPickMonkeMovie].forEach((button) => {
+    if (button) button.textContent = isEditing ? 'Done' : 'OK Precious';
+  });
+}
+
 function syncFilterControls() {
   renderGenrePills();
   renderRatingPills();
@@ -4615,12 +5042,27 @@ function animateResultFilterEntrance(pill) {
 }
 
 function handleGenreBackClear() {
+  if (state.resultFilterEditState) {
+    dismissResultFilterEditing();
+    return;
+  }
+
   if (!state.selectedGenreIds.length) {
     showView('landing');
     return;
   }
 
   clearFilters();
+}
+
+function handleResultFilterEditingPick() {
+  if (applyResultFilterEditing()) return;
+  pickRandomMovie();
+}
+
+function handleResultFilterEditingMonkePick() {
+  if (applyResultFilterEditing()) return;
+  pickSecretMovie();
 }
 
 function setResultSource(source) {
@@ -4632,6 +5074,7 @@ function setResultSource(source) {
 function wireEvents() {
   els.homeButton.addEventListener('click', () => showView('landing'));
   els.startPicking.addEventListener('click', () => {
+    cancelInitialFloatingPosterLoad();
     if (state.mode === 'monke') {
       showView('monkeFilter');
       return;
@@ -4647,12 +5090,18 @@ function wireEvents() {
   els.headerBackToGenres.addEventListener('click', () => showView('picker'));
   els.backToRatings.addEventListener('click', () => showView('rating'));
   els.headerBackToRatings.addEventListener('click', () => showView('rating'));
-  els.pickMovie.addEventListener('click', pickRandomMovie);
-  els.pickMonkeMovie.addEventListener('click', pickSecretMovie);
-  els.headerPickMonkeMovie.addEventListener('click', pickSecretMovie);
-  els.backToMonkeHome.addEventListener('click', () => showView('landing'));
-  els.headerBackToMonkeHome.addEventListener('click', () => showView('landing'));
-  els.headerPickMovie.addEventListener('click', pickRandomMovie);
+  els.pickMovie.addEventListener('click', handleResultFilterEditingPick);
+  els.pickMonkeMovie.addEventListener('click', handleResultFilterEditingMonkePick);
+  els.headerPickMonkeMovie.addEventListener('click', handleResultFilterEditingMonkePick);
+  els.backToMonkeHome.addEventListener('click', () => {
+    if (state.resultFilterEditState) dismissResultFilterEditing();
+    else showView('landing');
+  });
+  els.headerBackToMonkeHome.addEventListener('click', () => {
+    if (state.resultFilterEditState) dismissResultFilterEditing();
+    else showView('landing');
+  });
+  els.headerPickMovie.addEventListener('click', handleResultFilterEditingPick);
   els.headerClearFilters.addEventListener('click', handleGenreBackClear);
   els.tryAgain.addEventListener('click', () => {
     if (state.resultSource === 'sample') {
@@ -4662,6 +5111,12 @@ function wireEvents() {
 
     if (state.resultSource === 'secret') {
       pickSecretMovie({ cyclePosterOnly: true });
+      return;
+    }
+
+    if (state.resultSource === 'shared') {
+      clearFilters();
+      pickRandomMovie({ cyclePosterOnly: true });
       return;
     }
 
@@ -4690,6 +5145,13 @@ function wireEvents() {
   els.posterLightbox.addEventListener('click', (event) => {
     if (event.target === els.posterLightbox) closePosterLightbox();
   });
+  els.closeShareCardModal.addEventListener('click', closeShareCardModal);
+  els.shareCardModal.addEventListener('click', (event) => {
+    if (event.target === els.shareCardModal) closeShareCardModal();
+  });
+  els.copyShareCard.addEventListener('click', copyShareCardImage);
+  els.copyShareLink.addEventListener('click', copyShareCardLink);
+  els.downloadShareCardFile.addEventListener('click', saveShareCardImage);
   document.addEventListener('pointerdown', (event) => {
     if (
       mobileMediaQuery.matches &&
@@ -4709,11 +5171,14 @@ function wireEvents() {
     if (event.key === 'Escape') {
       closeTrailer();
       closePosterLightbox();
+      closeShareCardModal();
       closeNav();
     }
   });
   els.clearFilters.addEventListener('click', handleGenreBackClear);
   els.clearResultFilters.addEventListener('click', handleResultSaveAction);
+  els.downloadShareCard.addEventListener('click', downloadShareCard);
+  els.addResultFilter.addEventListener('click', beginResultFilterEditing);
   els.navToggle.addEventListener('click', toggleNav);
   if (els.navClose) els.navClose.addEventListener('click', closeNav);
   els.navOverlay.addEventListener('click', (event) => {
@@ -4821,11 +5286,10 @@ async function init() {
   } else {
     playLandingIntro();
   }
-  loadFloatingPosters();
+  if (!sharedMovieId) scheduleInitialFloatingPosterLoad();
 
   try {
-    await loadGenres();
-    await refreshCount();
+    await Promise.all([loadGenres(), refreshCount()]);
   } catch (error) {
     console.error(error);
     els.resultCount.textContent = 'Add TMDb token';
