@@ -102,7 +102,12 @@ const main = async () => {
     ? `<clipPath id="provider-${index}"><circle cx="${846 + index * 118}" cy="813" r="40" /></clipPath><image href="${toDataUri(image)}" x="${806 + index * 118}" y="773" width="80" height="80" preserveAspectRatio="xMidYMid slice" clip-path="url(#provider-${index})" />`
     : '').join('');
   const titleTracking = (titleFontSize * 0.06).toFixed(2);
-  const titleSvg = titleLines.map((line, index) => `<text x="806" y="${titleY + index * (titleFontSize + 14)}" class="title" letter-spacing="${titleTracking}px">${xmlEscape(line)}</text>`).join('');
+  const titleSvg = titleLines.map((line, index) => {
+    const trackedCharacters = Array.from(line).map((character, characterIndex) => (
+      `<tspan dx="${characterIndex === 0 ? 0 : titleTracking}">${xmlEscape(character)}</tspan>`
+    )).join('');
+    return `<text x="806" y="${titleY + index * (titleFontSize + 14)}" class="title" xml:space="preserve">${trackedCharacters}</text>`;
+  }).join('');
   const meta = `${Math.floor(details.runtime / 60)}h ${details.runtime % 60}m • ${details.certification || 'NR'} • Director: ${director}`;
   const cardSvg = `<svg width="1680" height="945" viewBox="0 0 1680 945" xmlns="http://www.w3.org/2000/svg">
     <defs>
