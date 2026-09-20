@@ -62,7 +62,11 @@ const main = async () => {
           encoding: 'utf8'
         });
         if (result.status !== 0) {
-          if ((result.stderr || result.stdout).includes("does not meet this slot's selection policy")) continue;
+          const output = result.stderr || result.stdout;
+          if (
+            output.includes("does not meet this slot's selection policy")
+            || output.includes('No eligible movie was returned by TMDb.')
+          ) continue;
           throw new Error(result.stderr || result.stdout || `Failed to create draft ${draftId}.`);
         }
         movie = JSON.parse(await readFile(resolve(draftDirectory, 'movie.json'), 'utf8'));
