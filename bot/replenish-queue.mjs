@@ -29,7 +29,7 @@ if (cutoffDate && lastScheduledDate >= cutoffDate) {
 const startDate = lastScheduledDate ? addDays(lastScheduledDate, 1) : addDays(easternToday(), 1);
 const needed = targetEntries - pendingEntries.length;
 const outputDirectory = resolve('.bot-queue-replenish');
-const drafts = await generateDrafts({ startDate, days: Math.ceil(needed / 2) + 3, outputDirectory });
+const drafts = await generateDrafts({ startDate, days: Math.ceil(needed / 2) + 3, outputDirectory, theme: queue.theme || 'standard' });
 const seenMovieIds = new Set(queue.entries.map((entry) => entry.id));
 const additions = drafts
   .filter((draft) => !seenMovieIds.has(draft.id) && (!cutoffDate || draft.date <= cutoffDate))

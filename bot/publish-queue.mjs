@@ -42,7 +42,8 @@ const render = spawnSync(process.execPath, ['bot/generate-dry-run.mjs'], {
     BOT_OUTPUT_DIR: outputDirectory,
     MOVIE_ID: String(dueEntry.id),
     SCHEDULE_DATE: dueEntry.date,
-    SCHEDULE_AT: dueEntry.slotLabel
+    SCHEDULE_AT: dueEntry.slotLabel,
+    BOT_CARD_THEME: dueEntry.theme || queue.theme || 'standard'
   },
   encoding: 'utf8'
 });

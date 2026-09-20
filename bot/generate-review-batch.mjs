@@ -7,6 +7,7 @@ const days = Math.max(1, Math.min(31, Number.parseInt(process.env.BOT_BATCH_DAYS
 const slots = [12, 20];
 const maxAttemptsPerSlot = 60;
 const seedBase = Number.parseInt(process.env.SELECTION_SEED || '', 10) || Date.now();
+const cardTheme = process.env.BOT_BATCH_THEME || 'standard';
 
 const htmlEscape = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&apos;', '"': '&quot;' })[character]);
 
@@ -51,6 +52,7 @@ const main = async () => {
             BOT_OUTPUT_DIR: draftDirectory,
             SCHEDULE_AT: slotLabel,
             SCHEDULE_DATE: date,
+            BOT_CARD_THEME: cardTheme,
             ALLOW_LONG_RUNTIME: slotIndex % 5 === 4 ? '1' : '0',
             SELECTION_SEED: String(seedBase + (slotIndex * 37) + attempt)
           },
