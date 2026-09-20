@@ -3,7 +3,7 @@
   "timeZone": "America/New_York",
   "autoReplenishUntil": "2026-09-30",
   "createdAt": "2026-09-20T03:30:06.965Z",
-  "updatedAt": "2026-09-20T17:24:52.843Z",
+  "updatedAt": "2026-09-20T18:16:41.873Z",
   "entries": [
     {
       "id": 500,
@@ -630,6 +630,1854 @@
       "cardPath": "drafts/22/card.png",
       "state": "skipped",
       "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 176,
+      "title": "Saw",
+      "year": "2004",
+      "runtime": 103,
+      "certification": "R",
+      "director": "James Wan",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "providers": [
+        "MovieSphere+ Amazon Channel",
+        "Howdy Amazon Channel"
+      ],
+      "postText": "Saw (2004)\nDirector: James Wan\nGenres: Horror, Mystery\nhttps://90minutemovie.com/?movie=176",
+      "scheduledAt": "Thursday, October 1 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "01",
+      "date": "2026-10-01",
+      "hour": 12,
+      "slotLabel": "Thursday, October 1 · 12:00 PM ET",
+      "cardPath": "drafts/01/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 126172,
+      "title": "Leprechaun: Origins",
+      "year": "2014",
+      "runtime": 90,
+      "certification": "R",
+      "director": "Zach Lipovsky",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "AMC+ Roku Premium Channel",
+        "Starz Apple TV channel",
+        "MovieSphere+ Amazon Channel"
+      ],
+      "postText": "Leprechaun: Origins (2014)\nDirector: Zach Lipovsky\nGenres: Horror\nhttps://90minutemovie.com/?movie=126172",
+      "scheduledAt": "Thursday, October 1 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "02",
+      "date": "2026-10-01",
+      "hour": 20,
+      "slotLabel": "Thursday, October 1 · 8:00 PM ET",
+      "cardPath": "drafts/02/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1511789,
+      "title": "Captain Hook: The Cursed Tides",
+      "year": "2025",
+      "runtime": 90,
+      "certification": "NR",
+      "director": "Lars Janssen",
+      "genres": [
+        "Horror",
+        "Adventure"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "Captain Hook: The Cursed Tides (2025)\nDirector: Lars Janssen\nGenres: Horror, Adventure\nhttps://90minutemovie.com/?movie=1511789",
+      "scheduledAt": "Friday, October 2 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "03",
+      "date": "2026-10-02",
+      "hour": 12,
+      "slotLabel": "Friday, October 2 · 12:00 PM ET",
+      "cardPath": "drafts/03/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 24124,
+      "title": "The Burning",
+      "year": "1981",
+      "runtime": 91,
+      "certification": "R",
+      "director": "Tony Maylam",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "The Burning (1981)\nDirector: Tony Maylam\nGenres: Horror\nhttps://90minutemovie.com/?movie=24124",
+      "scheduledAt": "Friday, October 2 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "04",
+      "date": "2026-10-02",
+      "hour": 20,
+      "slotLabel": "Friday, October 2 · 8:00 PM ET",
+      "cardPath": "drafts/04/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 11342,
+      "title": "Warlock",
+      "year": "1989",
+      "runtime": 103,
+      "certification": "R",
+      "director": "Steve Miner",
+      "genres": [
+        "Horror",
+        "Fantasy"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads",
+        "MovieSphere+ Amazon Channel"
+      ],
+      "postText": "Warlock (1989)\nDirector: Steve Miner\nGenres: Horror, Fantasy\nhttps://90minutemovie.com/?movie=11342",
+      "scheduledAt": "Saturday, October 3 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "05",
+      "date": "2026-10-03",
+      "hour": 12,
+      "slotLabel": "Saturday, October 3 · 12:00 PM ET",
+      "cardPath": "drafts/05/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 46429,
+      "title": "Gallowwalkers",
+      "year": "2012",
+      "runtime": 90,
+      "certification": "R",
+      "director": "Andrew Goth",
+      "genres": [
+        "Horror",
+        "Action"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Philo",
+        "Amazon Prime Video with Ads",
+        "MovieSphere+ Amazon Channel",
+        "Howdy Amazon Channel"
+      ],
+      "postText": "Gallowwalkers (2012)\nDirector: Andrew Goth\nGenres: Horror, Action\nhttps://90minutemovie.com/?movie=46429",
+      "scheduledAt": "Saturday, October 3 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "06",
+      "date": "2026-10-03",
+      "hour": 20,
+      "slotLabel": "Saturday, October 3 · 8:00 PM ET",
+      "cardPath": "drafts/06/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 452507,
+      "title": "1922",
+      "year": "2017",
+      "runtime": 102,
+      "certification": "NR",
+      "director": "Zak Hilditch",
+      "genres": [
+        "Horror",
+        "Crime"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "1922 (2017)\nDirector: Zak Hilditch\nGenres: Horror, Crime\nhttps://90minutemovie.com/?movie=452507",
+      "scheduledAt": "Sunday, October 4 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "07",
+      "date": "2026-10-04",
+      "hour": 12,
+      "slotLabel": "Sunday, October 4 · 12:00 PM ET",
+      "cardPath": "drafts/07/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 10375,
+      "title": "D-Tox",
+      "year": "2002",
+      "runtime": 96,
+      "certification": "R",
+      "director": "Jim Gillespie",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "fuboTV",
+        "Amazon Prime Video with Ads",
+        "Shout! Factory Amazon Channel",
+        "Howdy Amazon Channel"
+      ],
+      "postText": "D-Tox (2002)\nDirector: Jim Gillespie\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=10375",
+      "scheduledAt": "Sunday, October 4 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "08",
+      "date": "2026-10-04",
+      "hour": 20,
+      "slotLabel": "Sunday, October 4 · 8:00 PM ET",
+      "cardPath": "drafts/08/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 536554,
+      "title": "M3GAN",
+      "year": "2022",
+      "runtime": 102,
+      "certification": "PG-13",
+      "director": "Gerard Johnstone",
+      "genres": [
+        "Horror",
+        "Science Fiction"
+      ],
+      "providers": [
+        "Netflix",
+        "YouTube TV",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "M3GAN (2022)\nDirector: Gerard Johnstone\nGenres: Horror, Science Fiction\nhttps://90minutemovie.com/?movie=536554",
+      "scheduledAt": "Monday, October 5 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "09",
+      "date": "2026-10-05",
+      "hour": 12,
+      "slotLabel": "Monday, October 5 · 12:00 PM ET",
+      "cardPath": "drafts/09/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 8913,
+      "title": "Pet Sematary",
+      "year": "1989",
+      "runtime": 103,
+      "certification": "R",
+      "director": "Mary Lambert",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "Paramount Plus Premium",
+        "Paramount Plus Essential",
+        "Paramount+ Amazon Channel"
+      ],
+      "postText": "Pet Sematary (1989)\nDirector: Mary Lambert\nGenres: Horror\nhttps://90minutemovie.com/?movie=8913",
+      "scheduledAt": "Monday, October 5 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "10",
+      "date": "2026-10-05",
+      "hour": 20,
+      "slotLabel": "Monday, October 5 · 8:00 PM ET",
+      "cardPath": "drafts/10/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 19064,
+      "title": "Once Bitten",
+      "year": "1985",
+      "runtime": 94,
+      "certification": "PG-13",
+      "director": "Howard Storm",
+      "genres": [
+        "Horror",
+        "Comedy"
+      ],
+      "providers": [
+        "fuboTV",
+        "MGM+ Amazon Channel",
+        "Philo",
+        "MGM Plus Roku Premium Channel",
+        "MGM Plus"
+      ],
+      "postText": "Once Bitten (1985)\nDirector: Howard Storm\nGenres: Horror, Comedy\nhttps://90minutemovie.com/?movie=19064",
+      "scheduledAt": "Tuesday, October 6 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "11",
+      "date": "2026-10-06",
+      "hour": 12,
+      "slotLabel": "Tuesday, October 6 · 12:00 PM ET",
+      "cardPath": "drafts/11/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1288072,
+      "title": "Keeper",
+      "year": "2025",
+      "runtime": 99,
+      "certification": "R",
+      "director": "Osgood Perkins",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "providers": [
+        "Hulu"
+      ],
+      "postText": "Keeper (2025)\nDirector: Osgood Perkins\nGenres: Horror, Mystery\nhttps://90minutemovie.com/?movie=1288072",
+      "scheduledAt": "Tuesday, October 6 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "12",
+      "date": "2026-10-06",
+      "hour": 20,
+      "slotLabel": "Tuesday, October 6 · 8:00 PM ET",
+      "cardPath": "drafts/12/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1479495,
+      "title": "Hellcat",
+      "year": "2025",
+      "runtime": 91,
+      "certification": "NR",
+      "director": "Brock Bodell",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Philo",
+        "AMC Plus Apple TV channel",
+        "AMC+ Amazon Channel",
+        "AMC+ Roku Premium Channel",
+        "AMC+"
+      ],
+      "postText": "Hellcat (2025)\nDirector: Brock Bodell\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=1479495",
+      "scheduledAt": "Wednesday, October 7 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "13",
+      "date": "2026-10-07",
+      "hour": 12,
+      "slotLabel": "Wednesday, October 7 · 12:00 PM ET",
+      "cardPath": "drafts/13/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 845643,
+      "title": "The Piper",
+      "year": "2023",
+      "runtime": 95,
+      "certification": "NR",
+      "director": "Erlingur Thoroddsen",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "The Piper (2023)\nDirector: Erlingur Thoroddsen\nGenres: Horror\nhttps://90minutemovie.com/?movie=845643",
+      "scheduledAt": "Wednesday, October 7 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "14",
+      "date": "2026-10-07",
+      "hour": 20,
+      "slotLabel": "Wednesday, October 7 · 8:00 PM ET",
+      "cardPath": "drafts/14/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1032823,
+      "title": "Trap",
+      "year": "2024",
+      "runtime": 105,
+      "certification": "PG-13",
+      "director": "M. Night Shyamalan",
+      "genres": [
+        "Horror",
+        "Crime"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "HBO Max Amazon Channel",
+        "HBO Max",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "Trap (2024)\nDirector: M. Night Shyamalan\nGenres: Horror, Crime\nhttps://90minutemovie.com/?movie=1032823",
+      "scheduledAt": "Thursday, October 8 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "15",
+      "date": "2026-10-08",
+      "hour": 12,
+      "slotLabel": "Thursday, October 8 · 12:00 PM ET",
+      "cardPath": "drafts/15/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 313922,
+      "title": "Green Room",
+      "year": "2016",
+      "runtime": 95,
+      "certification": "R",
+      "director": "Jeremy Saulnier",
+      "genres": [
+        "Horror",
+        "Crime"
+      ],
+      "providers": [
+        "Netflix",
+        "Darkroom",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "Green Room (2016)\nDirector: Jeremy Saulnier\nGenres: Horror, Crime\nhttps://90minutemovie.com/?movie=313922",
+      "scheduledAt": "Thursday, October 8 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "16",
+      "date": "2026-10-08",
+      "hour": 20,
+      "slotLabel": "Thursday, October 8 · 8:00 PM ET",
+      "cardPath": "drafts/16/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 310131,
+      "title": "The Witch",
+      "year": "2016",
+      "runtime": 92,
+      "certification": "R",
+      "director": "Robert Eggers",
+      "genres": [
+        "Horror",
+        "Drama"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "The Witch (2016)\nDirector: Robert Eggers\nGenres: Horror, Drama\nhttps://90minutemovie.com/?movie=310131",
+      "scheduledAt": "Friday, October 9 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "17",
+      "date": "2026-10-09",
+      "hour": 12,
+      "slotLabel": "Friday, October 9 · 12:00 PM ET",
+      "cardPath": "drafts/17/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 571384,
+      "title": "Come Play",
+      "year": "2020",
+      "runtime": 97,
+      "certification": "PG-13",
+      "director": "Jacob Chase",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "providers": [
+        "Peacock Premium",
+        "YouTube TV",
+        "Peacock Premium Plus"
+      ],
+      "postText": "Come Play (2020)\nDirector: Jacob Chase\nGenres: Horror, Mystery\nhttps://90minutemovie.com/?movie=571384",
+      "scheduledAt": "Friday, October 9 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "18",
+      "date": "2026-10-09",
+      "hour": 20,
+      "slotLabel": "Friday, October 9 · 8:00 PM ET",
+      "cardPath": "drafts/18/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 814800,
+      "title": "Goodnight Mommy",
+      "year": "2022",
+      "runtime": 92,
+      "certification": "R",
+      "director": "Matt Sobel",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "Goodnight Mommy (2022)\nDirector: Matt Sobel\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=814800",
+      "scheduledAt": "Saturday, October 10 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "19",
+      "date": "2026-10-10",
+      "hour": 12,
+      "slotLabel": "Saturday, October 10 · 12:00 PM ET",
+      "cardPath": "drafts/19/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 872497,
+      "title": "Resurrection",
+      "year": "2022",
+      "runtime": 104,
+      "certification": "R",
+      "director": "Andrew Semans",
+      "genres": [
+        "Horror",
+        "Drama"
+      ],
+      "providers": [
+        "Philo",
+        "AMC+ Amazon Channel",
+        "AMC+ Roku Premium Channel",
+        "Shudder",
+        "Shudder Amazon Channel"
+      ],
+      "postText": "Resurrection (2022)\nDirector: Andrew Semans\nGenres: Horror, Drama\nhttps://90minutemovie.com/?movie=872497",
+      "scheduledAt": "Saturday, October 10 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "20",
+      "date": "2026-10-10",
+      "hour": 20,
+      "slotLabel": "Saturday, October 10 · 8:00 PM ET",
+      "cardPath": "drafts/20/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1368314,
+      "title": "Passenger",
+      "year": "2026",
+      "runtime": 94,
+      "certification": "R",
+      "director": "André Øvredal",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Paramount Plus Premium",
+        "Paramount Plus Essential",
+        "Paramount+ Amazon Channel",
+        "Paramount+ Roku Premium Channel"
+      ],
+      "postText": "Passenger (2026)\nDirector: André Øvredal\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=1368314",
+      "scheduledAt": "Sunday, October 11 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "21",
+      "date": "2026-10-11",
+      "hour": 12,
+      "slotLabel": "Sunday, October 11 · 12:00 PM ET",
+      "cardPath": "drafts/21/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 24924,
+      "title": "Night of the Demons",
+      "year": "1988",
+      "runtime": 90,
+      "certification": "R",
+      "director": "Kevin Tenney",
+      "genres": [
+        "Horror",
+        "Comedy"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Philo",
+        "AMC Plus Apple TV channel",
+        "AMC+ Amazon Channel",
+        "AMC+"
+      ],
+      "postText": "Night of the Demons (1988)\nDirector: Kevin Tenney\nGenres: Horror, Comedy\nhttps://90minutemovie.com/?movie=24924",
+      "scheduledAt": "Sunday, October 11 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "22",
+      "date": "2026-10-11",
+      "hour": 20,
+      "slotLabel": "Sunday, October 11 · 8:00 PM ET",
+      "cardPath": "drafts/22/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 605804,
+      "title": "The Wretched",
+      "year": "2019",
+      "runtime": 95,
+      "certification": "NR",
+      "director": "Drew T. Pierce",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "providers": [
+        "Netflix",
+        "Philo",
+        "AMC Plus Apple TV channel",
+        "AMC+ Amazon Channel",
+        "AMC+ Roku Premium Channel"
+      ],
+      "postText": "The Wretched (2019)\nDirector: Drew T. Pierce\nGenres: Horror, Mystery\nhttps://90minutemovie.com/?movie=605804",
+      "scheduledAt": "Monday, October 12 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "23",
+      "date": "2026-10-12",
+      "hour": 12,
+      "slotLabel": "Monday, October 12 · 12:00 PM ET",
+      "cardPath": "drafts/23/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 83899,
+      "title": "You're Next",
+      "year": "2013",
+      "runtime": 94,
+      "certification": "R",
+      "director": "Adam Wingard",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Philo",
+        "Starz Apple TV channel",
+        "MovieSphere+ Amazon Channel",
+        "Howdy Amazon Channel"
+      ],
+      "postText": "You're Next (2013)\nDirector: Adam Wingard\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=83899",
+      "scheduledAt": "Monday, October 12 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "24",
+      "date": "2026-10-12",
+      "hour": 20,
+      "slotLabel": "Monday, October 12 · 8:00 PM ET",
+      "cardPath": "drafts/24/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1362315,
+      "title": "The Hand That Rocks the Cradle",
+      "year": "2025",
+      "runtime": 105,
+      "certification": "R",
+      "director": "Michelle Garza Cervera",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Hulu"
+      ],
+      "postText": "The Hand That Rocks the Cradle (2025)\nDirector: Michelle Garza Cervera\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=1362315",
+      "scheduledAt": "Tuesday, October 13 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "25",
+      "date": "2026-10-13",
+      "hour": 12,
+      "slotLabel": "Tuesday, October 13 · 12:00 PM ET",
+      "cardPath": "drafts/25/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1683,
+      "title": "The Reaping",
+      "year": "2007",
+      "runtime": 99,
+      "certification": "R",
+      "director": "Stephen Hopkins",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "Howdy Amazon Channel"
+      ],
+      "postText": "The Reaping (2007)\nDirector: Stephen Hopkins\nGenres: Horror\nhttps://90minutemovie.com/?movie=1683",
+      "scheduledAt": "Tuesday, October 13 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "26",
+      "date": "2026-10-13",
+      "hour": 20,
+      "slotLabel": "Tuesday, October 13 · 8:00 PM ET",
+      "cardPath": "drafts/26/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 384798,
+      "title": "Kill Command",
+      "year": "2016",
+      "runtime": 99,
+      "certification": "NR",
+      "director": "Steven Gomez",
+      "genres": [
+        "Horror",
+        "Action"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "Kill Command (2016)\nDirector: Steven Gomez\nGenres: Horror, Action\nhttps://90minutemovie.com/?movie=384798",
+      "scheduledAt": "Wednesday, October 14 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "27",
+      "date": "2026-10-14",
+      "hour": 12,
+      "slotLabel": "Wednesday, October 14 · 12:00 PM ET",
+      "cardPath": "drafts/27/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1198984,
+      "title": "We Bury the Dead",
+      "year": "2026",
+      "runtime": 95,
+      "certification": "R",
+      "director": "Zak Hilditch",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Hulu"
+      ],
+      "postText": "We Bury the Dead (2026)\nDirector: Zak Hilditch\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=1198984",
+      "scheduledAt": "Wednesday, October 14 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "28",
+      "date": "2026-10-14",
+      "hour": 20,
+      "slotLabel": "Wednesday, October 14 · 8:00 PM ET",
+      "cardPath": "drafts/28/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 351460,
+      "title": "Death Note",
+      "year": "2017",
+      "runtime": 101,
+      "certification": "R",
+      "director": "Adam Wingard",
+      "genres": [
+        "Horror",
+        "Crime"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "Death Note (2017)\nDirector: Adam Wingard\nGenres: Horror, Crime\nhttps://90minutemovie.com/?movie=351460",
+      "scheduledAt": "Thursday, October 15 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "29",
+      "date": "2026-10-15",
+      "hour": 12,
+      "slotLabel": "Thursday, October 15 · 12:00 PM ET",
+      "cardPath": "drafts/29/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 913290,
+      "title": "Barbarian",
+      "year": "2022",
+      "runtime": 103,
+      "certification": "R",
+      "director": "Zach Cregger",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "providers": [
+        "fuboTV",
+        "HBO Max Amazon Channel",
+        "HBO Max"
+      ],
+      "postText": "Barbarian (2022)\nDirector: Zach Cregger\nGenres: Horror, Mystery\nhttps://90minutemovie.com/?movie=913290",
+      "scheduledAt": "Thursday, October 15 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "30",
+      "date": "2026-10-15",
+      "hour": 20,
+      "slotLabel": "Thursday, October 15 · 8:00 PM ET",
+      "cardPath": "drafts/30/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 301804,
+      "title": "Before I Wake",
+      "year": "2016",
+      "runtime": 97,
+      "certification": "PG-13",
+      "director": "Mike Flanagan",
+      "genres": [
+        "Horror",
+        "Drama"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "Before I Wake (2016)\nDirector: Mike Flanagan\nGenres: Horror, Drama\nhttps://90minutemovie.com/?movie=301804",
+      "scheduledAt": "Friday, October 16 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "31",
+      "date": "2026-10-16",
+      "hour": 12,
+      "slotLabel": "Friday, October 16 · 12:00 PM ET",
+      "cardPath": "drafts/31/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 9392,
+      "title": "The Descent",
+      "year": "2005",
+      "runtime": 100,
+      "certification": "R",
+      "director": "Neil Marshall",
+      "genres": [
+        "Horror",
+        "Adventure"
+      ],
+      "providers": [
+        "Philo",
+        "BFI Player Amazon Channel",
+        "MovieSphere+ Amazon Channel"
+      ],
+      "postText": "The Descent (2005)\nDirector: Neil Marshall\nGenres: Horror, Adventure\nhttps://90minutemovie.com/?movie=9392",
+      "scheduledAt": "Friday, October 16 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "32",
+      "date": "2026-10-16",
+      "hour": 20,
+      "slotLabel": "Friday, October 16 · 8:00 PM ET",
+      "cardPath": "drafts/32/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 21362,
+      "title": "High Spirits",
+      "year": "1988",
+      "runtime": 99,
+      "certification": "PG-13",
+      "director": "Neil Jordan",
+      "genres": [
+        "Horror",
+        "Fantasy"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "ScreenPix Apple TV channel",
+        "Amazon Prime Video with Ads",
+        "ScreenPix Amazon Channel "
+      ],
+      "postText": "High Spirits (1988)\nDirector: Neil Jordan\nGenres: Horror, Fantasy\nhttps://90minutemovie.com/?movie=21362",
+      "scheduledAt": "Saturday, October 17 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "33",
+      "date": "2026-10-17",
+      "hour": 12,
+      "slotLabel": "Saturday, October 17 · 12:00 PM ET",
+      "cardPath": "drafts/33/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1015303,
+      "title": "Elevator Game",
+      "year": "2023",
+      "runtime": 94,
+      "certification": "R",
+      "director": "Rebekah McKendry",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "Philo",
+        "AMC Plus Apple TV channel",
+        "AMC+ Amazon Channel",
+        "AMC+ Roku Premium Channel",
+        "AMC+"
+      ],
+      "postText": "Elevator Game (2023)\nDirector: Rebekah McKendry\nGenres: Horror\nhttps://90minutemovie.com/?movie=1015303",
+      "scheduledAt": "Saturday, October 17 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "34",
+      "date": "2026-10-17",
+      "hour": 20,
+      "slotLabel": "Saturday, October 17 · 8:00 PM ET",
+      "cardPath": "drafts/34/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 746781,
+      "title": "The Night",
+      "year": "2021",
+      "runtime": 105,
+      "certification": "NR",
+      "director": "Kourosh Ahari",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "providers": [
+        "Philo",
+        "AMC+ Amazon Channel",
+        "AMC+ Roku Premium Channel",
+        "YouTube TV",
+        "Sundance Now"
+      ],
+      "postText": "The Night (2021)\nDirector: Kourosh Ahari\nGenres: Horror, Mystery\nhttps://90minutemovie.com/?movie=746781",
+      "scheduledAt": "Sunday, October 18 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "35",
+      "date": "2026-10-18",
+      "hour": 12,
+      "slotLabel": "Sunday, October 18 · 12:00 PM ET",
+      "cardPath": "drafts/35/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 532408,
+      "title": "The Boogeyman",
+      "year": "2023",
+      "runtime": 99,
+      "certification": "PG-13",
+      "director": "Rob Savage",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "Hulu"
+      ],
+      "postText": "The Boogeyman (2023)\nDirector: Rob Savage\nGenres: Horror\nhttps://90minutemovie.com/?movie=532408",
+      "scheduledAt": "Sunday, October 18 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "36",
+      "date": "2026-10-18",
+      "hour": 20,
+      "slotLabel": "Sunday, October 18 · 8:00 PM ET",
+      "cardPath": "drafts/36/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 11954,
+      "title": "Lifeforce",
+      "year": "1985",
+      "runtime": 102,
+      "certification": "R",
+      "director": "Tobe Hooper",
+      "genres": [
+        "Horror",
+        "Science Fiction"
+      ],
+      "providers": [
+        "fuboTV",
+        "MGM+ Amazon Channel",
+        "Philo",
+        "MGM Plus Roku Premium Channel",
+        "MGM Plus"
+      ],
+      "postText": "Lifeforce (1985)\nDirector: Tobe Hooper\nGenres: Horror, Science Fiction\nhttps://90minutemovie.com/?movie=11954",
+      "scheduledAt": "Monday, October 19 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "37",
+      "date": "2026-10-19",
+      "hour": 12,
+      "slotLabel": "Monday, October 19 · 12:00 PM ET",
+      "cardPath": "drafts/37/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 680593,
+      "title": "The Dark and the Wicked",
+      "year": "2020",
+      "runtime": 95,
+      "certification": "NR",
+      "director": "Bryan Bertino",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "Philo",
+        "AMC Plus Apple TV channel",
+        "AMC+ Amazon Channel",
+        "AMC+ Roku Premium Channel",
+        "AMC+"
+      ],
+      "postText": "The Dark and the Wicked (2020)\nDirector: Bryan Bertino\nGenres: Horror\nhttps://90minutemovie.com/?movie=680593",
+      "scheduledAt": "Monday, October 19 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "38",
+      "date": "2026-10-19",
+      "hour": 20,
+      "slotLabel": "Monday, October 19 · 8:00 PM ET",
+      "cardPath": "drafts/38/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1242937,
+      "title": "The Dreadful",
+      "year": "2026",
+      "runtime": 94,
+      "certification": "R",
+      "director": "Natasha Kermani",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "The Dreadful (2026)\nDirector: Natasha Kermani\nGenres: Horror\nhttps://90minutemovie.com/?movie=1242937",
+      "scheduledAt": "Tuesday, October 20 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "39",
+      "date": "2026-10-20",
+      "hour": 12,
+      "slotLabel": "Tuesday, October 20 · 12:00 PM ET",
+      "cardPath": "drafts/39/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1992,
+      "title": "Planet Terror",
+      "year": "2007",
+      "runtime": 105,
+      "certification": "R",
+      "director": "Robert Rodriguez",
+      "genres": [
+        "Horror",
+        "Action"
+      ],
+      "providers": [
+        "MovieSphere+ Amazon Channel"
+      ],
+      "postText": "Planet Terror (2007)\nDirector: Robert Rodriguez\nGenres: Horror, Action\nhttps://90minutemovie.com/?movie=1992",
+      "scheduledAt": "Tuesday, October 20 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "40",
+      "date": "2026-10-20",
+      "hour": 20,
+      "slotLabel": "Tuesday, October 20 · 8:00 PM ET",
+      "cardPath": "drafts/40/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 30931,
+      "title": "Dark Night of the Scarecrow",
+      "year": "1981",
+      "runtime": 97,
+      "certification": "NR",
+      "director": "Frank De Felitta",
+      "genres": [
+        "Horror",
+        "TV Movie"
+      ],
+      "providers": [
+        "Philo",
+        "Night Flight Plus",
+        "Eternal Family",
+        "IndiePix Unlimited Amazon Channel",
+        "Bloodstream"
+      ],
+      "postText": "Dark Night of the Scarecrow (1981)\nDirector: Frank De Felitta\nGenres: Horror, TV Movie\nhttps://90minutemovie.com/?movie=30931",
+      "scheduledAt": "Wednesday, October 21 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "41",
+      "date": "2026-10-21",
+      "hour": 12,
+      "slotLabel": "Wednesday, October 21 · 12:00 PM ET",
+      "cardPath": "drafts/41/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 18476,
+      "title": "Horsemen",
+      "year": "2009",
+      "runtime": 90,
+      "certification": "R",
+      "director": "Jonas Åkerlund",
+      "genres": [
+        "Horror",
+        "Crime"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "Horsemen (2009)\nDirector: Jonas Åkerlund\nGenres: Horror, Crime\nhttps://90minutemovie.com/?movie=18476",
+      "scheduledAt": "Wednesday, October 21 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "42",
+      "date": "2026-10-21",
+      "hour": 20,
+      "slotLabel": "Wednesday, October 21 · 8:00 PM ET",
+      "cardPath": "drafts/42/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 10776,
+      "title": "Little Shop of Horrors",
+      "year": "1986",
+      "runtime": 94,
+      "certification": "PG-13",
+      "director": "Frank Oz",
+      "genres": [
+        "Horror",
+        "Comedy"
+      ],
+      "providers": [
+        "Philo"
+      ],
+      "postText": "Little Shop of Horrors (1986)\nDirector: Frank Oz\nGenres: Horror, Comedy\nhttps://90minutemovie.com/?movie=10776",
+      "scheduledAt": "Thursday, October 22 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "43",
+      "date": "2026-10-22",
+      "hour": 12,
+      "slotLabel": "Thursday, October 22 · 12:00 PM ET",
+      "cardPath": "drafts/43/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 447332,
+      "title": "A Quiet Place",
+      "year": "2018",
+      "runtime": 91,
+      "certification": "PG-13",
+      "director": "John Krasinski",
+      "genres": [
+        "Horror",
+        "Drama"
+      ],
+      "providers": [
+        "fuboTV",
+        "Paramount Plus Premium",
+        "Paramount Plus Essential",
+        "Paramount+ Amazon Channel",
+        "YouTube TV"
+      ],
+      "postText": "A Quiet Place (2018)\nDirector: John Krasinski\nGenres: Horror, Drama\nhttps://90minutemovie.com/?movie=447332",
+      "scheduledAt": "Thursday, October 22 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "44",
+      "date": "2026-10-22",
+      "hour": 20,
+      "slotLabel": "Thursday, October 22 · 8:00 PM ET",
+      "cardPath": "drafts/44/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 9913,
+      "title": "The Skeleton Key",
+      "year": "2005",
+      "runtime": 104,
+      "certification": "PG-13",
+      "director": "Iain Softley",
+      "genres": [
+        "Horror",
+        "Drama"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Peacock Premium",
+        "Amazon Prime Video with Ads",
+        "Peacock Premium Plus"
+      ],
+      "postText": "The Skeleton Key (2005)\nDirector: Iain Softley\nGenres: Horror, Drama\nhttps://90minutemovie.com/?movie=9913",
+      "scheduledAt": "Friday, October 23 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "45",
+      "date": "2026-10-23",
+      "hour": 12,
+      "slotLabel": "Friday, October 23 · 12:00 PM ET",
+      "cardPath": "drafts/45/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 112454,
+      "title": "Clown",
+      "year": "2014",
+      "runtime": 99,
+      "certification": "R",
+      "director": "Jon Watts",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Netflix"
+      ],
+      "postText": "Clown (2014)\nDirector: Jon Watts\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=112454",
+      "scheduledAt": "Friday, October 23 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "46",
+      "date": "2026-10-23",
+      "hour": 20,
+      "slotLabel": "Friday, October 23 · 8:00 PM ET",
+      "cardPath": "drafts/46/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 11906,
+      "title": "Suspiria",
+      "year": "1977",
+      "runtime": 99,
+      "certification": "R",
+      "director": "Dario Argento",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "Philo",
+        "Fandor Amazon Channel",
+        "Screambox Amazon Channel",
+        "Midnight Pulp Amazon Channel"
+      ],
+      "postText": "Suspiria (1977)\nDirector: Dario Argento\nGenres: Horror\nhttps://90minutemovie.com/?movie=11906",
+      "scheduledAt": "Saturday, October 24 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "47",
+      "date": "2026-10-24",
+      "hour": 12,
+      "slotLabel": "Saturday, October 24 · 12:00 PM ET",
+      "cardPath": "drafts/47/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1690,
+      "title": "Hostel",
+      "year": "2006",
+      "runtime": 94,
+      "certification": "R",
+      "director": "Eli Roth",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "MovieSphere+ Amazon Channel"
+      ],
+      "postText": "Hostel (2006)\nDirector: Eli Roth\nGenres: Horror\nhttps://90minutemovie.com/?movie=1690",
+      "scheduledAt": "Saturday, October 24 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "48",
+      "date": "2026-10-24",
+      "hour": 20,
+      "slotLabel": "Saturday, October 24 · 8:00 PM ET",
+      "cardPath": "drafts/48/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 77495,
+      "title": "Sleep Tight",
+      "year": "2011",
+      "runtime": 101,
+      "certification": "NR",
+      "director": "Jaume Balagueró",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "AMC+ Amazon Channel",
+        "Shudder",
+        "Shudder Amazon Channel",
+        "Shudder Apple TV channel"
+      ],
+      "postText": "Sleep Tight (2011)\nDirector: Jaume Balagueró\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=77495",
+      "scheduledAt": "Sunday, October 25 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "49",
+      "date": "2026-10-25",
+      "hour": 12,
+      "slotLabel": "Sunday, October 25 · 12:00 PM ET",
+      "cardPath": "drafts/49/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 734081,
+      "title": "Darkling",
+      "year": "2022",
+      "runtime": 104,
+      "certification": "NR",
+      "director": "Dušan Milić",
+      "genres": [
+        "Horror",
+        "Drama"
+      ],
+      "providers": [
+        "Klassiki"
+      ],
+      "postText": "Darkling (2022)\nDirector: Dušan Milić\nGenres: Horror, Drama\nhttps://90minutemovie.com/?movie=734081",
+      "scheduledAt": "Sunday, October 25 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "50",
+      "date": "2026-10-25",
+      "hour": 20,
+      "slotLabel": "Sunday, October 25 · 8:00 PM ET",
+      "cardPath": "drafts/50/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 298312,
+      "title": "The Visit",
+      "year": "2015",
+      "runtime": 94,
+      "certification": "PG-13",
+      "director": "M. Night Shyamalan",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "The Visit (2015)\nDirector: M. Night Shyamalan\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=298312",
+      "scheduledAt": "Monday, October 26 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "51",
+      "date": "2026-10-26",
+      "hour": 12,
+      "slotLabel": "Monday, October 26 · 12:00 PM ET",
+      "cardPath": "drafts/51/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 716258,
+      "title": "Black Box",
+      "year": "2020",
+      "runtime": 100,
+      "certification": "NR",
+      "director": "Emmanuel Osei-Kuffour, Jr.",
+      "genres": [
+        "Horror",
+        "Science Fiction"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "Black Box (2020)\nDirector: Emmanuel Osei-Kuffour, Jr.\nGenres: Horror, Science Fiction\nhttps://90minutemovie.com/?movie=716258",
+      "scheduledAt": "Monday, October 26 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "52",
+      "date": "2026-10-26",
+      "hour": 20,
+      "slotLabel": "Monday, October 26 · 8:00 PM ET",
+      "cardPath": "drafts/52/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 7340,
+      "title": "Carrie",
+      "year": "1976",
+      "runtime": 98,
+      "certification": "R",
+      "director": "Brian De Palma",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "HBO Max Amazon Channel",
+        "Cinemax Amazon Channel",
+        "HBO Max",
+        "Cinemax Apple TV channel"
+      ],
+      "postText": "Carrie (1976)\nDirector: Brian De Palma\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=7340",
+      "scheduledAt": "Tuesday, October 27 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "53",
+      "date": "2026-10-27",
+      "hour": 12,
+      "slotLabel": "Tuesday, October 27 · 12:00 PM ET",
+      "cardPath": "drafts/53/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 14435,
+      "title": "My Bloody Valentine",
+      "year": "2009",
+      "runtime": 101,
+      "certification": "R",
+      "director": "Patrick Lussier",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "MovieSphere+ Amazon Channel"
+      ],
+      "postText": "My Bloody Valentine (2009)\nDirector: Patrick Lussier\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=14435",
+      "scheduledAt": "Tuesday, October 27 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "54",
+      "date": "2026-10-27",
+      "hour": 20,
+      "slotLabel": "Tuesday, October 27 · 8:00 PM ET",
+      "cardPath": "drafts/54/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 12590,
+      "title": "Below",
+      "year": "2002",
+      "runtime": 105,
+      "certification": "R",
+      "director": "David Twohy",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "fuboTV",
+        "Paramount Plus Premium",
+        "Paramount Plus Essential",
+        "Paramount+ Amazon Channel",
+        "MGM Plus"
+      ],
+      "postText": "Below (2002)\nDirector: David Twohy\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=12590",
+      "scheduledAt": "Wednesday, October 28 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "55",
+      "date": "2026-10-28",
+      "hour": 12,
+      "slotLabel": "Wednesday, October 28 · 12:00 PM ET",
+      "cardPath": "drafts/55/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 762441,
+      "title": "A Quiet Place: Day One",
+      "year": "2024",
+      "runtime": 100,
+      "certification": "PG-13",
+      "director": "Michael Sarnoski",
+      "genres": [
+        "Horror",
+        "Science Fiction"
+      ],
+      "providers": [
+        "Netflix",
+        "Amazon Prime Video",
+        "MGM+ Amazon Channel",
+        "Paramount Plus Premium",
+        "Paramount Plus Essential"
+      ],
+      "postText": "A Quiet Place: Day One (2024)\nDirector: Michael Sarnoski\nGenres: Horror, Science Fiction\nhttps://90minutemovie.com/?movie=762441",
+      "scheduledAt": "Wednesday, October 28 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "56",
+      "date": "2026-10-28",
+      "hour": 20,
+      "slotLabel": "Wednesday, October 28 · 8:00 PM ET",
+      "cardPath": "drafts/56/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 549294,
+      "title": "Synchronic",
+      "year": "2020",
+      "runtime": 102,
+      "certification": "R",
+      "director": "Aaron Moorhead",
+      "genres": [
+        "Horror",
+        "Science Fiction"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Peacock Premium",
+        "Amazon Prime Video with Ads",
+        "Peacock Premium Plus",
+        "Bloodstream"
+      ],
+      "postText": "Synchronic (2020)\nDirector: Aaron Moorhead\nGenres: Horror, Science Fiction\nhttps://90minutemovie.com/?movie=549294",
+      "scheduledAt": "Thursday, October 29 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "57",
+      "date": "2026-10-29",
+      "hour": 12,
+      "slotLabel": "Thursday, October 29 · 12:00 PM ET",
+      "cardPath": "drafts/57/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1085103,
+      "title": "Clock",
+      "year": "2023",
+      "runtime": 92,
+      "certification": "R",
+      "director": "Alexis Jacknow",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Hulu"
+      ],
+      "postText": "Clock (2023)\nDirector: Alexis Jacknow\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=1085103",
+      "scheduledAt": "Thursday, October 29 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "58",
+      "date": "2026-10-29",
+      "hour": 20,
+      "slotLabel": "Thursday, October 29 · 8:00 PM ET",
+      "cardPath": "drafts/58/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 324544,
+      "title": "In the Lost Lands",
+      "year": "2025",
+      "runtime": 101,
+      "certification": "R",
+      "director": "Paul W. S. Anderson",
+      "genres": [
+        "Horror",
+        "Action"
+      ],
+      "providers": [
+        "Hulu"
+      ],
+      "postText": "In the Lost Lands (2025)\nDirector: Paul W. S. Anderson\nGenres: Horror, Action\nhttps://90minutemovie.com/?movie=324544",
+      "scheduledAt": "Friday, October 30 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "59",
+      "date": "2026-10-30",
+      "hour": 12,
+      "slotLabel": "Friday, October 30 · 12:00 PM ET",
+      "cardPath": "drafts/59/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 526051,
+      "title": "Look Away",
+      "year": "2018",
+      "runtime": 103,
+      "certification": "R",
+      "director": "Assaf Bernstein",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "Look Away (2018)\nDirector: Assaf Bernstein\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=526051",
+      "scheduledAt": "Friday, October 30 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "60",
+      "date": "2026-10-30",
+      "hour": 20,
+      "slotLabel": "Friday, October 30 · 8:00 PM ET",
+      "cardPath": "drafts/60/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 23202,
+      "title": "Trick 'r Treat",
+      "year": "2007",
+      "runtime": 82,
+      "certification": "R",
+      "director": "Michael Dougherty",
+      "genres": [
+        "Horror",
+        "Fantasy"
+      ],
+      "providers": [],
+      "postText": "Trick 'r Treat (2007)\nDirector: Michael Dougherty\nGenres: Horror, Fantasy\nhttps://90minutemovie.com/?movie=23202",
+      "scheduledAt": "Saturday, October 31 · 12:00 PM ET",
+      "theme": "october",
+      "draftId": "61",
+      "date": "2026-10-31",
+      "hour": 12,
+      "slotLabel": "Saturday, October 31 · 12:00 PM ET",
+      "cardPath": "drafts/61/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 948,
+      "title": "Halloween",
+      "year": "1978",
+      "runtime": 91,
+      "certification": "R",
+      "director": "John Carpenter",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "fuboTV",
+        "Philo",
+        "AMC Plus Apple TV channel",
+        "AMC+ Amazon Channel",
+        "AMC+ Roku Premium Channel"
+      ],
+      "postText": "Halloween (1978)\nDirector: John Carpenter\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=948",
+      "scheduledAt": "Saturday, October 31 · 8:00 PM ET",
+      "theme": "october",
+      "draftId": "62",
+      "date": "2026-10-31",
+      "hour": 20,
+      "slotLabel": "Saturday, October 31 · 8:00 PM ET",
+      "cardPath": "drafts/62/card.png",
+      "state": "queued",
+      "source": "approved-october-2026",
       "postedAt": null,
       "tweetId": null,
       "tweetUrl": null

@@ -9,6 +9,9 @@ bot-output/
 bot-review-batch/
 bot-queue-review/
 bot-october-review/
+bot-october-reroll-review/
+bot-october-reroll-review.zip
+bot-october-reroll-review-v2/
 bot/fonts/
 .bot-queue-build/
 .bot-queue-replenish/

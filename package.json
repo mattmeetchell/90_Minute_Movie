@@ -7,6 +7,8 @@
     "bot:queue:create": "node bot/create-queue.mjs",
     "bot:queue:replenish": "node bot/replenish-queue.mjs",
     "bot:queue:october-2026:review": "node bot/october-2026-queue.mjs",
+    "bot:queue:october-2026:reroll": "node bot/reroll-october-review.mjs",
+    "bot:queue:october-2026:approve": "node bot/add-october-review-to-queue.mjs",
     "bot:publish": "node bot/publish-queue.mjs"
   },
   "dependencies": {
