@@ -73,11 +73,11 @@ const discoverMovie = async (seed) => {
     watch_region: 'US',
     with_watch_monetization_types: 'flatrate',
     sort_by: 'popularity.desc',
-    page: (seed % 5) + 1
+    page: (seed % 50) + 1
   });
   const candidates = discovery.results.filter((movie) => movie.poster_path && movie.release_date);
   if (!candidates.length) throw new Error('No eligible movie was returned by TMDb.');
-  return candidates[seed % candidates.length];
+  return candidates[Math.floor(seed / 50) % candidates.length];
 };
 
 const main = async () => {
