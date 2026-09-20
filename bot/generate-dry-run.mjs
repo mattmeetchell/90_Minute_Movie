@@ -37,20 +37,50 @@ const fetchBuffer = async (url) => {
 const toDataUri = (buffer, contentType = 'image/png') => `data:${contentType};base64,${buffer.toString('base64')}`;
 const xmlEscape = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&apos;', '"': '&quot;' })[character]);
 
-const wrapTitle = (title) => {
+const titleMaxWidth = 720;
+
+const createTrackedCharacters = (line, tracking) => Array.from(line).map((character, characterIndex) => (
+  `<tspan dx="${characterIndex === 0 ? 0 : tracking}">${xmlEscape(character)}</tspan>`
+)).join('');
+
+const measureTitleWidth = async (line, fontSize, tracking) => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="220"><style>.title { fill: #fff; font-family: 'Roboto Flex', Arial, sans-serif; font-size: ${fontSize}px; font-weight: 900; }</style><text x="20" y="${fontSize + 20}" class="title" xml:space="preserve">${createTrackedCharacters(line, tracking)}</text></svg>`;
+  const { info } = await sharp(Buffer.from(svg))
+    .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .png()
+    .toBuffer({ resolveWithObject: true });
+  return info.width;
+};
+
+const getTitleLineCandidates = (title) => {
   const words = title.split(/\s+/).filter(Boolean);
-  if (words.length < 2 || title.length < 20) return [title];
-  let best = [title];
-  let bestDifference = Infinity;
+  const candidates = [[title]];
   for (let index = 1; index < words.length; index += 1) {
-    const candidate = [words.slice(0, index).join(' '), words.slice(index).join(' ')];
-    const difference = Math.abs(candidate[0].length - candidate[1].length);
-    if (difference < bestDifference) {
-      best = candidate;
-      bestDifference = difference;
+    candidates.push([words.slice(0, index).join(' '), words.slice(index).join(' ')]);
+  }
+  return candidates;
+};
+
+const getTitleLayout = async (title) => {
+  const candidates = getTitleLineCandidates(title);
+  for (let fontSize = 126; fontSize >= 64; fontSize -= 4) {
+    const tracking = (fontSize * 0.02).toFixed(2);
+    const measured = await Promise.all(candidates.map(async (lines) => ({
+      lines,
+      widths: await Promise.all(lines.map((line) => measureTitleWidth(line, fontSize, tracking)))
+    })));
+    const fitting = measured.filter(({ widths }) => widths.every((width) => width <= titleMaxWidth));
+    if (fitting.length) {
+      fitting.sort((first, second) => {
+        if (first.lines.length !== second.lines.length) return first.lines.length - second.lines.length;
+        return Math.max(...first.widths) - Math.max(...second.widths);
+      });
+      return { ...fitting[0], fontSize, tracking };
     }
   }
-  return best;
+  const fontSize = 60;
+  const tracking = (fontSize * 0.02).toFixed(2);
+  return { lines: [title], widths: [await measureTitleWidth(title, fontSize, tracking)], fontSize, tracking };
 };
 
 const dateSeed = () => {
@@ -98,17 +128,14 @@ const main = async () => {
     Promise.all(providersForUs.map((provider) => fetchBuffer(`${imageBaseUrl}/w185${provider.logo_path}`).catch(() => null)))
   ]);
 
-  const titleLines = wrapTitle(details.title);
-  const titleFontSize = titleLines.some((line) => line.length > 18) ? 105 : 126;
+  const titleLayout = await getTitleLayout(details.title);
+  const { lines: titleLines, fontSize: titleFontSize, tracking: titleTracking } = titleLayout;
   const titleY = titleLines.length === 1 ? 360 : 324;
   const providerSvg = providerImages.map((image, index) => image
     ? `<clipPath id="provider-${index}"><circle cx="${846 + index * 118}" cy="813" r="40" /></clipPath><image href="${toDataUri(image)}" x="${806 + index * 118}" y="773" width="80" height="80" preserveAspectRatio="xMidYMid slice" clip-path="url(#provider-${index})" />`
     : '').join('');
-  const titleTracking = (titleFontSize * 0.02).toFixed(2);
   const titleSvg = titleLines.map((line, index) => {
-    const trackedCharacters = Array.from(line).map((character, characterIndex) => (
-      `<tspan dx="${characterIndex === 0 ? 0 : titleTracking}">${xmlEscape(character)}</tspan>`
-    )).join('');
+    const trackedCharacters = createTrackedCharacters(line, titleTracking);
     return `<text x="806" y="${titleY + index * (titleFontSize + 14)}" class="title" xml:space="preserve">${trackedCharacters}</text>`;
   }).join('');
   const meta = `${Math.floor(details.runtime / 60)}h ${details.runtime % 60}m • ${details.certification || 'NR'} • Director: ${director}`;
