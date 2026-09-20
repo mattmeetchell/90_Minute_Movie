@@ -14,6 +14,8 @@ if (!tmdbApiKey && !tmdbBearerToken) {
   throw new Error('Set TMDB_API_KEY or TMDB_BEARER_TOKEN before generating a bot preview.');
 }
 
+const wait = (milliseconds) => new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
+
 const tmdbFetch = async (path, parameters = {}) => {
   const url = new URL(`${tmdbBaseUrl}${path}`);
   Object.entries(parameters).forEach(([key, value]) => {
@@ -24,9 +26,32 @@ const tmdbFetch = async (path, parameters = {}) => {
   if (tmdbBearerToken) headers.Authorization = `Bearer ${tmdbBearerToken}`;
   else url.searchParams.set('api_key', tmdbApiKey);
 
-  const response = await fetch(url, { headers });
-  if (!response.ok) throw new Error(`TMDb ${path} failed (${response.status}).`);
-  return response.json();
+  const maxAttempts = 4;
+  let lastError;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    try {
+      const response = await fetch(url, { headers });
+      if (response.ok) return response.json();
+
+      // Transient upstream failures and rate limits should not discard an
+      // entire month-long review run. All other responses remain fail-fast.
+      if (response.status !== 429 && response.status < 500) {
+        const error = new Error(`TMDb ${path} failed (${response.status}).`);
+        error.nonRetryable = true;
+        throw error;
+      }
+      lastError = new Error(`TMDb ${path} failed (${response.status}).`);
+    } catch (error) {
+      lastError = error;
+      if (error.nonRetryable) throw error;
+      if (attempt === maxAttempts - 1) break;
+    }
+
+    if (attempt < maxAttempts - 1) await wait(750 * (2 ** attempt));
+  }
+
+  throw lastError;
 };
 
 const fetchBuffer = async (url) => {
