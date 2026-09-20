@@ -148,8 +148,9 @@ const main = async () => {
   const genres = details.genres.slice(0, 2).map((genre) => genre.name);
   const providersForUs = providers.results?.US?.flatrate?.slice(0, 5) || [];
   const poster = await fetchBuffer(`${imageBaseUrl}/w780${details.poster_path}`);
-  const [logo, providerImages] = await Promise.all([
+  const [logo, bluRayIcon, providerImages] = await Promise.all([
     readFile(resolve('assets/brand/90_M_Logo.svg')),
+    readFile(resolve('assets/media/Blu-ray.svg')),
     Promise.all(providersForUs.map((provider) => fetchBuffer(`${imageBaseUrl}/w185${provider.logo_path}`).catch(() => null)))
   ]);
 
@@ -161,6 +162,7 @@ const main = async () => {
   const providerSvg = providerImages.map((image, index) => image
     ? `<clipPath id="provider-${index}"><circle cx="${846 + index * 118}" cy="813" r="40" /></clipPath><image href="${toDataUri(image)}" x="${806 + index * 118}" y="773" width="80" height="80" preserveAspectRatio="xMidYMid slice" clip-path="url(#provider-${index})" />`
     : '').join('');
+  const availabilitySvg = providerSvg || `<image href="${toDataUri(bluRayIcon, 'image/svg+xml')}" x="806" y="773" width="80" height="80" />`;
   const titleSvg = titleLines.map((line, index) => {
     const trackedCharacters = createTrackedCharacters(line, titleTracking);
     return `<text x="806" y="${titleTop + index * titleLineHeight}" class="title" dominant-baseline="hanging" xml:space="preserve">${trackedCharacters}</text>`;
@@ -182,7 +184,7 @@ const main = async () => {
     ${titleSvg}
     <text x="806" y="${metadataTop}" class="copy" dominant-baseline="hanging">${xmlEscape(meta)}</text>
     <text x="806" y="708" class="label">WATCH IT ON</text><line x1="806" y1="746" x2="1602" y2="746" stroke="#fff" stroke-width="4"/>
-    ${providerSvg || '<text x="806" y="817" class="copy">Check local availability</text>'}
+    ${availabilitySvg}
     <image href="${toDataUri(logo, 'image/svg+xml')}" x="1502" y="68" width="112" height="112" />
   </svg>`;
 

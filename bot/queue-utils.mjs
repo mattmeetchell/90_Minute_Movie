@@ -42,7 +42,7 @@ export const draftToQueueEntry = (draft, source = 'automatic') => ({
   tweetUrl: null
 });
 
-export const generateDrafts = async ({ startDate, days, outputDirectory, keepOutput = false, theme = 'standard' }) => {
+export const generateDrafts = async ({ startDate, days, outputDirectory, keepOutput = false, theme = 'standard', fixedSlots = {} }) => {
   await rm(outputDirectory, { recursive: true, force: true });
   const result = spawnSync(process.execPath, ['bot/generate-review-batch.mjs'], {
     cwd: process.cwd(),
@@ -51,7 +51,8 @@ export const generateDrafts = async ({ startDate, days, outputDirectory, keepOut
       BOT_BATCH_OUTPUT_DIR: outputDirectory,
       BOT_BATCH_START_DATE: startDate,
       BOT_BATCH_DAYS: String(days),
-      BOT_BATCH_THEME: theme
+      BOT_BATCH_THEME: theme,
+      BOT_FIXED_SLOTS: JSON.stringify(fixedSlots)
     },
     encoding: 'utf8'
   });

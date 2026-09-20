@@ -6,6 +6,7 @@
     "bot:batch": "node bot/generate-review-batch.mjs",
     "bot:queue:create": "node bot/create-queue.mjs",
     "bot:queue:replenish": "node bot/replenish-queue.mjs",
+    "bot:queue:october-2026:review": "node bot/october-2026-queue.mjs",
     "bot:publish": "node bot/publish-queue.mjs"
   },
   "dependencies": {

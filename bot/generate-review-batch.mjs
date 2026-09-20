@@ -8,6 +8,7 @@ const slots = [12, 20];
 const maxAttemptsPerSlot = 60;
 const seedBase = Number.parseInt(process.env.SELECTION_SEED || '', 10) || Date.now();
 const cardTheme = process.env.BOT_BATCH_THEME || 'standard';
+const fixedSlots = JSON.parse(process.env.BOT_FIXED_SLOTS || '{}');
 
 const htmlEscape = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&apos;', '"': '&quot;' })[character]);
 
@@ -41,6 +42,7 @@ const main = async () => {
       const slotLabel = formatSlot(date, hour);
       const draftId = String(slotIndex + 1).padStart(2, '0');
       const draftDirectory = resolve(batchDirectory, 'drafts', draftId);
+      const fixedMovieId = Number.parseInt(fixedSlots[`${date}-${hour}`] || '', 10);
       let movie;
 
       for (let attempt = 0; attempt < maxAttemptsPerSlot; attempt += 1) {
@@ -53,6 +55,7 @@ const main = async () => {
             SCHEDULE_AT: slotLabel,
             SCHEDULE_DATE: date,
             BOT_CARD_THEME: cardTheme,
+            ...(fixedMovieId ? { MOVIE_ID: String(fixedMovieId) } : {}),
             ALLOW_LONG_RUNTIME: slotIndex % 5 === 4 ? '1' : '0',
             SELECTION_SEED: String(seedBase + (slotIndex * 37) + attempt)
           },
@@ -63,11 +66,18 @@ const main = async () => {
           throw new Error(result.stderr || result.stdout || `Failed to create draft ${draftId}.`);
         }
         movie = JSON.parse(await readFile(resolve(draftDirectory, 'movie.json'), 'utf8'));
-        if (movie.providers.length && !usedMovieIds.has(movie.id)) break;
+        // An explicitly pinned title is editorially approved, so retain it even
+        // when TMDB has no current US flatrate listing. Normal picks still
+        // require a provider and must be unique within the batch.
+        if (fixedMovieId || (movie.providers.length && !usedMovieIds.has(movie.id))) break;
         movie = null;
+        if (fixedMovieId) break;
       }
 
-      if (!movie) throw new Error(`Could not find a unique streaming movie for ${slotLabel}.`);
+      if (!movie) {
+        const fixedMovieSuffix = fixedMovieId ? ` (fixed movie ID ${fixedMovieId})` : '';
+        throw new Error(`Could not find a unique streaming movie for ${slotLabel}${fixedMovieSuffix}.`);
+      }
       usedMovieIds.add(movie.id);
       drafts.push({ ...movie, draftId, date, hour, slotLabel, cardPath: `drafts/${draftId}/card.png` });
       slotIndex += 1;
