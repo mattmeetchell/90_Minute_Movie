@@ -154,7 +154,7 @@ const main = async () => {
   const titleLayout = getTitleLayout(details.title);
   const { lines: titleLines, fontSize: titleFontSize, tracking: titleTracking } = titleLayout;
   const yearPillBottom = 199;
-  const titleTop = yearPillBottom + 40;
+  const titleTop = yearPillBottom + 80;
   const titleLineHeight = titleFontSize + 14;
   const providerSvg = providerImages.map((image, index) => image
     ? `<clipPath id="provider-${index}"><circle cx="${846 + index * 118}" cy="813" r="40" /></clipPath><image href="${toDataUri(image)}" x="${806 + index * 118}" y="773" width="80" height="80" preserveAspectRatio="xMidYMid slice" clip-path="url(#provider-${index})" />`
