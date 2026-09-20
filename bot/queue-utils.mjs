@@ -42,7 +42,7 @@ export const draftToQueueEntry = (draft, source = 'automatic') => ({
   tweetUrl: null
 });
 
-export const generateDrafts = async ({ startDate, days, outputDirectory }) => {
+export const generateDrafts = async ({ startDate, days, outputDirectory, keepOutput = false }) => {
   await rm(outputDirectory, { recursive: true, force: true });
   const result = spawnSync(process.execPath, ['bot/generate-review-batch.mjs'], {
     cwd: process.cwd(),
@@ -56,6 +56,6 @@ export const generateDrafts = async ({ startDate, days, outputDirectory }) => {
   });
   if (result.status !== 0) throw new Error(result.stderr || result.stdout || 'Could not generate queue drafts.');
   const batch = JSON.parse(await readFile(resolve(outputDirectory, 'queue.json'), 'utf8'));
-  await rm(outputDirectory, { recursive: true, force: true });
+  if (!keepOutput) await rm(outputDirectory, { recursive: true, force: true });
   return batch.drafts;
 };

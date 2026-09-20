@@ -3,9 +3,9 @@ import { addDays, draftToQueueEntry, easternToday, generateDrafts, writeQueue } 
 
 const days = Math.max(1, Math.min(31, Number.parseInt(process.env.BOT_QUEUE_DAYS || '14', 10)));
 const startDate = process.env.BOT_QUEUE_START_DATE || addDays(easternToday(), 1);
-const outputDirectory = resolve('.bot-queue-build');
+const outputDirectory = resolve(process.env.BOT_QUEUE_REVIEW_OUTPUT || 'bot-queue-review');
 
-const drafts = await generateDrafts({ startDate, days, outputDirectory });
+const drafts = await generateDrafts({ startDate, days, outputDirectory, keepOutput: true });
 const queue = {
   version: 1,
   timeZone: 'America/New_York',
@@ -15,4 +15,4 @@ const queue = {
 };
 
 await writeQueue(queue);
-console.log(`Created ${queue.entries.length} queued posts starting ${startDate}.`);
+console.log(`Created ${queue.entries.length} queued posts starting ${startDate}. Review files are in ${outputDirectory}.`);
