@@ -48,6 +48,12 @@ body::before {
   z-index: 0;
 }
 
+body.share-card-modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
 body::after {
   background: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.92) 16%, rgba(0, 0, 0, 0.46) 45%, rgba(0, 0, 0, 0) 100%);
   content: "";
@@ -4225,13 +4231,18 @@ button.result-filter-pill:focus-visible::after {
   justify-content: center;
   padding: 24px;
   position: fixed;
+  overscroll-behavior: contain;
   z-index: 2500;
 }
 
 .share-card-panel {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
   max-height: calc(100dvh - 48px);
   max-width: min(1120px, 100%);
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 34px;
   width: 100%;
 }
@@ -4248,6 +4259,8 @@ button.result-filter-pill:focus-visible::after {
   box-shadow: 0 28px 70px rgba(0, 0, 0, 0.58);
   display: block;
   height: auto;
+  max-height: max(180px, calc(100dvh - 298px));
+  object-fit: contain;
   width: 100%;
 }
 
@@ -4541,6 +4554,10 @@ button.result-filter-pill:focus-visible::after {
   .share-card-panel {
     max-height: calc(100dvh - 36px);
     padding: 0 4px 36px;
+  }
+
+  .share-card-image {
+    max-height: max(160px, calc(100dvh - 350px));
   }
 
   .share-card-actions {

@@ -225,6 +225,7 @@ const state = {
   shareCardBlob: null,
   shareCardObjectUrl: '',
   shareCardIsGenerating: false,
+  shareCardScrollY: 0,
   directorResultHistory: [],
   savedMovies: [],
   savedListId: '',
@@ -4330,6 +4331,9 @@ function openShareCardModal(blob) {
   els.shareCardStatus.textContent = 'Share this on social media, make sure to include the link';
   els.copyShareCard.textContent = 'Copy image';
   els.copyShareLink.textContent = 'Copy link';
+  state.shareCardScrollY = window.scrollY;
+  document.body.style.top = `-${state.shareCardScrollY}px`;
+  document.body.classList.add('share-card-modal-open');
   els.shareCardModal.classList.remove('hidden');
   els.copyShareCard.focus();
 }
@@ -4337,6 +4341,10 @@ function openShareCardModal(blob) {
 function closeShareCardModal() {
   if (els.shareCardModal.classList.contains('hidden')) return;
   els.shareCardModal.classList.add('hidden');
+  document.body.classList.remove('share-card-modal-open');
+  document.body.style.top = '';
+  window.scrollTo(0, state.shareCardScrollY);
+  state.shareCardScrollY = 0;
   els.shareCardImage.src = '';
   if (state.shareCardObjectUrl) URL.revokeObjectURL(state.shareCardObjectUrl);
   state.shareCardObjectUrl = '';
