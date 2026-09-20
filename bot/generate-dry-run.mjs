@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import sharp from 'sharp';
 
-const outputDirectory = resolve('bot-output');
+const outputDirectory = resolve(process.env.BOT_OUTPUT_DIR || 'bot-output');
 const tmdbBaseUrl = 'https://api.themoviedb.org/3';
 const imageBaseUrl = 'https://image.tmdb.org/t/p';
 const websiteUrl = process.env.WEBSITE_URL || 'https://90minutemovie.com';
@@ -58,7 +58,10 @@ const dateSeed = () => {
   return [...now].reduce((sum, character) => sum + character.charCodeAt(0), 0);
 };
 
-const discoverMovie = async () => {
+const selectionSeed = Number.parseInt(process.env.SELECTION_SEED || '', 10) || dateSeed();
+const requestedMovieId = Number.parseInt(process.env.MOVIE_ID || '', 10);
+
+const discoverMovie = async (seed) => {
   const discovery = await tmdbFetch('/discover/movie', {
     include_adult: 'false',
     include_video: 'false',
@@ -70,15 +73,15 @@ const discoverMovie = async () => {
     watch_region: 'US',
     with_watch_monetization_types: 'flatrate',
     sort_by: 'popularity.desc',
-    page: (dateSeed() % 5) + 1
+    page: (seed % 5) + 1
   });
   const candidates = discovery.results.filter((movie) => movie.poster_path && movie.release_date);
   if (!candidates.length) throw new Error('No eligible movie was returned by TMDb.');
-  return candidates[dateSeed() % candidates.length];
+  return candidates[seed % candidates.length];
 };
 
 const main = async () => {
-  const candidate = await discoverMovie();
+  const candidate = requestedMovieId ? { id: requestedMovieId } : await discoverMovie(selectionSeed);
   const [details, credits, providers] = await Promise.all([
     tmdbFetch(`/movie/${candidate.id}`),
     tmdbFetch(`/movie/${candidate.id}/credits`),
@@ -135,7 +138,7 @@ const main = async () => {
   await Promise.all([
     writeFile(resolve(outputDirectory, 'post.txt'), `${postText}\n`),
     sharp(Buffer.from(cardSvg)).png().toFile(resolve(outputDirectory, 'card.png')),
-    writeFile(resolve(outputDirectory, 'movie.json'), `${JSON.stringify({ id: details.id, title: details.title, year, director, genres, providers: providersForUs.map((provider) => provider.provider_name), postText }, null, 2)}\n`)
+    writeFile(resolve(outputDirectory, 'movie.json'), `${JSON.stringify({ id: details.id, title: details.title, year, director, genres, providers: providersForUs.map((provider) => provider.provider_name), postText, scheduledAt: process.env.SCHEDULE_AT || null }, null, 2)}\n`)
   ]);
   console.log(postText);
 };

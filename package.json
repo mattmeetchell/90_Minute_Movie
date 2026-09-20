@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "bot:dry-run": "node bot/generate-dry-run.mjs"
+    "bot:dry-run": "node bot/generate-dry-run.mjs",
+    "bot:batch": "node bot/generate-review-batch.mjs"
   },
   "dependencies": {
     "sharp": "^0.34.3"
