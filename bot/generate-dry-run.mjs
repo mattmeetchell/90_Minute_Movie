@@ -116,14 +116,17 @@ const discoverMovie = async (seed) => {
 
 const main = async () => {
   const candidate = requestedMovieId ? { id: requestedMovieId } : await discoverMovie(selectionSeed);
-  const [details, credits, providers] = await Promise.all([
+  const [details, credits, providers, releaseDates] = await Promise.all([
     tmdbFetch(`/movie/${candidate.id}`),
     tmdbFetch(`/movie/${candidate.id}/credits`),
-    tmdbFetch(`/movie/${candidate.id}/watch/providers`)
+    tmdbFetch(`/movie/${candidate.id}/watch/providers`),
+    tmdbFetch(`/movie/${candidate.id}/release_dates`)
   ]);
 
   const director = credits.crew.find((person) => person.job === 'Director')?.name || 'Unknown';
   const year = (details.release_date || candidate.release_date || '').slice(0, 4) || '—';
+  const usReleaseDates = releaseDates.results?.find((release) => release.iso_3166_1 === 'US')?.release_dates || [];
+  const certification = usReleaseDates.find((release) => release.certification)?.certification || 'NR';
   const genres = details.genres.slice(0, 2).map((genre) => genre.name);
   const providersForUs = providers.results?.US?.flatrate?.slice(0, 5) || [];
   const poster = await fetchBuffer(`${imageBaseUrl}/w780${details.poster_path}`);
@@ -142,7 +145,7 @@ const main = async () => {
     const trackedCharacters = createTrackedCharacters(line, titleTracking);
     return `<text x="806" y="${titleY + index * (titleFontSize + 14)}" class="title" xml:space="preserve">${trackedCharacters}</text>`;
   }).join('');
-  const meta = `${Math.floor(details.runtime / 60)}h ${details.runtime % 60}m • ${details.certification || 'NR'} • Director: ${director}`;
+  const meta = `${Math.floor(details.runtime / 60)}h ${details.runtime % 60}m • ${certification} • Director: ${director}`;
   const lastTitleBaseline = titleY + ((titleLines.length - 1) * (titleFontSize + 14));
   // The metadata baseline is 40px below the visual bottom of the final title line.
   const metadataY = lastTitleBaseline + 62;
@@ -169,7 +172,7 @@ const main = async () => {
   await Promise.all([
     writeFile(resolve(outputDirectory, 'post.txt'), `${postText}\n`),
     sharp(Buffer.from(cardSvg)).png().toFile(resolve(outputDirectory, 'card.png')),
-    writeFile(resolve(outputDirectory, 'movie.json'), `${JSON.stringify({ id: details.id, title: details.title, year, director, genres, providers: providersForUs.map((provider) => provider.provider_name), postText, scheduledAt: process.env.SCHEDULE_AT || null }, null, 2)}\n`)
+    writeFile(resolve(outputDirectory, 'movie.json'), `${JSON.stringify({ id: details.id, title: details.title, year, certification, director, genres, providers: providersForUs.map((provider) => provider.provider_name), postText, scheduledAt: process.env.SCHEDULE_AT || null }, null, 2)}\n`)
   ]);
   console.log(postText);
 };
