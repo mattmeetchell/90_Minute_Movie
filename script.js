@@ -3590,7 +3590,7 @@ function runPersonalPickAnticipation() {
   els.poster.src = '';
   els.poster.alt = '';
   els.posterHint.textContent = 'Picking...';
-  els.posterButton.disabled = true;
+  els.posterButton.classList.add('is-loading');
 
   const reel = document.createElement('span');
   reel.className = 'personal-pick-reel';
@@ -3762,12 +3762,13 @@ function renderMovie(details, credits, videos, providerData, releaseDates) {
 
   if (trailer?.key) {
     state.trailerUrl = `https://www.youtube.com/embed/${trailer.key}?autoplay=1`;
-    els.posterButton.disabled = false;
+    els.posterButton.classList.remove('is-loading');
+    els.posterButton.classList.add('has-trailer');
     els.playTrailerAction.classList.remove('hidden');
     els.posterHint.textContent = 'Play trailer';
   } else {
     state.trailerUrl = '';
-    els.posterButton.disabled = !mobileMediaQuery.matches;
+    els.posterButton.classList.remove('is-loading', 'has-trailer');
     els.playTrailerAction.classList.add('hidden');
     els.posterHint.textContent = 'No trailer';
   }
@@ -4719,14 +4720,15 @@ function resetMobileTrailerArm() {
   state.mobileTrailerArmed = false;
   els.posterButton.classList.remove('mobile-trailer-armed');
   els.posterMobileActions.setAttribute('aria-hidden', 'true');
-  els.posterButton.setAttribute('aria-label', 'Play trailer');
 }
 
 function handlePosterTrailerClick(event) {
-  if (!mobileMediaQuery.matches) {
+  if (event.target.closest('#posterHint')) {
     openTrailer();
     return;
   }
+
+  if (!mobileMediaQuery.matches) return;
 
   if (event.target.closest('#seePosterAction')) {
     openPosterLightbox();
@@ -4749,7 +4751,6 @@ function handlePosterTrailerClick(event) {
     state.mobileTrailerArmed = true;
     els.posterButton.classList.add('mobile-trailer-armed');
     els.posterMobileActions.setAttribute('aria-hidden', 'false');
-    els.posterButton.setAttribute('aria-label', 'Poster actions: see poster or play trailer');
     return;
   }
 
