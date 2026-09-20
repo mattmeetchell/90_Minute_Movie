@@ -1,0 +1,53 @@
+name: Movie bot queue
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: First date to schedule (YYYY-MM-DD). Leave blank to start tomorrow in Eastern Time.
+        required: false
+        type: string
+      days:
+        description: Number of days to queue (default: 14)
+        required: false
+        default: '14'
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: movie-bot-queue
+  cancel-in-progress: false
+
+jobs:
+  create-queue:
+    runs-on: ubuntu-latest
+    env:
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+      TMDB_BEARER_TOKEN: ${{ secrets.TMDB_BEARER_TOKEN }}
+      WEBSITE_URL: https://90minutemovie.com
+      BOT_QUEUE_START_DATE: ${{ inputs.start_date }}
+      BOT_QUEUE_DAYS: ${{ inputs.days }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install card font
+        run: |
+          mkdir -p ~/.local/share/fonts
+          curl -fL --retry 3 \
+            'https://github.com/google/fonts/raw/main/ofl/robotoflex/RobotoFlex%5BGRAD%2CXOPQ%2CXTRA%2CYOPQ%2CYTAS%2CYTDE%2CYTFI%2CYTLC%2CYTUC%2Copsz%2Cslnt%2Cwdth%2Cwght%5D.ttf' \
+            -o ~/.local/share/fonts/RobotoFlex.ttf
+          fc-cache -f
+      - run: npm run bot:queue:create
+      - name: Commit queue
+        run: |
+          git config user.name '90 Minute Movie Bot'
+          git config user.email 'actions@github.com'
+          git add bot-queue/queue.json
+          git commit -m 'Initialize movie bot queue'
+          git push
