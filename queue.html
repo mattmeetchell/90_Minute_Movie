@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Upcoming movies — 90 Minute Movie</title>
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/brand/Favicon_512x512.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="queue.css" />
+</head>
+<body>
+  <main class="queue-shell">
+    <header class="queue-header">
+      <a class="brand" href="/" aria-label="90 Minute Movie home">
+        <img src="assets/brand/90_M_Logo.svg" alt="90 Minute Movie" />
+      </a>
+      <div>
+        <p class="eyebrow">90 Minute Movie</p>
+        <h1>Upcoming picks</h1>
+        <p id="queueSummary" class="intro">Loading the current queue…</p>
+      </div>
+    </header>
+
+    <section class="queue-controls" aria-label="Queue filters">
+      <button class="filter is-active" type="button" data-filter="upcoming">Upcoming</button>
+      <button class="filter" type="button" data-filter="all">All</button>
+      <button class="filter" type="button" data-filter="posted">Posted</button>
+    </section>
+
+    <p id="queueError" class="queue-error" role="alert" hidden></p>
+    <section id="queueGrid" class="queue-grid" aria-live="polite"></section>
+  </main>
+  <script type="module" src="queue.js"></script>
+</body>
+</html>
