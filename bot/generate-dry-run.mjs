@@ -37,50 +37,54 @@ const fetchBuffer = async (url) => {
 const toDataUri = (buffer, contentType = 'image/png') => `data:${contentType};base64,${buffer.toString('base64')}`;
 const xmlEscape = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&apos;', '"': '&quot;' })[character]);
 
-const titleMaxWidth = 720;
-
+// The card has a deliberately generous right-side gutter; titles must never
+// enter the logo area or run off the exported image.
 const createTrackedCharacters = (line, tracking) => Array.from(line).map((character, characterIndex) => (
   `<tspan dx="${characterIndex === 0 ? 0 : tracking}">${xmlEscape(character)}</tspan>`
 )).join('');
 
-const measureTitleWidth = async (line, fontSize, tracking) => {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="220"><style>.title { fill: #fff; font-family: 'Roboto Flex', Arial, sans-serif; font-size: ${fontSize}px; font-weight: 900; }</style><text x="20" y="${fontSize + 20}" class="title" xml:space="preserve">${createTrackedCharacters(line, tracking)}</text></svg>`;
-  const { info } = await sharp(Buffer.from(svg))
-    .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .png()
-    .toBuffer({ resolveWithObject: true });
-  return info.width;
-};
-
-const getTitleLineCandidates = (title) => {
-  const words = title.split(/\s+/).filter(Boolean);
-  const candidates = [[title]];
-  for (let index = 1; index < words.length; index += 1) {
-    candidates.push([words.slice(0, index).join(' '), words.slice(index).join(' ')]);
+const splitTitleIntoLines = (words, lineCount) => {
+  if (lineCount === 1) return [[words.join(' ')]];
+  const candidates = [];
+  for (let index = 1; index <= words.length - lineCount + 1; index += 1) {
+    const firstLine = words.slice(0, index).join(' ');
+    splitTitleIntoLines(words.slice(index), lineCount - 1).forEach((remainingLines) => {
+      candidates.push([firstLine, ...remainingLines]);
+    });
   }
   return candidates;
 };
 
-const getTitleLayout = async (title) => {
-  const candidates = getTitleLineCandidates(title);
-  for (let fontSize = 126; fontSize >= 64; fontSize -= 4) {
-    const tracking = (fontSize * 0.02).toFixed(2);
-    const measured = await Promise.all(candidates.map(async (lines) => ({
-      lines,
-      widths: await Promise.all(lines.map((line) => measureTitleWidth(line, fontSize, tracking)))
-    })));
-    const fitting = measured.filter(({ widths }) => widths.every((width) => width <= titleMaxWidth));
-    if (fitting.length) {
-      fitting.sort((first, second) => {
-        if (first.lines.length !== second.lines.length) return first.lines.length - second.lines.length;
-        return Math.max(...first.widths) - Math.max(...second.widths);
-      });
-      return { ...fitting[0], fontSize, tracking };
-    }
+const fontSizeForTitleLength = (length) => {
+  if (length <= 8) return 126;
+  if (length <= 10) return 116;
+  if (length <= 12) return 104;
+  if (length <= 14) return 88;
+  if (length <= 16) return 72;
+  if (length <= 18) return 60;
+  if (length <= 22) return 52;
+  return 48;
+};
+
+const getTitleLayout = (title) => {
+  const words = title.split(/\s+/).filter(Boolean);
+  if (title.length <= 15 || words.length < 2) {
+    const fontSize = fontSizeForTitleLength(title.length);
+    return { lines: [title], fontSize, tracking: (fontSize * 0.02).toFixed(2) };
   }
-  const fontSize = 60;
-  const tracking = (fontSize * 0.02).toFixed(2);
-  return { lines: [title], widths: [await measureTitleWidth(title, fontSize, tracking)], fontSize, tracking };
+
+  const twoLineCandidates = splitTitleIntoLines(words, 2);
+  const bestTwoLineCandidate = twoLineCandidates.sort((first, second) => (
+    Math.max(...first.map((line) => line.length)) - Math.max(...second.map((line) => line.length))
+  ))[0];
+  const longestTwoLineLength = Math.max(...bestTwoLineCandidate.map((line) => line.length));
+  const lines = longestTwoLineLength <= 18 || words.length < 3
+    ? bestTwoLineCandidate
+    : splitTitleIntoLines(words, 3).sort((first, second) => (
+      Math.max(...first.map((line) => line.length)) - Math.max(...second.map((line) => line.length))
+    ))[0];
+  const fontSize = fontSizeForTitleLength(Math.max(...lines.map((line) => line.length)));
+  return { lines, fontSize, tracking: (fontSize * 0.02).toFixed(2) };
 };
 
 const dateSeed = () => {
@@ -128,9 +132,9 @@ const main = async () => {
     Promise.all(providersForUs.map((provider) => fetchBuffer(`${imageBaseUrl}/w185${provider.logo_path}`).catch(() => null)))
   ]);
 
-  const titleLayout = await getTitleLayout(details.title);
+  const titleLayout = getTitleLayout(details.title);
   const { lines: titleLines, fontSize: titleFontSize, tracking: titleTracking } = titleLayout;
-  const titleY = titleLines.length === 1 ? 360 : 324;
+  const titleY = titleLines.length === 1 ? 360 : titleLines.length === 2 ? 324 : 280;
   const providerSvg = providerImages.map((image, index) => image
     ? `<clipPath id="provider-${index}"><circle cx="${846 + index * 118}" cy="813" r="40" /></clipPath><image href="${toDataUri(image)}" x="${806 + index * 118}" y="773" width="80" height="80" preserveAspectRatio="xMidYMid slice" clip-path="url(#provider-${index})" />`
     : '').join('');
