@@ -124,6 +124,7 @@ const scheduledDate = process.env.SCHEDULE_DATE || new Intl.DateTimeFormat('en-C
   timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit'
 }).format(new Date());
 const avoidHorrorForThisSlot = /^\d{4}-09-/.test(scheduledDate);
+const requireHorrorForThisSlot = process.env.REQUIRE_HORROR === '1';
 const cardTheme = getCardTheme(process.env.BOT_CARD_THEME);
 const isOccasionalLongPick = process.env.ALLOW_LONG_RUNTIME === undefined
   ? selectionSeed % 5 === 0
@@ -140,6 +141,7 @@ const discoverMovie = async (seed) => {
     'vote_count.gte': 25,
     'with_runtime.gte': isOccasionalLongPick ? 103 : 90,
     'with_runtime.lte': 105,
+    with_genres: requireHorrorForThisSlot ? '27' : undefined,
     without_genres: avoidHorrorForThisSlot ? '27' : undefined,
     watch_region: 'US',
     with_watch_monetization_types: 'flatrate',
@@ -165,7 +167,11 @@ const main = async () => {
   const isHorror = details.genres.some((genre) => genre.id === 27);
   const hasTargetRuntime = details.runtime >= (isOccasionalLongPick ? 103 : 90)
     && details.runtime <= (isOccasionalLongPick ? 105 : 102);
-  if (!requestedMovieId && (!hasTargetRuntime || (avoidHorrorForThisSlot && isHorror))) {
+  if (!requestedMovieId && (
+    !hasTargetRuntime
+    || (avoidHorrorForThisSlot && isHorror)
+    || (requireHorrorForThisSlot && !isHorror)
+  )) {
     throw new Error(`Movie ${details.id} does not meet this slot's selection policy.`);
   }
   const usReleaseDates = releaseDates.results?.find((release) => release.iso_3166_1 === 'US')?.release_dates || [];

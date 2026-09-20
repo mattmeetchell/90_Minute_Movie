@@ -7,15 +7,24 @@ const days = 31;
 const theme = 'october';
 const outputDirectory = resolve(process.env.BOT_OCTOBER_REVIEW_OUTPUT || 'bot-october-review');
 
-// These anchor the month. Every other slot remains selected by the regular
-// availability and runtime rules, then can be reviewed before replacing a queue.
+// These anchor the month. Every other slot must be a horror title that meets
+// the regular availability and runtime rules, then can be reviewed before it
+// is ever added to the live queue.
 const fixedSlots = {
   '2026-10-01-12': 176,
   '2026-10-31-12': 23202,
   '2026-10-31-20': 948
 };
 
-const drafts = await generateDrafts({ startDate, days, outputDirectory, keepOutput: true, theme, fixedSlots });
+const drafts = await generateDrafts({
+  startDate,
+  days,
+  outputDirectory,
+  keepOutput: true,
+  theme,
+  fixedSlots,
+  requireHorror: true
+});
 const candidateQueue = {
   version: 1,
   timeZone: 'America/New_York',
