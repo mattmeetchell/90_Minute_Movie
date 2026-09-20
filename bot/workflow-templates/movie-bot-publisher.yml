@@ -1,0 +1,56 @@
+name: Movie bot publisher
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      live_post:
+        description: Set true only to send a real X post during a manual test.
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: movie-bot-publisher
+  cancel-in-progress: false
+
+jobs:
+  publish-next-post:
+    runs-on: ubuntu-latest
+    env:
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+      TMDB_BEARER_TOKEN: ${{ secrets.TMDB_BEARER_TOKEN }}
+      WEBSITE_URL: https://90minutemovie.com
+      X_API_KEY: ${{ secrets.X_API_KEY }}
+      X_API_SECRET: ${{ secrets.X_API_SECRET }}
+      X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+      X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+      PUBLISH_ENABLED: ${{ inputs.live_post || vars.X_PUBLISH_ENABLED }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install card font
+        run: |
+          mkdir -p ~/.local/share/fonts
+          curl -fL --retry 3 \
+            'https://github.com/google/fonts/raw/main/ofl/robotoflex/RobotoFlex%5BGRAD%2CXOPQ%2CXTRA%2CYOPQ%2CYTAS%2CYTDE%2CYTFI%2CYTLC%2CYTUC%2Copsz%2Cslnt%2Cwdth%2Cwght%5D.ttf' \
+            -o ~/.local/share/fonts/RobotoFlex.ttf
+          fc-cache -f
+      - run: npm run bot:queue:replenish
+      - run: npm run bot:publish
+      - name: Save queue state
+        run: |
+          if git diff --quiet -- bot-queue/queue.json; then exit 0; fi
+          git config user.name '90 Minute Movie Bot'
+          git config user.email 'actions@github.com'
+          git add bot-queue/queue.json
+          git commit -m 'Update movie bot queue'
+          git push

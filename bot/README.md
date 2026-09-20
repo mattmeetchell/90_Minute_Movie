@@ -21,3 +21,23 @@ The workflow needs a `TMDB_API_KEY` or `TMDB_BEARER_TOKEN` GitHub Actions secret
 ## Two-week review batch
 
 `Movie bot review batch` creates two scheduled drafts per day (12 PM and 8 PM Eastern), starting tomorrow unless a date is supplied. Its artifact contains `review.html`, a browsable gallery of all cards and post copy, plus `queue.json` and the individual draft images. It never posts to X.
+
+## Queue and publishing
+
+The persistent queue is `bot-queue/queue.json`. It stores only metadata and
+post state; cards are regenerated immediately before publishing so image files
+do not accumulate in the repository.
+
+- `npm run bot:queue:create` creates a new 14-day queue, starting tomorrow.
+- `npm run bot:queue:replenish` tops the queue back up to 28 pending posts.
+- `npm run bot:publish` finds the next due item and renders it. It exits safely
+  unless `PUBLISH_ENABLED=true` is explicitly set.
+
+The publisher needs these GitHub Actions secrets: `X_API_KEY`,
+`X_API_SECRET`, `X_ACCESS_TOKEN`, and `X_ACCESS_TOKEN_SECRET`. The X app and
+the access token must have Read and Write permission.
+
+`workflow-templates/` contains the two GitHub Actions workflows needed to
+initialize the queue and publish it. They are templates because workflow
+changes must be added through the repository's GitHub workflow editor in this
+setup. Copy them into `.github/workflows/` when enabling the bot.

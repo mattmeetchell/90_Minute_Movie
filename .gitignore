@@ -8,4 +8,7 @@ local-preview-server.js
 bot-output/
 bot-review-batch/
 bot/fonts/
+.bot-queue-build/
+.bot-queue-replenish/
+.bot-publish-*/
 *.log
