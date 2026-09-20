@@ -4,7 +4,11 @@ import { spawnSync } from 'node:child_process';
 
 const batchDirectory = resolve(process.env.BOT_BATCH_OUTPUT_DIR || 'bot-review-batch');
 const days = Math.max(1, Math.min(31, Number.parseInt(process.env.BOT_BATCH_DAYS || '14', 10)));
-const slots = [12, 20];
+const slots = (process.env.BOT_BATCH_HOURS || '12,20')
+  .split(',')
+  .map((value) => Number.parseInt(value.trim(), 10))
+  .filter((hour) => hour === 12 || hour === 20);
+if (!slots.length) throw new Error('BOT_BATCH_HOURS must include 12 and/or 20.');
 const maxAttemptsPerSlot = 60;
 const seedBase = Number.parseInt(process.env.SELECTION_SEED || '', 10) || Date.now();
 const cardTheme = process.env.BOT_BATCH_THEME || 'standard';

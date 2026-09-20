@@ -1,9 +1,8 @@
 {
   "version": 1,
   "timeZone": "America/New_York",
-  "autoReplenishUntil": "2026-09-30",
   "createdAt": "2026-09-20T03:30:06.965Z",
-  "updatedAt": "2026-09-20T18:16:41.873Z",
+  "updatedAt": "2026-09-20T18:36:31.888Z",
   "entries": [
     {
       "id": 500,
@@ -2478,6 +2477,896 @@
       "cardPath": "drafts/62/card.png",
       "state": "queued",
       "source": "approved-october-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 888,
+      "title": "The Flintstones",
+      "year": "1994",
+      "runtime": 91,
+      "certification": "PG",
+      "director": "Brian Levant",
+      "genres": [
+        "Fantasy",
+        "Comedy"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "The Flintstones (1994)\nDirector: Brian Levant\nGenres: Fantasy, Comedy\nhttps://90minutemovie.com/?movie=888",
+      "scheduledAt": "Sunday, November 1 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "01",
+      "date": "2026-11-01",
+      "hour": 12,
+      "slotLabel": "Sunday, November 1 · 12:00 PM ET",
+      "cardPath": "drafts/01/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 51540,
+      "title": "Horrible Bosses",
+      "year": "2011",
+      "runtime": 98,
+      "certification": "R",
+      "director": "Seth Gordon",
+      "genres": [
+        "Comedy",
+        "Crime"
+      ],
+      "providers": [
+        "Peacock Premium",
+        "Peacock Premium Plus"
+      ],
+      "postText": "Horrible Bosses (2011)\nDirector: Seth Gordon\nGenres: Comedy, Crime\nhttps://90minutemovie.com/?movie=51540",
+      "scheduledAt": "Monday, November 2 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "02",
+      "date": "2026-11-02",
+      "hour": 12,
+      "slotLabel": "Monday, November 2 · 12:00 PM ET",
+      "cardPath": "drafts/02/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 10198,
+      "title": "The Princess and the Frog",
+      "year": "2009",
+      "runtime": 98,
+      "certification": "G",
+      "director": "Ron Clements",
+      "genres": [
+        "Animation",
+        "Romance"
+      ],
+      "providers": [
+        "Disney Plus"
+      ],
+      "postText": "The Princess and the Frog (2009)\nDirector: Ron Clements\nGenres: Animation, Romance\nhttps://90minutemovie.com/?movie=10198",
+      "scheduledAt": "Tuesday, November 3 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "03",
+      "date": "2026-11-03",
+      "hour": 12,
+      "slotLabel": "Tuesday, November 3 · 12:00 PM ET",
+      "cardPath": "drafts/03/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1242501,
+      "title": "Icefall",
+      "year": "2025",
+      "runtime": 99,
+      "certification": "NR",
+      "director": "Stefan Ruzowitzky",
+      "genres": [
+        "Action",
+        "Crime"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "Icefall (2025)\nDirector: Stefan Ruzowitzky\nGenres: Action, Crime\nhttps://90minutemovie.com/?movie=1242501",
+      "scheduledAt": "Wednesday, November 4 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "04",
+      "date": "2026-11-04",
+      "hour": 12,
+      "slotLabel": "Wednesday, November 4 · 12:00 PM ET",
+      "cardPath": "drafts/04/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 527435,
+      "title": "The Christmas Chronicles",
+      "year": "2018",
+      "runtime": 104,
+      "certification": "PG",
+      "director": "Clay Kaytis",
+      "genres": [
+        "Comedy",
+        "Adventure"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "The Christmas Chronicles (2018)\nDirector: Clay Kaytis\nGenres: Comedy, Adventure\nhttps://90minutemovie.com/?movie=527435",
+      "scheduledAt": "Thursday, November 5 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "05",
+      "date": "2026-11-05",
+      "hour": 12,
+      "slotLabel": "Thursday, November 5 · 12:00 PM ET",
+      "cardPath": "drafts/05/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 531309,
+      "title": "Brightburn",
+      "year": "2019",
+      "runtime": 91,
+      "certification": "R",
+      "director": "David Yarovesky",
+      "genres": [
+        "Horror",
+        "Science Fiction"
+      ],
+      "providers": [
+        "Sony Pictures Core Amazon Channel"
+      ],
+      "postText": "Brightburn (2019)\nDirector: David Yarovesky\nGenres: Horror, Science Fiction\nhttps://90minutemovie.com/?movie=531309",
+      "scheduledAt": "Friday, November 6 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "06",
+      "date": "2026-11-06",
+      "hour": 12,
+      "slotLabel": "Friday, November 6 · 12:00 PM ET",
+      "cardPath": "drafts/06/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 964849,
+      "title": "Nightborn",
+      "year": "2026",
+      "runtime": 92,
+      "certification": "NR",
+      "director": "Hanna Bergholm",
+      "genres": [
+        "Horror"
+      ],
+      "providers": [
+        "Philo",
+        "AMC Plus Apple TV channel",
+        "AMC+ Amazon Channel",
+        "AMC+ Roku Premium Channel",
+        "AMC+"
+      ],
+      "postText": "Nightborn (2026)\nDirector: Hanna Bergholm\nGenres: Horror\nhttps://90minutemovie.com/?movie=964849",
+      "scheduledAt": "Saturday, November 7 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "07",
+      "date": "2026-11-07",
+      "hour": 12,
+      "slotLabel": "Saturday, November 7 · 12:00 PM ET",
+      "cardPath": "drafts/07/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 508965,
+      "title": "Klaus",
+      "year": "2019",
+      "runtime": 97,
+      "certification": "PG",
+      "director": "Sergio Pablos",
+      "genres": [
+        "Animation",
+        "Family"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "Klaus (2019)\nDirector: Sergio Pablos\nGenres: Animation, Family\nhttps://90minutemovie.com/?movie=508965",
+      "scheduledAt": "Sunday, November 8 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "08",
+      "date": "2026-11-08",
+      "hour": 12,
+      "slotLabel": "Sunday, November 8 · 12:00 PM ET",
+      "cardPath": "drafts/08/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 587792,
+      "title": "Palm Springs",
+      "year": "2020",
+      "runtime": 90,
+      "certification": "R",
+      "director": "Max Barbakow",
+      "genres": [
+        "Comedy",
+        "Romance"
+      ],
+      "providers": [
+        "Hulu"
+      ],
+      "postText": "Palm Springs (2020)\nDirector: Max Barbakow\nGenres: Comedy, Romance\nhttps://90minutemovie.com/?movie=587792",
+      "scheduledAt": "Monday, November 9 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "09",
+      "date": "2026-11-09",
+      "hour": 12,
+      "slotLabel": "Monday, November 9 · 12:00 PM ET",
+      "cardPath": "drafts/09/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 9399,
+      "title": "Lionheart",
+      "year": "1990",
+      "runtime": 105,
+      "certification": "R",
+      "director": "Sheldon Lettich",
+      "genres": [
+        "Action"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "fuboTV",
+        "Amazon Prime Video with Ads",
+        "ARROW"
+      ],
+      "postText": "Lionheart (1990)\nDirector: Sheldon Lettich\nGenres: Action\nhttps://90minutemovie.com/?movie=9399",
+      "scheduledAt": "Tuesday, November 10 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "10",
+      "date": "2026-11-10",
+      "hour": 12,
+      "slotLabel": "Tuesday, November 10 · 12:00 PM ET",
+      "cardPath": "drafts/10/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 4951,
+      "title": "10 Things I Hate About You",
+      "year": "1999",
+      "runtime": 97,
+      "certification": "PG-13",
+      "director": "Gil Junger",
+      "genres": [
+        "Comedy",
+        "Romance"
+      ],
+      "providers": [
+        "Disney Plus",
+        "fuboTV",
+        "Peacock Premium",
+        "YouTube TV",
+        "FXNow"
+      ],
+      "postText": "10 Things I Hate About You (1999)\nDirector: Gil Junger\nGenres: Comedy, Romance\nhttps://90minutemovie.com/?movie=4951",
+      "scheduledAt": "Wednesday, November 11 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "11",
+      "date": "2026-11-11",
+      "hour": 12,
+      "slotLabel": "Wednesday, November 11 · 12:00 PM ET",
+      "cardPath": "drafts/11/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 490,
+      "title": "The Seventh Seal",
+      "year": "1957",
+      "runtime": 96,
+      "certification": "NR",
+      "director": "Ingmar Bergman",
+      "genres": [
+        "Fantasy",
+        "Drama"
+      ],
+      "providers": [
+        "HBO Max Amazon Channel",
+        "Criterion Channel",
+        "HBO Max"
+      ],
+      "postText": "The Seventh Seal (1957)\nDirector: Ingmar Bergman\nGenres: Fantasy, Drama\nhttps://90minutemovie.com/?movie=490",
+      "scheduledAt": "Thursday, November 12 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "12",
+      "date": "2026-11-12",
+      "hour": 12,
+      "slotLabel": "Thursday, November 12 · 12:00 PM ET",
+      "cardPath": "drafts/12/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 4858,
+      "title": "The Invasion",
+      "year": "2007",
+      "runtime": 99,
+      "certification": "PG-13",
+      "director": "Oliver Hirschbiegel",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "providers": [
+        "Howdy Amazon Channel"
+      ],
+      "postText": "The Invasion (2007)\nDirector: Oliver Hirschbiegel\nGenres: Horror, Mystery\nhttps://90minutemovie.com/?movie=4858",
+      "scheduledAt": "Friday, November 13 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "13",
+      "date": "2026-11-13",
+      "hour": 12,
+      "slotLabel": "Friday, November 13 · 12:00 PM ET",
+      "cardPath": "drafts/13/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 550205,
+      "title": "Wish Dragon",
+      "year": "2021",
+      "runtime": 99,
+      "certification": "PG",
+      "director": "Chris Appelhans",
+      "genres": [
+        "Animation",
+        "Family"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "Wish Dragon (2021)\nDirector: Chris Appelhans\nGenres: Animation, Family\nhttps://90minutemovie.com/?movie=550205",
+      "scheduledAt": "Saturday, November 14 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "14",
+      "date": "2026-11-14",
+      "hour": 12,
+      "slotLabel": "Saturday, November 14 · 12:00 PM ET",
+      "cardPath": "drafts/14/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1390300,
+      "title": "Over Your Dead Body",
+      "year": "2026",
+      "runtime": 105,
+      "certification": "R",
+      "director": "Jorma Taccone",
+      "genres": [
+        "Action",
+        "Comedy"
+      ],
+      "providers": [
+        "Philo",
+        "AMC Plus Apple TV channel",
+        "AMC+ Amazon Channel",
+        "AMC+ Roku Premium Channel",
+        "AMC+"
+      ],
+      "postText": "Over Your Dead Body (2026)\nDirector: Jorma Taccone\nGenres: Action, Comedy\nhttps://90minutemovie.com/?movie=1390300",
+      "scheduledAt": "Sunday, November 15 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "15",
+      "date": "2026-11-15",
+      "hour": 12,
+      "slotLabel": "Sunday, November 15 · 12:00 PM ET",
+      "cardPath": "drafts/15/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 9600,
+      "title": "Big Momma's House",
+      "year": "2000",
+      "runtime": 98,
+      "certification": "PG-13",
+      "director": "Raja Gosnell",
+      "genres": [
+        "Crime",
+        "Comedy"
+      ],
+      "providers": [
+        "Starz Apple TV channel"
+      ],
+      "postText": "Big Momma's House (2000)\nDirector: Raja Gosnell\nGenres: Crime, Comedy\nhttps://90minutemovie.com/?movie=9600",
+      "scheduledAt": "Monday, November 16 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "16",
+      "date": "2026-11-16",
+      "hour": 12,
+      "slotLabel": "Monday, November 16 · 12:00 PM ET",
+      "cardPath": "drafts/16/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 16871,
+      "title": "Drag Me to Hell",
+      "year": "2009",
+      "runtime": 99,
+      "certification": "PG-13",
+      "director": "Sam Raimi",
+      "genres": [
+        "Horror",
+        "Thriller"
+      ],
+      "providers": [
+        "Peacock Premium",
+        "Starz Apple TV channel",
+        "Peacock Premium Plus"
+      ],
+      "postText": "Drag Me to Hell (2009)\nDirector: Sam Raimi\nGenres: Horror, Thriller\nhttps://90minutemovie.com/?movie=16871",
+      "scheduledAt": "Tuesday, November 17 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "17",
+      "date": "2026-11-17",
+      "hour": 12,
+      "slotLabel": "Tuesday, November 17 · 12:00 PM ET",
+      "cardPath": "drafts/17/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 4108,
+      "title": "The Transporter",
+      "year": "2002",
+      "runtime": 92,
+      "certification": "PG-13",
+      "director": "Corey Yuen",
+      "genres": [
+        "Action",
+        "Crime"
+      ],
+      "providers": [
+        "fuboTV",
+        "YouTube TV"
+      ],
+      "postText": "The Transporter (2002)\nDirector: Corey Yuen\nGenres: Action, Crime\nhttps://90minutemovie.com/?movie=4108",
+      "scheduledAt": "Wednesday, November 18 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "18",
+      "date": "2026-11-18",
+      "hour": 12,
+      "slotLabel": "Wednesday, November 18 · 12:00 PM ET",
+      "cardPath": "drafts/18/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 38757,
+      "title": "Tangled",
+      "year": "2010",
+      "runtime": 100,
+      "certification": "PG",
+      "director": "Byron Howard",
+      "genres": [
+        "Animation",
+        "Family"
+      ],
+      "providers": [
+        "Disney Plus"
+      ],
+      "postText": "Tangled (2010)\nDirector: Byron Howard\nGenres: Animation, Family\nhttps://90minutemovie.com/?movie=38757",
+      "scheduledAt": "Thursday, November 19 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "19",
+      "date": "2026-11-19",
+      "hour": 12,
+      "slotLabel": "Thursday, November 19 · 12:00 PM ET",
+      "cardPath": "drafts/19/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 523638,
+      "title": "Prisoners of the Ghostland",
+      "year": "2021",
+      "runtime": 103,
+      "certification": "NR",
+      "director": "Sion Sono",
+      "genres": [
+        "Horror",
+        "Action"
+      ],
+      "providers": [
+        "Philo",
+        "AMC Plus Apple TV channel",
+        "AMC+ Amazon Channel",
+        "AMC+",
+        "Shudder"
+      ],
+      "postText": "Prisoners of the Ghostland (2021)\nDirector: Sion Sono\nGenres: Horror, Action\nhttps://90minutemovie.com/?movie=523638",
+      "scheduledAt": "Friday, November 20 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "20",
+      "date": "2026-11-20",
+      "hour": 12,
+      "slotLabel": "Friday, November 20 · 12:00 PM ET",
+      "cardPath": "drafts/20/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 443791,
+      "title": "Underwater",
+      "year": "2020",
+      "runtime": 95,
+      "certification": "PG-13",
+      "director": "William Eubank",
+      "genres": [
+        "Horror",
+        "Science Fiction"
+      ],
+      "providers": [
+        "fuboTV",
+        "YouTube TV",
+        "FXNow"
+      ],
+      "postText": "Underwater (2020)\nDirector: William Eubank\nGenres: Horror, Science Fiction\nhttps://90minutemovie.com/?movie=443791",
+      "scheduledAt": "Saturday, November 21 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "21",
+      "date": "2026-11-21",
+      "hour": 12,
+      "slotLabel": "Saturday, November 21 · 12:00 PM ET",
+      "cardPath": "drafts/21/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 17979,
+      "title": "A Christmas Carol",
+      "year": "2009",
+      "runtime": 96,
+      "certification": "PG",
+      "director": "Robert Zemeckis",
+      "genres": [
+        "Animation",
+        "Drama"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Disney Plus",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "A Christmas Carol (2009)\nDirector: Robert Zemeckis\nGenres: Animation, Drama\nhttps://90minutemovie.com/?movie=17979",
+      "scheduledAt": "Sunday, November 22 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "22",
+      "date": "2026-11-22",
+      "hour": 12,
+      "slotLabel": "Sunday, November 22 · 12:00 PM ET",
+      "cardPath": "drafts/22/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 502356,
+      "title": "The Super Mario Bros. Movie",
+      "year": "2023",
+      "runtime": 93,
+      "certification": "PG",
+      "director": "Aaron Horvath",
+      "genres": [
+        "Family",
+        "Comedy"
+      ],
+      "providers": [
+        "Peacock Premium",
+        "Peacock Premium Plus",
+        "Peacock Premium Plus Amazon Channel"
+      ],
+      "postText": "The Super Mario Bros. Movie (2023)\nDirector: Aaron Horvath\nGenres: Family, Comedy\nhttps://90minutemovie.com/?movie=502356",
+      "scheduledAt": "Monday, November 23 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "23",
+      "date": "2026-11-23",
+      "hour": 12,
+      "slotLabel": "Monday, November 23 · 12:00 PM ET",
+      "cardPath": "drafts/23/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 19173,
+      "title": "Diary of a Nymphomaniac",
+      "year": "2008",
+      "runtime": 102,
+      "certification": "NR",
+      "director": "Christian Molina",
+      "genres": [
+        "Drama",
+        "Romance"
+      ],
+      "providers": [
+        "Philo"
+      ],
+      "postText": "Diary of a Nymphomaniac (2008)\nDirector: Christian Molina\nGenres: Drama, Romance\nhttps://90minutemovie.com/?movie=19173",
+      "scheduledAt": "Tuesday, November 24 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "24",
+      "date": "2026-11-24",
+      "hour": 12,
+      "slotLabel": "Tuesday, November 24 · 12:00 PM ET",
+      "cardPath": "drafts/24/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 549053,
+      "title": "Last Christmas",
+      "year": "2019",
+      "runtime": 103,
+      "certification": "PG-13",
+      "director": "Paul Feig",
+      "genres": [
+        "Comedy",
+        "Drama"
+      ],
+      "providers": [
+        "Hulu"
+      ],
+      "postText": "Last Christmas (2019)\nDirector: Paul Feig\nGenres: Comedy, Drama\nhttps://90minutemovie.com/?movie=549053",
+      "scheduledAt": "Wednesday, November 25 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "25",
+      "date": "2026-11-25",
+      "hour": 12,
+      "slotLabel": "Wednesday, November 25 · 12:00 PM ET",
+      "cardPath": "drafts/25/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1071215,
+      "title": "Thanksgiving",
+      "year": "2023",
+      "runtime": 106,
+      "certification": "R",
+      "director": "Eli Roth",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "providers": [
+        "Hulu",
+        "fuboTV",
+        "HBO Max Amazon Channel",
+        "YouTube TV",
+        "HBO Max"
+      ],
+      "postText": "Thanksgiving (2023)\nDirector: Eli Roth\nGenres: Horror, Mystery\nhttps://90minutemovie.com/?movie=1071215",
+      "scheduledAt": "Thursday, November 26 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "26",
+      "date": "2026-11-26",
+      "hour": 12,
+      "slotLabel": "Thursday, November 26 · 12:00 PM ET",
+      "cardPath": "drafts/26/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 957,
+      "title": "Spaceballs",
+      "year": "1987",
+      "runtime": 96,
+      "certification": "PG",
+      "director": "Mel Brooks",
+      "genres": [
+        "Comedy",
+        "Science Fiction"
+      ],
+      "providers": [
+        "fuboTV",
+        "MGM+ Amazon Channel",
+        "Philo",
+        "AMC Plus Apple TV channel",
+        "AMC+ Amazon Channel"
+      ],
+      "postText": "Spaceballs (1987)\nDirector: Mel Brooks\nGenres: Comedy, Science Fiction\nhttps://90minutemovie.com/?movie=957",
+      "scheduledAt": "Friday, November 27 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "27",
+      "date": "2026-11-27",
+      "hour": 12,
+      "slotLabel": "Friday, November 27 · 12:00 PM ET",
+      "cardPath": "drafts/27/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 583,
+      "title": "Life of Brian",
+      "year": "1979",
+      "runtime": 94,
+      "certification": "R",
+      "director": "Terry Jones",
+      "genres": [
+        "Comedy"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "fuboTV",
+        "Peacock Premium",
+        "Amazon Prime Video with Ads",
+        "Peacock Premium Plus"
+      ],
+      "postText": "Life of Brian (1979)\nDirector: Terry Jones\nGenres: Comedy\nhttps://90minutemovie.com/?movie=583",
+      "scheduledAt": "Saturday, November 28 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "28",
+      "date": "2026-11-28",
+      "hour": 12,
+      "slotLabel": "Saturday, November 28 · 12:00 PM ET",
+      "cardPath": "drafts/28/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 8204,
+      "title": "The Spiderwick Chronicles",
+      "year": "2008",
+      "runtime": 95,
+      "certification": "PG",
+      "director": "Mark Waters",
+      "genres": [
+        "Family",
+        "Adventure"
+      ],
+      "providers": [
+        "fuboTV",
+        "Paramount Plus Premium",
+        "Paramount Plus Essential",
+        "Paramount+ Amazon Channel",
+        "Paramount+ Roku Premium Channel"
+      ],
+      "postText": "The Spiderwick Chronicles (2008)\nDirector: Mark Waters\nGenres: Family, Adventure\nhttps://90minutemovie.com/?movie=8204",
+      "scheduledAt": "Sunday, November 29 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "29",
+      "date": "2026-11-29",
+      "hour": 12,
+      "slotLabel": "Sunday, November 29 · 12:00 PM ET",
+      "cardPath": "drafts/29/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 454983,
+      "title": "The Kissing Booth",
+      "year": "2018",
+      "runtime": 105,
+      "certification": "PG-13",
+      "director": "Vince Marcello",
+      "genres": [
+        "Romance",
+        "Comedy"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "The Kissing Booth (2018)\nDirector: Vince Marcello\nGenres: Romance, Comedy\nhttps://90minutemovie.com/?movie=454983",
+      "scheduledAt": "Monday, November 30 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "30",
+      "date": "2026-11-30",
+      "hour": 12,
+      "slotLabel": "Monday, November 30 · 12:00 PM ET",
+      "cardPath": "drafts/30/card.png",
+      "state": "queued",
+      "source": "automatic-november-2026",
       "postedAt": null,
       "tweetId": null,
       "tweetUrl": null

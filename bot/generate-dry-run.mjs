@@ -120,6 +120,10 @@ const dateSeed = () => {
 
 const selectionSeed = Number.parseInt(process.env.SELECTION_SEED || '', 10) || dateSeed();
 const requestedMovieId = Number.parseInt(process.env.MOVIE_ID || '', 10);
+const excludedMovieIds = new Set((process.env.BOT_EXCLUDED_MOVIE_IDS || '')
+  .split(',')
+  .map((value) => Number.parseInt(value.trim(), 10))
+  .filter(Number.isFinite));
 const scheduledDate = process.env.SCHEDULE_DATE || new Intl.DateTimeFormat('en-CA', {
   timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit'
 }).format(new Date());
@@ -206,6 +210,7 @@ const main = async () => {
     && details.runtime <= (isOccasionalLongPick ? 105 : 102);
   if (!requestedMovieId && (
     !hasTargetRuntime
+    || excludedMovieIds.has(details.id)
     || (avoidHorrorForThisSlot && isHorror)
     || (requireHorrorForThisSlot && !isHorror)
     || !await isEligibleFranchiseEntry(details)
