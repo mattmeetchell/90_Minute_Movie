@@ -9,7 +9,7 @@
     "bot:publish": "node bot/publish-queue.mjs"
   },
   "dependencies": {
-    "sharp": "^0.34.3",
+    "sharp": "^0.35.4",
     "twitter-api-v2": "^1.29.1"
   }
 }
