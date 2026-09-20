@@ -1,485 +1,9 @@
 {
   "version": 1,
   "timeZone": "America/New_York",
-  "createdAt": "2026-09-20T03:14:27.692Z",
-  "updatedAt": "2026-09-20T03:14:27.692Z",
+  "createdAt": "2026-09-20T03:22:50.793Z",
+  "updatedAt": "2026-09-20T03:22:50.793Z",
   "entries": [
-    {
-      "id": 9614,
-      "title": "Happy Gilmore",
-      "year": "1996",
-      "runtime": 92,
-      "certification": "PG-13",
-      "director": "Dennis Dugan",
-      "genres": [
-        "Comedy"
-      ],
-      "providers": [
-        "Philo",
-        "Starz Amazon Channel",
-        "Starz",
-        "Starz Roku Premium Channel"
-      ],
-      "postText": "Happy Gilmore (1996)\nDirector: Dennis Dugan\nGenres: Comedy\nhttps://90minutemovie.com/?movie=9614",
-      "scheduledAt": "Sunday, September 20 · 12:00 PM ET",
-      "draftId": "01",
-      "date": "2026-09-20",
-      "hour": 12,
-      "slotLabel": "Sunday, September 20 · 12:00 PM ET",
-      "cardPath": "drafts/01/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 1414413,
-      "title": "Brothers Under Fire",
-      "year": "2026",
-      "runtime": 99,
-      "certification": "NR",
-      "director": "Justin Chadwick",
-      "genres": [
-        "Action",
-        "Thriller"
-      ],
-      "providers": [
-        "Hulu"
-      ],
-      "postText": "Brothers Under Fire (2026)\nDirector: Justin Chadwick\nGenres: Action, Thriller\nhttps://90minutemovie.com/?movie=1414413",
-      "scheduledAt": "Sunday, September 20 · 8:00 PM ET",
-      "draftId": "02",
-      "date": "2026-09-20",
-      "hour": 20,
-      "slotLabel": "Sunday, September 20 · 8:00 PM ET",
-      "cardPath": "drafts/02/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 1668364,
-      "title": "Desire",
-      "year": "2026",
-      "runtime": 97,
-      "certification": "R",
-      "director": "Teresa Simone",
-      "genres": [
-        "Mystery",
-        "Drama"
-      ],
-      "providers": [
-        "Netflix",
-        "Netflix Standard with Ads"
-      ],
-      "postText": "Desire (2026)\nDirector: Teresa Simone\nGenres: Mystery, Drama\nhttps://90minutemovie.com/?movie=1668364",
-      "scheduledAt": "Monday, September 21 · 12:00 PM ET",
-      "draftId": "03",
-      "date": "2026-09-21",
-      "hour": 12,
-      "slotLabel": "Monday, September 21 · 12:00 PM ET",
-      "cardPath": "drafts/03/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 287948,
-      "title": "The Transporter Refueled",
-      "year": "2015",
-      "runtime": 95,
-      "certification": "PG-13",
-      "director": "Camille Delamarre",
-      "genres": [
-        "Action",
-        "Thriller"
-      ],
-      "providers": [
-        "HBO Max Amazon Channel",
-        "Cinemax Amazon Channel",
-        "HBO Max",
-        "Cinemax Apple TV channel"
-      ],
-      "postText": "The Transporter Refueled (2015)\nDirector: Camille Delamarre\nGenres: Action, Thriller\nhttps://90minutemovie.com/?movie=287948",
-      "scheduledAt": "Monday, September 21 · 8:00 PM ET",
-      "draftId": "04",
-      "date": "2026-09-21",
-      "hour": 20,
-      "slotLabel": "Monday, September 21 · 8:00 PM ET",
-      "cardPath": "drafts/04/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 14177,
-      "title": "Beauty Shop",
-      "year": "2005",
-      "runtime": 105,
-      "certification": "PG-13",
-      "director": "Bille Woodruff",
-      "genres": [
-        "Comedy",
-        "Romance"
-      ],
-      "providers": [
-        "Amazon Prime Video",
-        "MGM Plus Roku Premium Channel",
-        "MGM Plus",
-        "Amazon Prime Video with Ads"
-      ],
-      "postText": "Beauty Shop (2005)\nDirector: Bille Woodruff\nGenres: Comedy, Romance\nhttps://90minutemovie.com/?movie=14177",
-      "scheduledAt": "Tuesday, September 22 · 12:00 PM ET",
-      "draftId": "05",
-      "date": "2026-09-22",
-      "hour": 12,
-      "slotLabel": "Tuesday, September 22 · 12:00 PM ET",
-      "cardPath": "drafts/05/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 204082,
-      "title": "Homefront",
-      "year": "2013",
-      "runtime": 100,
-      "certification": "R",
-      "director": "Gary Fleder",
-      "genres": [
-        "Action",
-        "Thriller"
-      ],
-      "providers": [
-        "Amazon Prime Video",
-        "FilmBox+",
-        "Amazon Prime Video with Ads"
-      ],
-      "postText": "Homefront (2013)\nDirector: Gary Fleder\nGenres: Action, Thriller\nhttps://90minutemovie.com/?movie=204082",
-      "scheduledAt": "Tuesday, September 22 · 8:00 PM ET",
-      "draftId": "06",
-      "date": "2026-09-22",
-      "hour": 20,
-      "slotLabel": "Tuesday, September 22 · 8:00 PM ET",
-      "cardPath": "drafts/06/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 808,
-      "title": "Shrek",
-      "year": "2001",
-      "runtime": 90,
-      "certification": "PG",
-      "director": "Andrew Adamson",
-      "genres": [
-        "Animation",
-        "Comedy"
-      ],
-      "providers": [
-        "Peacock Premium",
-        "Peacock Premium Plus"
-      ],
-      "postText": "Shrek (2001)\nDirector: Andrew Adamson\nGenres: Animation, Comedy\nhttps://90minutemovie.com/?movie=808",
-      "scheduledAt": "Wednesday, September 23 · 12:00 PM ET",
-      "draftId": "07",
-      "date": "2026-09-23",
-      "hour": 12,
-      "slotLabel": "Wednesday, September 23 · 12:00 PM ET",
-      "cardPath": "drafts/07/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 10022,
-      "title": "The Pacifier",
-      "year": "2005",
-      "runtime": 95,
-      "certification": "PG",
-      "director": "Adam Shankman",
-      "genres": [
-        "Comedy",
-        "Family"
-      ],
-      "providers": [
-        "Disney Plus"
-      ],
-      "postText": "The Pacifier (2005)\nDirector: Adam Shankman\nGenres: Comedy, Family\nhttps://90minutemovie.com/?movie=10022",
-      "scheduledAt": "Wednesday, September 23 · 8:00 PM ET",
-      "draftId": "08",
-      "date": "2026-09-23",
-      "hour": 20,
-      "slotLabel": "Wednesday, September 23 · 8:00 PM ET",
-      "cardPath": "drafts/08/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 296099,
-      "title": "Vacation",
-      "year": "2015",
-      "runtime": 99,
-      "certification": "R",
-      "director": "John Francis Daley",
-      "genres": [
-        "Comedy",
-        "Adventure"
-      ],
-      "providers": [
-        "Paramount Plus Essential",
-        "YouTube TV"
-      ],
-      "postText": "Vacation (2015)\nDirector: John Francis Daley\nGenres: Comedy, Adventure\nhttps://90minutemovie.com/?movie=296099",
-      "scheduledAt": "Thursday, September 24 · 12:00 PM ET",
-      "draftId": "09",
-      "date": "2026-09-24",
-      "hour": 12,
-      "slotLabel": "Thursday, September 24 · 12:00 PM ET",
-      "cardPath": "drafts/09/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 994108,
-      "title": "All of Us Strangers",
-      "year": "2023",
-      "runtime": 105,
-      "certification": "R",
-      "director": "Andrew Haigh",
-      "genres": [
-        "Romance",
-        "Drama"
-      ],
-      "providers": [
-        "Hulu"
-      ],
-      "postText": "All of Us Strangers (2023)\nDirector: Andrew Haigh\nGenres: Romance, Drama\nhttps://90minutemovie.com/?movie=994108",
-      "scheduledAt": "Thursday, September 24 · 8:00 PM ET",
-      "draftId": "10",
-      "date": "2026-09-24",
-      "hour": 20,
-      "slotLabel": "Thursday, September 24 · 8:00 PM ET",
-      "cardPath": "drafts/10/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 21835,
-      "title": "A Chinese Odyssey Part Two: Cinderella",
-      "year": "1995",
-      "runtime": 99,
-      "certification": "NR",
-      "director": "Jeffrey Lau Chun-Wai",
-      "genres": [
-        "Action",
-        "Adventure"
-      ],
-      "providers": [
-        "Shout! Factory Amazon Channel"
-      ],
-      "postText": "A Chinese Odyssey Part Two: Cinderella (1995)\nDirector: Jeffrey Lau Chun-Wai\nGenres: Action, Adventure\nhttps://90minutemovie.com/?movie=21835",
-      "scheduledAt": "Friday, September 25 · 12:00 PM ET",
-      "draftId": "11",
-      "date": "2026-09-25",
-      "hour": 12,
-      "slotLabel": "Friday, September 25 · 12:00 PM ET",
-      "cardPath": "drafts/11/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 441130,
-      "title": "Wolfwalkers",
-      "year": "2020",
-      "runtime": 102,
-      "certification": "PG",
-      "director": "Tomm Moore",
-      "genres": [
-        "Animation",
-        "Family"
-      ],
-      "providers": [
-        "Apple TV",
-        "Apple TV Amazon Channel"
-      ],
-      "postText": "Wolfwalkers (2020)\nDirector: Tomm Moore\nGenres: Animation, Family\nhttps://90minutemovie.com/?movie=441130",
-      "scheduledAt": "Friday, September 25 · 8:00 PM ET",
-      "draftId": "12",
-      "date": "2026-09-25",
-      "hour": 20,
-      "slotLabel": "Friday, September 25 · 8:00 PM ET",
-      "cardPath": "drafts/12/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 796,
-      "title": "Cruel Intentions",
-      "year": "1999",
-      "runtime": 97,
-      "certification": "R",
-      "director": "Roger Kumble",
-      "genres": [
-        "Drama",
-        "Romance"
-      ],
-      "providers": [
-        "Netflix",
-        "Hulu",
-        "Netflix Standard with Ads"
-      ],
-      "postText": "Cruel Intentions (1999)\nDirector: Roger Kumble\nGenres: Drama, Romance\nhttps://90minutemovie.com/?movie=796",
-      "scheduledAt": "Saturday, September 26 · 12:00 PM ET",
-      "draftId": "13",
-      "date": "2026-09-26",
-      "hour": 12,
-      "slotLabel": "Saturday, September 26 · 12:00 PM ET",
-      "cardPath": "drafts/13/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 127380,
-      "title": "Finding Dory",
-      "year": "2016",
-      "runtime": 97,
-      "certification": "PG",
-      "director": "Andrew Stanton",
-      "genres": [
-        "Adventure",
-        "Animation"
-      ],
-      "providers": [
-        "Disney Plus"
-      ],
-      "postText": "Finding Dory (2016)\nDirector: Andrew Stanton\nGenres: Adventure, Animation\nhttps://90minutemovie.com/?movie=127380",
-      "scheduledAt": "Saturday, September 26 · 8:00 PM ET",
-      "draftId": "14",
-      "date": "2026-09-26",
-      "hour": 20,
-      "slotLabel": "Saturday, September 26 · 8:00 PM ET",
-      "cardPath": "drafts/14/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 734265,
-      "title": "Love Hard",
-      "year": "2021",
-      "runtime": 105,
-      "certification": "NR",
-      "director": "Hernán Jiménez",
-      "genres": [
-        "Comedy",
-        "Romance"
-      ],
-      "providers": [
-        "Netflix",
-        "Netflix Standard with Ads"
-      ],
-      "postText": "Love Hard (2021)\nDirector: Hernán Jiménez\nGenres: Comedy, Romance\nhttps://90minutemovie.com/?movie=734265",
-      "scheduledAt": "Sunday, September 27 · 12:00 PM ET",
-      "draftId": "15",
-      "date": "2026-09-27",
-      "hour": 12,
-      "slotLabel": "Sunday, September 27 · 12:00 PM ET",
-      "cardPath": "drafts/15/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 71880,
-      "title": "Jack and Jill",
-      "year": "2011",
-      "runtime": 91,
-      "certification": "PG",
-      "director": "Dennis Dugan",
-      "genres": [
-        "Comedy",
-        "Family"
-      ],
-      "providers": [
-        "Starz Apple TV channel"
-      ],
-      "postText": "Jack and Jill (2011)\nDirector: Dennis Dugan\nGenres: Comedy, Family\nhttps://90minutemovie.com/?movie=71880",
-      "scheduledAt": "Sunday, September 27 · 8:00 PM ET",
-      "draftId": "16",
-      "date": "2026-09-27",
-      "hour": 20,
-      "slotLabel": "Sunday, September 27 · 8:00 PM ET",
-      "cardPath": "drafts/16/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
-    {
-      "id": 12133,
-      "title": "Step Brothers",
-      "year": "2008",
-      "runtime": 98,
-      "certification": "R",
-      "director": "Adam McKay",
-      "genres": [
-        "Comedy"
-      ],
-      "providers": [
-        "YouTube TV",
-        "Starz Apple TV channel"
-      ],
-      "postText": "Step Brothers (2008)\nDirector: Adam McKay\nGenres: Comedy\nhttps://90minutemovie.com/?movie=12133",
-      "scheduledAt": "Monday, September 28 · 12:00 PM ET",
-      "draftId": "17",
-      "date": "2026-09-28",
-      "hour": 12,
-      "slotLabel": "Monday, September 28 · 12:00 PM ET",
-      "cardPath": "drafts/17/card.png",
-      "state": "queued",
-      "source": "automatic",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
-    },
     {
       "id": 137,
       "title": "Groundhog Day",
@@ -495,12 +19,12 @@
         "fuboTV"
       ],
       "postText": "Groundhog Day (1993)\nDirector: Harold Ramis\nGenres: Romance, Fantasy\nhttps://90minutemovie.com/?movie=137",
-      "scheduledAt": "Monday, September 28 · 8:00 PM ET",
-      "draftId": "18",
-      "date": "2026-09-28",
-      "hour": 20,
-      "slotLabel": "Monday, September 28 · 8:00 PM ET",
-      "cardPath": "drafts/18/card.png",
+      "scheduledAt": "Sunday, September 20 · 12:00 PM ET",
+      "draftId": "01",
+      "date": "2026-09-20",
+      "hour": 12,
+      "slotLabel": "Sunday, September 20 · 12:00 PM ET",
+      "cardPath": "drafts/01/card.png",
       "state": "queued",
       "source": "automatic",
       "postedAt": null,
@@ -522,12 +46,12 @@
         "Angel Studios"
       ],
       "postText": "Animal Farm (2026)\nDirector: Andy Serkis\nGenres: Animation, Comedy\nhttps://90minutemovie.com/?movie=539745",
-      "scheduledAt": "Tuesday, September 29 · 12:00 PM ET",
-      "draftId": "19",
-      "date": "2026-09-29",
-      "hour": 12,
-      "slotLabel": "Tuesday, September 29 · 12:00 PM ET",
-      "cardPath": "drafts/19/card.png",
+      "scheduledAt": "Sunday, September 20 · 8:00 PM ET",
+      "draftId": "02",
+      "date": "2026-09-20",
+      "hour": 20,
+      "slotLabel": "Sunday, September 20 · 8:00 PM ET",
+      "cardPath": "drafts/02/card.png",
       "state": "queued",
       "source": "automatic",
       "postedAt": null,
@@ -535,27 +59,29 @@
       "tweetUrl": null
     },
     {
-      "id": 619278,
-      "title": "Inside Man: Most Wanted",
-      "year": "2019",
-      "runtime": 105,
+      "id": 333669,
+      "title": "Bastille Day",
+      "year": "2016",
+      "runtime": 92,
       "certification": "R",
-      "director": "MJ Bassett",
+      "director": "James Watkins",
       "genres": [
-        "Action",
-        "Crime"
+        "Action"
       ],
       "providers": [
-        "Netflix",
-        "Netflix Standard with Ads"
+        "Philo",
+        "Starz Amazon Channel",
+        "Starz",
+        "Starz Apple TV channel",
+        "Starz Roku Premium Channel"
       ],
-      "postText": "Inside Man: Most Wanted (2019)\nDirector: MJ Bassett\nGenres: Action, Crime\nhttps://90minutemovie.com/?movie=619278",
-      "scheduledAt": "Tuesday, September 29 · 8:00 PM ET",
-      "draftId": "20",
-      "date": "2026-09-29",
-      "hour": 20,
-      "slotLabel": "Tuesday, September 29 · 8:00 PM ET",
-      "cardPath": "drafts/20/card.png",
+      "postText": "Bastille Day (2016)\nDirector: James Watkins\nGenres: Action\nhttps://90minutemovie.com/?movie=333669",
+      "scheduledAt": "Monday, September 21 · 12:00 PM ET",
+      "draftId": "03",
+      "date": "2026-09-21",
+      "hour": 12,
+      "slotLabel": "Monday, September 21 · 12:00 PM ET",
+      "cardPath": "drafts/03/card.png",
       "state": "queued",
       "source": "automatic",
       "postedAt": null,
@@ -581,6 +107,484 @@
         "AMC+"
       ],
       "postText": "Rambo III (1988)\nDirector: Peter MacDonald\nGenres: Action, Adventure\nhttps://90minutemovie.com/?movie=1370",
+      "scheduledAt": "Monday, September 21 · 8:00 PM ET",
+      "draftId": "04",
+      "date": "2026-09-21",
+      "hour": 20,
+      "slotLabel": "Monday, September 21 · 8:00 PM ET",
+      "cardPath": "drafts/04/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 41513,
+      "title": "The Smurfs",
+      "year": "2011",
+      "runtime": 103,
+      "certification": "PG",
+      "director": "Raja Gosnell",
+      "genres": [
+        "Animation",
+        "Family"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads",
+        "Sony Pictures Core Amazon Channel"
+      ],
+      "postText": "The Smurfs (2011)\nDirector: Raja Gosnell\nGenres: Animation, Family\nhttps://90minutemovie.com/?movie=41513",
+      "scheduledAt": "Tuesday, September 22 · 12:00 PM ET",
+      "draftId": "05",
+      "date": "2026-09-22",
+      "hour": 12,
+      "slotLabel": "Tuesday, September 22 · 12:00 PM ET",
+      "cardPath": "drafts/05/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 2140,
+      "title": "Kiss of the Dragon",
+      "year": "2001",
+      "runtime": 98,
+      "certification": "R",
+      "director": "Chris Nahon",
+      "genres": [
+        "Action",
+        "Crime"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "Kiss of the Dragon (2001)\nDirector: Chris Nahon\nGenres: Action, Crime\nhttps://90minutemovie.com/?movie=2140",
+      "scheduledAt": "Tuesday, September 22 · 8:00 PM ET",
+      "draftId": "06",
+      "date": "2026-09-22",
+      "hour": 20,
+      "slotLabel": "Tuesday, September 22 · 8:00 PM ET",
+      "cardPath": "drafts/06/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 490,
+      "title": "The Seventh Seal",
+      "year": "1957",
+      "runtime": 96,
+      "certification": "NR",
+      "director": "Ingmar Bergman",
+      "genres": [
+        "Fantasy",
+        "Drama"
+      ],
+      "providers": [
+        "HBO Max Amazon Channel",
+        "Criterion Channel",
+        "HBO Max"
+      ],
+      "postText": "The Seventh Seal (1957)\nDirector: Ingmar Bergman\nGenres: Fantasy, Drama\nhttps://90minutemovie.com/?movie=490",
+      "scheduledAt": "Wednesday, September 23 · 12:00 PM ET",
+      "draftId": "07",
+      "date": "2026-09-23",
+      "hour": 12,
+      "slotLabel": "Wednesday, September 23 · 12:00 PM ET",
+      "cardPath": "drafts/07/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 639721,
+      "title": "The Addams Family 2",
+      "year": "2021",
+      "runtime": 93,
+      "certification": "PG",
+      "director": "Greg Tiernan",
+      "genres": [
+        "Animation",
+        "Family"
+      ],
+      "providers": [
+        "Peacock Premium",
+        "Peacock Premium Plus"
+      ],
+      "postText": "The Addams Family 2 (2021)\nDirector: Greg Tiernan\nGenres: Animation, Family\nhttps://90minutemovie.com/?movie=639721",
+      "scheduledAt": "Wednesday, September 23 · 8:00 PM ET",
+      "draftId": "08",
+      "date": "2026-09-23",
+      "hour": 20,
+      "slotLabel": "Wednesday, September 23 · 8:00 PM ET",
+      "cardPath": "drafts/08/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 810,
+      "title": "Shrek the Third",
+      "year": "2007",
+      "runtime": 93,
+      "certification": "PG",
+      "director": "Chris Miller",
+      "genres": [
+        "Fantasy",
+        "Adventure"
+      ],
+      "providers": [
+        "Peacock Premium",
+        "Peacock Premium Plus"
+      ],
+      "postText": "Shrek the Third (2007)\nDirector: Chris Miller\nGenres: Fantasy, Adventure\nhttps://90minutemovie.com/?movie=810",
+      "scheduledAt": "Thursday, September 24 · 12:00 PM ET",
+      "draftId": "09",
+      "date": "2026-09-24",
+      "hour": 12,
+      "slotLabel": "Thursday, September 24 · 12:00 PM ET",
+      "cardPath": "drafts/09/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 11333,
+      "title": "Super Fuzz",
+      "year": "1980",
+      "runtime": 104,
+      "certification": "PG",
+      "director": "Sergio Corbucci",
+      "genres": [
+        "Fantasy",
+        "Action"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "Super Fuzz (1980)\nDirector: Sergio Corbucci\nGenres: Fantasy, Action\nhttps://90minutemovie.com/?movie=11333",
+      "scheduledAt": "Thursday, September 24 · 8:00 PM ET",
+      "draftId": "10",
+      "date": "2026-09-24",
+      "hour": 20,
+      "slotLabel": "Thursday, September 24 · 8:00 PM ET",
+      "cardPath": "drafts/10/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 9614,
+      "title": "Happy Gilmore",
+      "year": "1996",
+      "runtime": 92,
+      "certification": "PG-13",
+      "director": "Dennis Dugan",
+      "genres": [
+        "Comedy"
+      ],
+      "providers": [
+        "Philo",
+        "Starz Amazon Channel",
+        "Starz",
+        "Starz Roku Premium Channel"
+      ],
+      "postText": "Happy Gilmore (1996)\nDirector: Dennis Dugan\nGenres: Comedy\nhttps://90minutemovie.com/?movie=9614",
+      "scheduledAt": "Friday, September 25 · 12:00 PM ET",
+      "draftId": "11",
+      "date": "2026-09-25",
+      "hour": 12,
+      "slotLabel": "Friday, September 25 · 12:00 PM ET",
+      "cardPath": "drafts/11/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1641319,
+      "title": "Sniper: No Nation",
+      "year": "2026",
+      "runtime": 96,
+      "certification": "R",
+      "director": "Trevor Calverley",
+      "genres": [
+        "Action",
+        "Thriller"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "Sniper: No Nation (2026)\nDirector: Trevor Calverley\nGenres: Action, Thriller\nhttps://90minutemovie.com/?movie=1641319",
+      "scheduledAt": "Friday, September 25 · 8:00 PM ET",
+      "draftId": "12",
+      "date": "2026-09-25",
+      "hour": 20,
+      "slotLabel": "Friday, September 25 · 8:00 PM ET",
+      "cardPath": "drafts/12/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 105864,
+      "title": "The Good Dinosaur",
+      "year": "2015",
+      "runtime": 93,
+      "certification": "PG",
+      "director": "Peter Sohn",
+      "genres": [
+        "Adventure",
+        "Animation"
+      ],
+      "providers": [
+        "Disney Plus"
+      ],
+      "postText": "The Good Dinosaur (2015)\nDirector: Peter Sohn\nGenres: Adventure, Animation\nhttps://90minutemovie.com/?movie=105864",
+      "scheduledAt": "Saturday, September 26 · 12:00 PM ET",
+      "draftId": "13",
+      "date": "2026-09-26",
+      "hour": 12,
+      "slotLabel": "Saturday, September 26 · 12:00 PM ET",
+      "cardPath": "drafts/13/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 41283,
+      "title": "Faster",
+      "year": "2010",
+      "runtime": 98,
+      "certification": "R",
+      "director": "George Tillman Jr.",
+      "genres": [
+        "Crime",
+        "Drama"
+      ],
+      "providers": [
+        "fuboTV",
+        "Paramount Plus Premium",
+        "Paramount+ Amazon Channel"
+      ],
+      "postText": "Faster (2010)\nDirector: George Tillman Jr.\nGenres: Crime, Drama\nhttps://90minutemovie.com/?movie=41283",
+      "scheduledAt": "Saturday, September 26 · 8:00 PM ET",
+      "draftId": "14",
+      "date": "2026-09-26",
+      "hour": 20,
+      "slotLabel": "Saturday, September 26 · 8:00 PM ET",
+      "cardPath": "drafts/14/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 14177,
+      "title": "Beauty Shop",
+      "year": "2005",
+      "runtime": 105,
+      "certification": "PG-13",
+      "director": "Bille Woodruff",
+      "genres": [
+        "Comedy",
+        "Romance"
+      ],
+      "providers": [
+        "Amazon Prime Video",
+        "MGM Plus Roku Premium Channel",
+        "MGM Plus",
+        "Amazon Prime Video with Ads"
+      ],
+      "postText": "Beauty Shop (2005)\nDirector: Bille Woodruff\nGenres: Comedy, Romance\nhttps://90minutemovie.com/?movie=14177",
+      "scheduledAt": "Sunday, September 27 · 12:00 PM ET",
+      "draftId": "15",
+      "date": "2026-09-27",
+      "hour": 12,
+      "slotLabel": "Sunday, September 27 · 12:00 PM ET",
+      "cardPath": "drafts/15/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 82675,
+      "title": "Taken 2",
+      "year": "2012",
+      "runtime": 91,
+      "certification": "PG-13",
+      "director": "Olivier Megaton",
+      "genres": [
+        "Action",
+        "Crime"
+      ],
+      "providers": [
+        "HBO Max Amazon Channel",
+        "HBO Max"
+      ],
+      "postText": "Taken 2 (2012)\nDirector: Olivier Megaton\nGenres: Action, Crime\nhttps://90minutemovie.com/?movie=82675",
+      "scheduledAt": "Sunday, September 27 · 8:00 PM ET",
+      "draftId": "16",
+      "date": "2026-09-27",
+      "hour": 20,
+      "slotLabel": "Sunday, September 27 · 8:00 PM ET",
+      "cardPath": "drafts/16/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1226863,
+      "title": "The Super Mario Galaxy Movie",
+      "year": "2026",
+      "runtime": 98,
+      "certification": "PG",
+      "director": "Aaron Horvath",
+      "genres": [
+        "Family",
+        "Comedy"
+      ],
+      "providers": [
+        "Peacock Premium",
+        "Peacock Premium Plus"
+      ],
+      "postText": "The Super Mario Galaxy Movie (2026)\nDirector: Aaron Horvath\nGenres: Family, Comedy\nhttps://90minutemovie.com/?movie=1226863",
+      "scheduledAt": "Monday, September 28 · 12:00 PM ET",
+      "draftId": "17",
+      "date": "2026-09-28",
+      "hour": 12,
+      "slotLabel": "Monday, September 28 · 12:00 PM ET",
+      "cardPath": "drafts/17/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 10022,
+      "title": "The Pacifier",
+      "year": "2005",
+      "runtime": 95,
+      "certification": "PG",
+      "director": "Adam Shankman",
+      "genres": [
+        "Comedy",
+        "Family"
+      ],
+      "providers": [
+        "Disney Plus"
+      ],
+      "postText": "The Pacifier (2005)\nDirector: Adam Shankman\nGenres: Comedy, Family\nhttps://90minutemovie.com/?movie=10022",
+      "scheduledAt": "Monday, September 28 · 8:00 PM ET",
+      "draftId": "18",
+      "date": "2026-09-28",
+      "hour": 20,
+      "slotLabel": "Monday, September 28 · 8:00 PM ET",
+      "cardPath": "drafts/18/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 296099,
+      "title": "Vacation",
+      "year": "2015",
+      "runtime": 99,
+      "certification": "R",
+      "director": "John Francis Daley",
+      "genres": [
+        "Comedy",
+        "Adventure"
+      ],
+      "providers": [
+        "Paramount Plus Essential",
+        "YouTube TV"
+      ],
+      "postText": "Vacation (2015)\nDirector: John Francis Daley\nGenres: Comedy, Adventure\nhttps://90minutemovie.com/?movie=296099",
+      "scheduledAt": "Tuesday, September 29 · 12:00 PM ET",
+      "draftId": "19",
+      "date": "2026-09-29",
+      "hour": 12,
+      "slotLabel": "Tuesday, September 29 · 12:00 PM ET",
+      "cardPath": "drafts/19/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 642885,
+      "title": "Hocus Pocus 2",
+      "year": "2022",
+      "runtime": 104,
+      "certification": "PG",
+      "director": "Anne Fletcher",
+      "genres": [
+        "Fantasy",
+        "Comedy"
+      ],
+      "providers": [
+        "Disney Plus"
+      ],
+      "postText": "Hocus Pocus 2 (2022)\nDirector: Anne Fletcher\nGenres: Fantasy, Comedy\nhttps://90minutemovie.com/?movie=642885",
+      "scheduledAt": "Tuesday, September 29 · 8:00 PM ET",
+      "draftId": "20",
+      "date": "2026-09-29",
+      "hour": 20,
+      "slotLabel": "Tuesday, September 29 · 8:00 PM ET",
+      "cardPath": "drafts/20/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 9947,
+      "title": "Elektra",
+      "year": "2005",
+      "runtime": 97,
+      "certification": "PG-13",
+      "director": "Rob Bowman",
+      "genres": [
+        "Action",
+        "Fantasy"
+      ],
+      "providers": [
+        "Disney Plus"
+      ],
+      "postText": "Elektra (2005)\nDirector: Rob Bowman\nGenres: Action, Fantasy\nhttps://90minutemovie.com/?movie=9947",
       "scheduledAt": "Wednesday, September 30 · 12:00 PM ET",
       "draftId": "21",
       "date": "2026-09-30",
@@ -594,20 +598,21 @@
       "tweetUrl": null
     },
     {
-      "id": 1265,
-      "title": "Bridge to Terabithia",
-      "year": "2007",
-      "runtime": 95,
+      "id": 441130,
+      "title": "Wolfwalkers",
+      "year": "2020",
+      "runtime": 102,
       "certification": "PG",
-      "director": "Gábor Csupó",
+      "director": "Tomm Moore",
       "genres": [
-        "Adventure",
-        "Drama"
+        "Animation",
+        "Family"
       ],
       "providers": [
-        "Disney Plus"
+        "Apple TV",
+        "Apple TV Amazon Channel"
       ],
-      "postText": "Bridge to Terabithia (2007)\nDirector: Gábor Csupó\nGenres: Adventure, Drama\nhttps://90minutemovie.com/?movie=1265",
+      "postText": "Wolfwalkers (2020)\nDirector: Tomm Moore\nGenres: Animation, Family\nhttps://90minutemovie.com/?movie=441130",
       "scheduledAt": "Wednesday, September 30 · 8:00 PM ET",
       "draftId": "22",
       "date": "2026-09-30",
@@ -621,20 +626,23 @@
       "tweetUrl": null
     },
     {
-      "id": 505600,
-      "title": "Booksmart",
-      "year": "2019",
-      "runtime": 102,
+      "id": 55779,
+      "title": "Final Destination 5",
+      "year": "2011",
+      "runtime": 91,
       "certification": "R",
-      "director": "Olivia Wilde",
+      "director": "Steven Quale",
       "genres": [
-        "Comedy"
+        "Horror",
+        "Mystery"
       ],
       "providers": [
-        "Lionsgate+ Amazon Channels",
-        "Howdy Amazon Channel"
+        "HBO Max Amazon Channel",
+        "Cinemax Amazon Channel",
+        "HBO Max",
+        "Cinemax Apple TV channel"
       ],
-      "postText": "Booksmart (2019)\nDirector: Olivia Wilde\nGenres: Comedy\nhttps://90minutemovie.com/?movie=505600",
+      "postText": "Final Destination 5 (2011)\nDirector: Steven Quale\nGenres: Horror, Mystery\nhttps://90minutemovie.com/?movie=55779",
       "scheduledAt": "Thursday, October 1 · 12:00 PM ET",
       "draftId": "23",
       "date": "2026-10-01",
@@ -648,24 +656,21 @@
       "tweetUrl": null
     },
     {
-      "id": 855435,
-      "title": "Faces of Death",
-      "year": "2026",
-      "runtime": 97,
-      "certification": "R",
-      "director": "Daniel Goldhaber",
+      "id": 748783,
+      "title": "The Garfield Movie",
+      "year": "2024",
+      "runtime": 101,
+      "certification": "PG",
+      "director": "Mark Dindal",
       "genres": [
-        "Horror",
-        "Crime"
+        "Adventure",
+        "Animation"
       ],
       "providers": [
-        "Philo",
-        "AMC Plus Apple TV channel",
-        "AMC+ Amazon Channel",
-        "AMC+ Roku Premium Channel",
-        "Shudder"
+        "Hulu",
+        "fuboTV"
       ],
-      "postText": "Faces of Death (2026)\nDirector: Daniel Goldhaber\nGenres: Horror, Crime\nhttps://90minutemovie.com/?movie=855435",
+      "postText": "The Garfield Movie (2024)\nDirector: Mark Dindal\nGenres: Adventure, Animation\nhttps://90minutemovie.com/?movie=748783",
       "scheduledAt": "Thursday, October 1 · 8:00 PM ET",
       "draftId": "24",
       "date": "2026-10-01",
@@ -679,21 +684,20 @@
       "tweetUrl": null
     },
     {
-      "id": 239678,
-      "title": "This Is Where I Leave You",
-      "year": "2014",
-      "runtime": 103,
-      "certification": "R",
-      "director": "Shawn Levy",
+      "id": 9446,
+      "title": "Jungle 2 Jungle",
+      "year": "1997",
+      "runtime": 105,
+      "certification": "PG",
+      "director": "John Pasquin",
       "genres": [
-        "Drama",
-        "Comedy"
+        "Comedy",
+        "Family"
       ],
       "providers": [
-        "Peacock Premium",
-        "Peacock Premium Plus"
+        "Disney Plus"
       ],
-      "postText": "This Is Where I Leave You (2014)\nDirector: Shawn Levy\nGenres: Drama, Comedy\nhttps://90minutemovie.com/?movie=239678",
+      "postText": "Jungle 2 Jungle (1997)\nDirector: John Pasquin\nGenres: Comedy, Family\nhttps://90minutemovie.com/?movie=9446",
       "scheduledAt": "Friday, October 2 · 12:00 PM ET",
       "draftId": "25",
       "date": "2026-10-02",
@@ -707,20 +711,21 @@
       "tweetUrl": null
     },
     {
-      "id": 38365,
-      "title": "Grown Ups",
-      "year": "2010",
-      "runtime": 102,
-      "certification": "PG-13",
-      "director": "Dennis Dugan",
+      "id": 481848,
+      "title": "The Call of the Wild",
+      "year": "2020",
+      "runtime": 100,
+      "certification": "PG",
+      "director": "Chris Sanders",
       "genres": [
-        "Comedy"
+        "Adventure",
+        "Family"
       ],
       "providers": [
-        "YouTube TV",
-        "Starz Apple TV channel"
+        "Disney Plus",
+        "fuboTV"
       ],
-      "postText": "Grown Ups (2010)\nDirector: Dennis Dugan\nGenres: Comedy\nhttps://90minutemovie.com/?movie=38365",
+      "postText": "The Call of the Wild (2020)\nDirector: Chris Sanders\nGenres: Adventure, Family\nhttps://90minutemovie.com/?movie=481848",
       "scheduledAt": "Friday, October 2 · 8:00 PM ET",
       "draftId": "26",
       "date": "2026-10-02",
@@ -734,23 +739,22 @@
       "tweetUrl": null
     },
     {
-      "id": 136418,
-      "title": "Hummingbird",
-      "year": "2013",
-      "runtime": 100,
-      "certification": "R",
-      "director": "Steven Knight",
+      "id": 700391,
+      "title": "65",
+      "year": "2023",
+      "runtime": 92,
+      "certification": "PG-13",
+      "director": "Bryan Woods",
       "genres": [
         "Action",
-        "Thriller"
+        "Adventure"
       ],
       "providers": [
         "Amazon Prime Video",
-        "YouTube TV",
-        "Amazon Prime Video with Ads",
-        "MovieSphere+ Amazon Channel"
+        "Hulu",
+        "Amazon Prime Video with Ads"
       ],
-      "postText": "Hummingbird (2013)\nDirector: Steven Knight\nGenres: Action, Thriller\nhttps://90minutemovie.com/?movie=136418",
+      "postText": "65 (2023)\nDirector: Bryan Woods\nGenres: Action, Adventure\nhttps://90minutemovie.com/?movie=700391",
       "scheduledAt": "Saturday, October 3 · 12:00 PM ET",
       "draftId": "27",
       "date": "2026-10-03",
@@ -764,21 +768,20 @@
       "tweetUrl": null
     },
     {
-      "id": 870360,
-      "title": "The Day the Earth Blew Up: A Looney Tunes Movie",
-      "year": "2024",
-      "runtime": 91,
-      "certification": "PG",
-      "director": "Peter Browngardt",
+      "id": 10198,
+      "title": "The Princess and the Frog",
+      "year": "2009",
+      "runtime": 98,
+      "certification": "G",
+      "director": "Ron Clements",
       "genres": [
-        "Family",
-        "Comedy"
+        "Animation",
+        "Romance"
       ],
       "providers": [
-        "HBO Max Amazon Channel",
-        "HBO Max"
+        "Disney Plus"
       ],
-      "postText": "The Day the Earth Blew Up: A Looney Tunes Movie (2024)\nDirector: Peter Browngardt\nGenres: Family, Comedy\nhttps://90minutemovie.com/?movie=870360",
+      "postText": "The Princess and the Frog (2009)\nDirector: Ron Clements\nGenres: Animation, Romance\nhttps://90minutemovie.com/?movie=10198",
       "scheduledAt": "Saturday, October 3 · 8:00 PM ET",
       "draftId": "28",
       "date": "2026-10-03",
