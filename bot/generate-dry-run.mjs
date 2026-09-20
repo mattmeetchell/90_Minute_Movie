@@ -94,16 +94,26 @@ const dateSeed = () => {
 
 const selectionSeed = Number.parseInt(process.env.SELECTION_SEED || '', 10) || dateSeed();
 const requestedMovieId = Number.parseInt(process.env.MOVIE_ID || '', 10);
+const scheduledDate = process.env.SCHEDULE_DATE || new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit'
+}).format(new Date());
+const avoidHorrorForThisSlot = /^\d{4}-09-/.test(scheduledDate);
+const isOccasionalLongPick = process.env.ALLOW_LONG_RUNTIME === undefined
+  ? selectionSeed % 5 === 0
+  : process.env.ALLOW_LONG_RUNTIME === '1';
 
 const discoverMovie = async (seed) => {
+  // Most picks stay close to the 100-minute brief. One in five attempts may
+  // draw from the upper edge so the feed still has some longer variety.
   const discovery = await tmdbFetch('/discover/movie', {
     include_adult: 'false',
     include_video: 'false',
     language: 'en-US',
     'primary_release_date.lte': new Date().toISOString().slice(0, 10),
     'vote_count.gte': 25,
-    'with_runtime.gte': 75,
+    'with_runtime.gte': isOccasionalLongPick ? 103 : 90,
     'with_runtime.lte': 105,
+    without_genres: avoidHorrorForThisSlot ? '27' : undefined,
     watch_region: 'US',
     with_watch_monetization_types: 'flatrate',
     sort_by: 'popularity.desc',
@@ -125,6 +135,12 @@ const main = async () => {
 
   const director = credits.crew.find((person) => person.job === 'Director')?.name || 'Unknown';
   const year = (details.release_date || candidate.release_date || '').slice(0, 4) || '—';
+  const isHorror = details.genres.some((genre) => genre.id === 27);
+  const hasTargetRuntime = details.runtime >= (isOccasionalLongPick ? 103 : 90)
+    && details.runtime <= (isOccasionalLongPick ? 105 : 102);
+  if (!requestedMovieId && (!hasTargetRuntime || (avoidHorrorForThisSlot && isHorror))) {
+    throw new Error(`Movie ${details.id} does not meet this slot's selection policy.`);
+  }
   const usReleaseDates = releaseDates.results?.find((release) => release.iso_3166_1 === 'US')?.release_dates || [];
   const certification = usReleaseDates.find((release) => release.certification)?.certification || 'NR';
   const genres = details.genres.slice(0, 2).map((genre) => genre.name);
@@ -172,7 +188,7 @@ const main = async () => {
   await Promise.all([
     writeFile(resolve(outputDirectory, 'post.txt'), `${postText}\n`),
     sharp(Buffer.from(cardSvg)).png().toFile(resolve(outputDirectory, 'card.png')),
-    writeFile(resolve(outputDirectory, 'movie.json'), `${JSON.stringify({ id: details.id, title: details.title, year, certification, director, genres, providers: providersForUs.map((provider) => provider.provider_name), postText, scheduledAt: process.env.SCHEDULE_AT || null }, null, 2)}\n`)
+    writeFile(resolve(outputDirectory, 'movie.json'), `${JSON.stringify({ id: details.id, title: details.title, year, runtime: details.runtime, certification, director, genres, providers: providersForUs.map((provider) => provider.provider_name), postText, scheduledAt: process.env.SCHEDULE_AT || null }, null, 2)}\n`)
   ]);
   console.log(postText);
 };

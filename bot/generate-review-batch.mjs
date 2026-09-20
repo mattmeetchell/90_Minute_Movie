@@ -50,11 +50,16 @@ const main = async () => {
             ...process.env,
             BOT_OUTPUT_DIR: draftDirectory,
             SCHEDULE_AT: slotLabel,
+            SCHEDULE_DATE: date,
+            ALLOW_LONG_RUNTIME: slotIndex % 5 === 4 ? '1' : '0',
             SELECTION_SEED: String(seedBase + (slotIndex * 37) + attempt)
           },
           encoding: 'utf8'
         });
-        if (result.status !== 0) throw new Error(result.stderr || result.stdout || `Failed to create draft ${draftId}.`);
+        if (result.status !== 0) {
+          if ((result.stderr || result.stdout).includes("does not meet this slot's selection policy")) continue;
+          throw new Error(result.stderr || result.stdout || `Failed to create draft ${draftId}.`);
+        }
         movie = JSON.parse(await readFile(resolve(draftDirectory, 'movie.json'), 'utf8'));
         if (movie.providers.length && !usedMovieIds.has(movie.id)) break;
         movie = null;
