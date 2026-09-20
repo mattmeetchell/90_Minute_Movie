@@ -153,6 +153,43 @@ const discoverMovie = async (seed) => {
   return candidates[Math.floor(seed / 50) % candidates.length];
 };
 
+const movieReleaseTimestamp = (movie) => {
+  if (!movie?.release_date) return 0;
+  const timestamp = Date.parse(`${movie.release_date}T00:00:00Z`);
+  return Number.isFinite(timestamp) ? timestamp : 0;
+};
+
+const looksLikeNumberedSequel = (title = '') => {
+  const normalizedTitle = title.normalize().trim();
+  return (
+    /\b(?:part|chapter|volume|vol\.?)\s*(?:[2-9]|\d{2,}|ii|iii|iv|v|vi|vii|viii|ix|x)\b/i.test(normalizedTitle)
+    || /(?:\s|:)(?:[2-9]|ii|iii|iv|v|vi|vii|viii|ix|x)$/i.test(normalizedTitle)
+  );
+};
+
+// Match the served site's policy: choose only the first released film in a
+// collection, with a title-pattern fallback for titles outside collections.
+const isEligibleFranchiseEntry = async (details) => {
+  const collectionId = details.belongs_to_collection?.id;
+  if (!collectionId) return !looksLikeNumberedSequel(details.title);
+
+  try {
+    const collection = await tmdbFetch(`/collection/${collectionId}`, { language: 'en-US' });
+    const candidateRelease = movieReleaseTimestamp(details);
+    if (!candidateRelease) return !looksLikeNumberedSequel(details.title);
+
+    const hasEarlierInstallment = (collection.parts || []).some((part) => {
+      if (String(part.id) === String(details.id)) return false;
+      const partRelease = movieReleaseTimestamp(part);
+      return partRelease && partRelease < candidateRelease;
+    });
+    return !hasEarlierInstallment;
+  } catch (error) {
+    console.warn(`Could not verify collection order for "${details.title}".`, error.message);
+    return !looksLikeNumberedSequel(details.title);
+  }
+};
+
 const main = async () => {
   const candidate = requestedMovieId ? { id: requestedMovieId } : await discoverMovie(selectionSeed);
   const [details, credits, providers, releaseDates] = await Promise.all([
@@ -171,12 +208,16 @@ const main = async () => {
     !hasTargetRuntime
     || (avoidHorrorForThisSlot && isHorror)
     || (requireHorrorForThisSlot && !isHorror)
+    || !await isEligibleFranchiseEntry(details)
   )) {
     throw new Error(`Movie ${details.id} does not meet this slot's selection policy.`);
   }
   const usReleaseDates = releaseDates.results?.find((release) => release.iso_3166_1 === 'US')?.release_dates || [];
   const certification = usReleaseDates.find((release) => release.certification)?.certification || 'NR';
-  const genres = details.genres.slice(0, 2).map((genre) => genre.name);
+  const genreNames = details.genres.map((genre) => genre.name);
+  const genres = isHorror
+    ? ['Horror', ...genreNames.filter((genre) => genre !== 'Horror')].slice(0, 2)
+    : genreNames.slice(0, 2);
   const providersForUs = providers.results?.US?.flatrate?.slice(0, 5) || [];
   const poster = await fetchBuffer(`${imageBaseUrl}/w780${details.poster_path}`);
   const [logo, bluRayIcon, providerImages] = await Promise.all([
