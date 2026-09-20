@@ -13,6 +13,7 @@ try {
   throw error;
 }
 const pendingEntries = queue.entries.filter((entry) => entry.state === 'queued');
+const cutoffDate = queue.autoReplenishUntil;
 
 if (pendingEntries.length >= targetEntries) {
   console.log(`Queue already has ${pendingEntries.length} pending posts; no replenishment needed.`);
@@ -20,14 +21,28 @@ if (pendingEntries.length >= targetEntries) {
 }
 
 const lastScheduledDate = queue.entries.map((entry) => entry.date).sort().at(-1);
+if (cutoffDate && lastScheduledDate >= cutoffDate) {
+  console.log(`Queue replenishment stops at ${cutoffDate}; no new posts will be added.`);
+  process.exit(0);
+}
+
 const startDate = lastScheduledDate ? addDays(lastScheduledDate, 1) : addDays(easternToday(), 1);
 const needed = targetEntries - pendingEntries.length;
 const outputDirectory = resolve('.bot-queue-replenish');
 const drafts = await generateDrafts({ startDate, days: Math.ceil(needed / 2) + 3, outputDirectory });
 const seenMovieIds = new Set(queue.entries.map((entry) => entry.id));
-const additions = drafts.filter((draft) => !seenMovieIds.has(draft.id)).slice(0, needed);
+const additions = drafts
+  .filter((draft) => !seenMovieIds.has(draft.id) && (!cutoffDate || draft.date <= cutoffDate))
+  .slice(0, needed);
 
-if (additions.length < needed) throw new Error(`Only found ${additions.length} unique additions; needed ${needed}.`);
+if (additions.length < needed && !cutoffDate) {
+  throw new Error(`Only found ${additions.length} unique additions; needed ${needed}.`);
+}
+
+if (additions.length === 0) {
+  console.log(`No eligible posts available before the ${cutoffDate} cutoff.`);
+  process.exit(0);
+}
 
 queue.entries.push(...additions.map((draft) => draftToQueueEntry(draft)));
 queue.updatedAt = new Date().toISOString();
