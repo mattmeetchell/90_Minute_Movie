@@ -98,6 +98,7 @@ const scheduledDate = process.env.SCHEDULE_DATE || new Intl.DateTimeFormat('en-C
   timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit'
 }).format(new Date());
 const avoidHorrorForThisSlot = /^\d{4}-09-/.test(scheduledDate);
+const isOctoberCard = /^\d{4}-10-/.test(scheduledDate);
 const isOccasionalLongPick = process.env.ALLOW_LONG_RUNTIME === undefined
   ? selectionSeed % 5 === 0
   : process.env.ALLOW_LONG_RUNTIME === '1';
@@ -167,13 +168,21 @@ const main = async () => {
   const titleBottom = titleTop + ((titleLines.length - 1) * titleLineHeight) + titleFontSize;
   // Keep 60px between the title block and the extra movie information.
   const metadataTop = titleBottom + 60;
+  const backgroundSvg = isOctoberCard
+    ? `<linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#020202"/><stop offset=".48" stop-color="#090302"/><stop offset="1" stop-color="#5a1005"/></linearGradient>
+      <radialGradient id="glow" cx="0" cy="1" r=".82"><stop stop-color="#e17b17"/><stop offset="1" stop-color="#e17b17" stop-opacity="0"/></radialGradient>
+      <radialGradient id="autumn-shadow" cx="1" cy="1" r=".8"><stop stop-color="#8a0b12" stop-opacity=".86"/><stop offset="1" stop-color="#8a0b12" stop-opacity="0"/></radialGradient>`
+    : `<linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050608"/><stop offset=".48" stop-color="#183042"/><stop offset="1" stop-color="#159b82"/></linearGradient>
+      <radialGradient id="glow" cx="0" cy="1" r=".75"><stop stop-color="#96002e"/><stop offset="1" stop-color="#96002e" stop-opacity="0"/></radialGradient>`;
+  const backgroundLayers = isOctoberCard
+    ? '<rect width="1680" height="945" fill="url(#background)"/><rect width="980" height="945" fill="url(#glow)"/><rect width="1680" height="945" fill="url(#autumn-shadow)"/>'
+    : '<rect width="1680" height="945" fill="url(#background)"/><rect width="820" height="945" fill="url(#glow)"/>';
   const cardSvg = `<svg width="1680" height="945" viewBox="0 0 1680 945" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050608"/><stop offset=".48" stop-color="#183042"/><stop offset="1" stop-color="#159b82"/></linearGradient>
-      <radialGradient id="glow" cx="0" cy="1" r=".75"><stop stop-color="#96002e"/><stop offset="1" stop-color="#96002e" stop-opacity="0"/></radialGradient>
+      ${backgroundSvg}
       <style>.title { fill: #fff; font-family: 'Roboto Flex', Arial, sans-serif; font-size: ${titleFontSize}px; font-weight: 900; } .copy { fill: #fff; font-family: 'Roboto Flex', Arial, sans-serif; font-size: 28px; font-weight: 400; } .label { fill: #fff; font-family: 'Roboto Flex', Arial, sans-serif; font-size: 23px; font-weight: 700; letter-spacing: 2px; }</style>
     </defs>
-    <rect width="1680" height="945" fill="url(#background)"/><rect width="820" height="945" fill="url(#glow)"/>
+    ${backgroundLayers}
     <rect x="158" y="64" width="560" height="816" rx="35" fill="none" stroke="#fff" stroke-width="4"/>
     <image href="${toDataUri(poster, 'image/jpeg')}" x="184" y="89" width="510" height="765" preserveAspectRatio="xMidYMid slice" clip-path="url(#poster-clip)"/>
     <clipPath id="poster-clip"><rect x="184" y="89" width="510" height="765" rx="31"/></clipPath>
