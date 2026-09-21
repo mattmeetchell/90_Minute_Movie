@@ -5474,6 +5474,25 @@ button.result-filter-pill:focus-visible::after {
     z-index: 1;
   }
 
+  /* A fixed action tray tracks the dynamic iOS Safari viewport and footer edge,
+     which makes it visibly jump while scrolling. Keep result actions in flow on
+     small screens: they stay reachable immediately before the footer instead. */
+  .app-shell[data-view="result"] .movie-copy .result-actions {
+    background: transparent;
+    bottom: auto;
+    left: auto;
+    margin-top: 34px;
+    padding: 0 0 36px;
+    pointer-events: auto;
+    position: relative !important;
+    transform: none !important;
+    width: 100%;
+  }
+
+  .app-shell[data-view="result"] .movie-copy .result-actions::before {
+    display: none;
+  }
+
   .app-shell[data-view="result"] .result-actions {
     animation: none;
     opacity: 0;
