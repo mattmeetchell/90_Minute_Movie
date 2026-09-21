@@ -4438,6 +4438,16 @@ button.result-filter-pill:focus-visible::after {
   margin: 0;
 }
 
+.footer-campaign-link {
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 700;
+}
+
+.footer-campaign-link:hover,
+.footer-campaign-link:focus-visible {
+  color: #fff;
+}
+
 .footer-social {
   align-items: center;
   display: flex;
