@@ -24,7 +24,9 @@ const NAV_OPEN_ICON = 'assets/nav/hamburger-open.svg';
 const NAV_CLOSE_ICON = 'assets/nav/hamburger-close.svg';
 const RESULT_RETURN_EXIT_MS = 760;
 const MOBILE_RESULT_RETURN_GROW_MS = 440;
-const IS_HALLOWEEN_COLLECTION = /^\/halloween-movies\/?$/.test(window.location.pathname);
+const IS_HALLOWEEN_COLLECTION =
+  /^\/halloween-movies\/?$/.test(window.location.pathname) ||
+  new URLSearchParams(window.location.search).get('collection') === 'halloween';
 const HALLOWEEN_GENRE_NAME = 'Horror';
 const ABOUT_LONG_MOVIE_MIN_RUNTIME = 150;
 const ABOUT_LONG_MOVIES = [
@@ -2045,7 +2047,8 @@ function applyHalloweenCollectionCopy() {
   document.title = 'Halloween Movie Picker | 90 Minute Movie';
   els.appShell.dataset.collection = 'halloween';
   els.heroEyebrow.textContent = 'Got 90ish min?';
-  els.heroSupport.innerHTML = 'Pick your rating, choose an era, and we\'ll find a Halloween movie for&nbsp;you.';
+  els.landingView.querySelector('.hero-copy h1').innerHTML = 'Let\'s watch<br>a spooky movie';
+  els.heroSupport.innerHTML = 'Pick your rating, choose an era, and we\'ll find a Halloween-friendly movie for&nbsp;you.';
   els.startPicking.textContent = 'Find a horror movie';
 }
 
@@ -2189,6 +2192,10 @@ function getFloatingPosterDiscoverParams(page) {
     ...buildDiscoverParams(page),
     page
   };
+
+  if (IS_HALLOWEEN_COLLECTION) {
+    params.with_genres = '27';
+  }
 
   if (!state.physicalMode) {
     params.watch_region = 'US';
