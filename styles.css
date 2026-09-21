@@ -75,11 +75,12 @@ body::after {
 
 body:has(.app-shell[data-collection="halloween"])::before {
   background:
-    radial-gradient(64% 76% at 94% 76%, rgba(177, 38, 0, 0.68) 0%, rgba(117, 19, 0, 0.34) 48%, transparent 76%),
-    radial-gradient(62% 68% at 12% 91%, rgba(235, 94, 0, 0.52) 0%, rgba(133, 21, 0, 0.24) 46%, transparent 74%),
-    radial-gradient(72% 76% at 54% 26%, rgba(77, 4, 8, 0.5) 0%, rgba(29, 2, 5, 0.38) 56%, transparent 82%),
+    linear-gradient(248.61deg, rgba(222, 124, 1, 0.1) 11.52%, transparent 37.07%),
+    linear-gradient(196.8deg, #000 25.43%, transparent 95.47%),
+    linear-gradient(208.58deg, transparent 64.09%, #ffa200 105.52%),
+    radial-gradient(78.39% 79.56% at 100% 44.55%, rgba(247, 0, 4, 0.75) 0%, rgba(247, 0, 4, 0.35) 50%, rgba(247, 0, 4, 0.466667) 100%),
     #050000;
-  filter: saturate(1.15);
+  filter: saturate(1.08);
 }
 
 .app-shell[data-collection="halloween"] .drawer-panel-genre,
@@ -95,12 +96,30 @@ body:has(.app-shell[data-collection="halloween"])::before {
   border-color: rgba(255, 132, 58, 0.42);
 }
 
+.app-shell[data-collection="halloween"] {
+  --halloween-active-blue: #41c1e2;
+}
+
+.app-shell[data-collection="halloween"] .genre-card.has-art.active .genre-icon,
+.app-shell[data-collection="halloween"] .rating-card.active .rating-icon,
+.app-shell[data-collection="halloween"] .monke-format-card.active .monke-format-icon,
+.app-shell[data-collection="halloween"] .decade-pill.decade-card.active .decade-icon {
+  filter: drop-shadow(0 0 16px rgba(65, 193, 226, 0.5));
+}
+
+.app-shell[data-collection="halloween"] .genre-card.has-art.active .genre-icon img,
+.app-shell[data-collection="halloween"] .rating-card.active .rating-icon img,
+.app-shell[data-collection="halloween"] .monke-format-card.active .monke-format-icon img,
+.app-shell[data-collection="halloween"] .decade-pill.decade-card.active .decade-icon img {
+  filter: brightness(0) saturate(100%) invert(70%) sepia(68%) saturate(1170%) hue-rotate(153deg) brightness(96%) contrast(88%);
+}
+
 @keyframes halloweenCtaTypeShiver {
   0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-0.25px); }
-  40% { transform: translateX(0.5px); }
-  60% { transform: translateX(-0.5px); }
-  80% { transform: translateX(0.25px); }
+  20% { transform: translateX(-0.5px); }
+  40% { transform: translateX(0.9px); }
+  60% { transform: translateX(-0.9px); }
+  80% { transform: translateX(0.5px); }
 }
 
 @keyframes halloweenCtaTextBuzz {
@@ -117,7 +136,7 @@ body:has(.app-shell[data-collection="halloween"])::before {
 }
 
 .app-shell[data-collection="halloween"] .button-primary:hover .halloween-cta-label {
-  animation: halloweenCtaTypeShiver 480ms steps(3, end) infinite;
+  animation: halloweenCtaTypeShiver 440ms steps(3, end) infinite;
 }
 
 .app-shell[data-collection="halloween"] #tryAgain.try-again-hovering::after {
