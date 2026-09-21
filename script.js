@@ -408,6 +408,7 @@ const els = {
   footer: document.querySelector('.site-footer'),
   footerLogoButton: document.getElementById('footerLogoButton'),
   footerCopy: document.querySelector('.footer-copy'),
+  footerCampaignLink: document.getElementById('footerCampaignLink'),
   secretFlowTrigger: document.getElementById('secretFlowTrigger'),
   physicalFlowTrigger: document.getElementById('physicalFlowTrigger')
 };
@@ -2046,6 +2047,8 @@ function applyHalloweenCollectionCopy() {
 
   document.title = 'Halloween Movie Picker | 90 Minute Movie';
   els.appShell.dataset.collection = 'halloween';
+  els.footerCampaignLink.href = '/';
+  els.footerCampaignLink.textContent = '◀ Back to main flow';
   els.heroEyebrow.textContent = 'Got 90ish min?';
   els.landingView.querySelector('.hero-copy h1').innerHTML = 'Let\'s watch<br>a spooky movie';
   els.heroSupport.innerHTML = 'Pick your rating, choose an era, and we\'ll find a Halloween-friendly movie for&nbsp;you.';
