@@ -68,6 +68,43 @@ body::after {
   z-index: 0;
 }
 
+/* Scoped collection skin: the standard picker remains unchanged. */
+.app-shell[data-collection="halloween"]::before {
+  background: rgba(24, 0, 0, 0.24);
+}
+
+body:has(.app-shell[data-collection="halloween"])::before {
+  background:
+    radial-gradient(64% 76% at 94% 76%, rgba(177, 38, 0, 0.68) 0%, rgba(117, 19, 0, 0.34) 48%, transparent 76%),
+    radial-gradient(62% 68% at 12% 91%, rgba(235, 94, 0, 0.52) 0%, rgba(133, 21, 0, 0.24) 46%, transparent 74%),
+    radial-gradient(72% 76% at 54% 26%, rgba(77, 4, 8, 0.5) 0%, rgba(29, 2, 5, 0.38) 56%, transparent 82%),
+    #050000;
+  filter: saturate(1.15);
+}
+
+.app-shell[data-collection="halloween"] .drawer-panel-genre,
+.app-shell[data-collection="halloween"] .picker-view,
+.app-shell[data-collection="halloween"] .mode-toggle,
+.app-shell[data-collection="halloween"] .nav-special-item,
+.app-shell[data-collection="halloween"] .secret-flow-trigger {
+  display: none !important;
+}
+
+.app-shell[data-collection="halloween"] .topbar,
+.app-shell[data-collection="halloween"] .nav-overlay {
+  border-color: rgba(255, 132, 58, 0.42);
+}
+
+.app-shell[data-collection="halloween"] .button-primary {
+  background: #e84d12;
+  border-color: #ff9b5d;
+}
+
+.app-shell[data-collection="halloween"] .button-primary:hover,
+.app-shell[data-collection="halloween"] .button-primary:focus-visible {
+  background: #ff6828;
+}
+
 @keyframes ambientGradient {
   0% {
     transform: translateY(-2%) scale(1.05);

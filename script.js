@@ -24,6 +24,8 @@ const NAV_OPEN_ICON = 'assets/nav/hamburger-open.svg';
 const NAV_CLOSE_ICON = 'assets/nav/hamburger-close.svg';
 const RESULT_RETURN_EXIT_MS = 760;
 const MOBILE_RESULT_RETURN_GROW_MS = 440;
+const IS_HALLOWEEN_COLLECTION = /^\/halloween-movies\/?$/.test(window.location.pathname);
+const HALLOWEEN_GENRE_NAME = 'Horror';
 const ABOUT_LONG_MOVIE_MIN_RUNTIME = 150;
 const ABOUT_LONG_MOVIES = [
   { id: 44012, title: 'Jeanne Dielman, 23 quai du Commerce, 1080 Bruxelles' },
@@ -1386,7 +1388,7 @@ function renderSavedList(options = {}) {
     pickMovie.className = 'saved-list-empty-pick button-primary';
     pickMovie.type = 'button';
     pickMovie.textContent = 'Find a movie';
-    pickMovie.addEventListener('click', () => showView(state.mode === 'monke' ? 'monkeFilter' : 'picker'));
+    pickMovie.addEventListener('click', () => showView(state.mode === 'monke' ? 'monkeFilter' : getPrimaryFilterView()));
 
     const posters = document.createElement('div');
     posters.className = 'saved-list-empty-posters';
@@ -2022,9 +2024,35 @@ function clearScreenTransitionClasses() {
   });
 }
 
+function getHalloweenGenreId() {
+  return state.genres.find((genre) => genre.name === HALLOWEEN_GENRE_NAME)?.id || null;
+}
+
+function enforceHalloweenGenre() {
+  if (!IS_HALLOWEEN_COLLECTION) return;
+
+  const horrorGenreId = getHalloweenGenreId();
+  if (horrorGenreId) state.selectedGenreIds = [horrorGenreId];
+}
+
+function getPrimaryFilterView() {
+  return IS_HALLOWEEN_COLLECTION ? 'rating' : 'picker';
+}
+
+function applyHalloweenCollectionCopy() {
+  if (!IS_HALLOWEEN_COLLECTION) return;
+
+  document.title = 'Halloween Movie Picker | 90 Minute Movie';
+  els.appShell.dataset.collection = 'halloween';
+  els.heroEyebrow.textContent = 'Got 90ish min?';
+  els.heroSupport.innerHTML = 'Pick your rating, choose an era, and we\'ll find a Halloween movie for&nbsp;you.';
+  els.startPicking.textContent = 'Find a horror movie';
+}
+
 async function loadGenres() {
   const data = await tmdbFetch('/genre/movie/list', { language: 'en-US' });
   state.genres = data.genres.filter((genre) => !EXCLUDED_GENRES.has(genre.name));
+  enforceHalloweenGenre();
   await preloadGenreIcons();
   renderGenrePills();
 }
@@ -2594,6 +2622,8 @@ function updateGenreBackClearButtons() {
 }
 
 function toggleGenre(id) {
+  if (IS_HALLOWEEN_COLLECTION) return;
+
   const wasActive = state.selectedGenreIds.includes(id);
   state.genreSettleId = id;
   state.genreSettleDirection = wasActive ? 'off' : 'on';
@@ -2740,6 +2770,11 @@ function updateSelectionSummary() {
   const selectedGenres = state.genres
     .filter((genre) => state.selectedGenreIds.includes(genre.id))
     .map((genre) => genre.name);
+
+  if (IS_HALLOWEEN_COLLECTION) {
+    els.selectionSummary.textContent = 'Horror is locked for this collection.';
+    return;
+  }
 
   if (!selectedGenres.length) {
     els.selectionSummary.textContent = 'Choose up to 2 genres, or leave it open for any vibe.';
@@ -3475,6 +3510,11 @@ function updatePhysicalModeCopy() {
   els.appShell.dataset.physicalMode = state.physicalMode ? 'true' : 'false';
   els.appShell.dataset.appMode = state.mode;
 
+  if (IS_HALLOWEEN_COLLECTION) {
+    applyHalloweenCollectionCopy();
+    return;
+  }
+
   if (els.modeToggle) {
     const label = state.mode === 'monke'
       ? 'Monke mode'
@@ -4036,7 +4076,7 @@ function getResultFilterItems(movie = null) {
     .filter((genre) => state.selectedGenreIds.includes(genre.id))
     .map((genre) => ({
       label: genre.name,
-      removable: true,
+      removable: !IS_HALLOWEEN_COLLECTION,
       type: 'genre',
       values: [String(genre.id)]
     }));
@@ -4858,6 +4898,7 @@ function closeTrailer() {
 
 function clearFilters() {
   state.selectedGenreIds = [];
+  enforceHalloweenGenre();
   state.selectedRatings = [];
   state.anyRatingSelected = false;
   state.selectedDecades = [];
@@ -4887,7 +4928,7 @@ function beginResultFilterEditing() {
     state.anyEraSelected = true;
   }
   updateResultFilterEditingControls();
-  showView(state.resultSource === 'secret' ? 'monkeFilter' : 'picker');
+  showView(state.resultSource === 'secret' ? 'monkeFilter' : getPrimaryFilterView());
 }
 
 function dismissResultFilterEditing() {
@@ -4900,6 +4941,7 @@ function dismissResultFilterEditing() {
   state.selectedDecades = previousState.selectedDecades;
   state.anyEraSelected = previousState.anyEraSelected;
   state.monkeFormats = previousState.monkeFormats;
+  enforceHalloweenGenre();
   state.resultFilterEditState = null;
   updateResultFilterEditingControls();
   syncFilterControls();
@@ -4966,6 +5008,7 @@ async function handleResultFilterDismiss(event) {
 
   switch (pill.dataset.filterType) {
     case 'genre':
+      if (IS_HALLOWEEN_COLLECTION) return;
       state.selectedGenreIds = state.selectedGenreIds.filter((id) => !values.includes(String(id)));
       break;
     case 'rating':
@@ -5059,7 +5102,7 @@ function handleGenreBackClear() {
     return;
   }
 
-  if (!state.selectedGenreIds.length) {
+  if (IS_HALLOWEEN_COLLECTION || !state.selectedGenreIds.length) {
     showView('landing');
     return;
   }
@@ -5092,14 +5135,14 @@ function wireEvents() {
       return;
     }
 
-    showView('picker');
+    showView(getPrimaryFilterView());
   });
   els.goToRatings.addEventListener('click', () => showView('rating'));
   els.headerGoToRatings.addEventListener('click', () => showView('rating'));
   els.goToDecades.addEventListener('click', () => showView('decade'));
   els.headerGoToDecades.addEventListener('click', () => showView('decade'));
-  els.backToGenres.addEventListener('click', () => showView('picker'));
-  els.headerBackToGenres.addEventListener('click', () => showView('picker'));
+  els.backToGenres.addEventListener('click', () => showView(IS_HALLOWEEN_COLLECTION ? 'landing' : 'picker'));
+  els.headerBackToGenres.addEventListener('click', () => showView(IS_HALLOWEEN_COLLECTION ? 'landing' : 'picker'));
   els.backToRatings.addEventListener('click', () => showView('rating'));
   els.headerBackToRatings.addEventListener('click', () => showView('rating'));
   els.pickMovie.addEventListener('click', handleResultFilterEditingPick);
@@ -5275,6 +5318,7 @@ async function init() {
   els.appShell.dataset.view = state.activeView;
   els.appShell.dataset.resultSource = state.resultSource;
   els.appShell.dataset.navOpen = 'false';
+  applyHalloweenCollectionCopy();
   await preloadSelectorStateIcons();
   loadSavedMovies();
   randomizeAboutLongMovie();
