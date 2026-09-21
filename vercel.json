@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/halloween-movies",
-      "destination": "/index.html"
+      "destination": "/"
     }
   ],
   "headers": [
