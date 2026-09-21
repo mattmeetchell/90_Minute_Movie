@@ -224,16 +224,21 @@ const main = async () => {
   const squareTitleSvg = squareTitle.lines.map((line, index) => (
     `<text x="84" y="${272 + index * (squareTitle.fontSize + 18)}" class="square-title" dominant-baseline="hanging" xml:space="preserve">${createTrackedCharacters(line, squareTitle.tracking, xmlEscape)}</text>`
   )).join('');
-  const squareProviderSvg = providerImages.slice(0, 5).map((image, index) => (
-    `<clipPath id="square-provider-${index}"><circle cx="${106 + index * 100}" cy="950" r="36"/></clipPath><circle cx="${106 + index * 100}" cy="950" r="36" fill="#fff"/>${image ? `<image href="${toDataUri(image)}" x="70" y="914" width="72" height="72" preserveAspectRatio="xMidYMid slice" clip-path="url(#square-provider-${index})"/>` : ''}`
-  )).join('');
-  const squareAvailabilitySvg = squareProviderSvg || `<circle cx="106" cy="950" r="36" fill="#fff"/><image href="${toDataUri(bluRayIcon, 'image/svg+xml')}" x="70" y="914" width="72" height="72"/>`;
+  const squareProviderSvg = providerImages.filter(Boolean).slice(0, 5).map((image, index) => {
+    const size = 96;
+    const gap = 56;
+    const x = 84 + index * (size + gap);
+    const y = 902;
+    const centerX = x + size / 2;
+    const centerY = y + size / 2;
+    return `<clipPath id="square-provider-${index}"><circle cx="${centerX}" cy="${centerY}" r="48"/></clipPath><image href="${toDataUri(image)}" x="${x}" y="${y}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid slice" clip-path="url(#square-provider-${index})"/>`;
+  }).join('');
   const instagramPosterLayer = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg"><clipPath id="instagram-poster"><rect x="254" y="112" width="574" height="858" rx="30"/></clipPath><image href="${toDataUri(poster, 'image/jpeg')}" x="254" y="112" width="574" height="858" preserveAspectRatio="xMidYMid slice" clip-path="url(#instagram-poster)"/></svg>`;
   const instagramDetailsLayer = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
     <defs><style>.square-title{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:${squareTitle.fontSize}px;font-weight:900}.square-copy{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:22px;font-weight:400}.square-label{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:28px;font-weight:400;letter-spacing:2px}</style></defs>
     <rect x="84" y="145" width="120" height="58" rx="29" fill="#fff"/><text x="144" y="183" text-anchor="middle" fill="#111" font-family="Roboto Flex, Arial, sans-serif" font-size="29">${year}</text>
     ${squareTitleSvg}<text x="84" y="${272 + squareTitle.lines.length * (squareTitle.fontSize + 18) + 34}" class="square-copy">${xmlEscape(meta)}</text>
-    <text x="84" y="820" class="square-label">WATCH IT ON</text><line x1="84" y1="872" x2="996" y2="872" stroke="#fff" stroke-width="4"/>${squareAvailabilitySvg}
+    <text x="84" y="820" class="square-label">WATCH IT ON</text><line x1="84" y1="872" x2="996" y2="872" stroke="#fff" stroke-width="4"/>${squareProviderSvg}
   </svg>`;
 
   const postText = `${details.title} (${year})\nDirector: ${director}\nGenres: ${genres.join(', ')}\n${websiteUrl}/?movie=${details.id}`;
