@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://90minutemovie.com/sitemap.xml
+Sitemap: https://www.90minutemovie.com/sitemap.xml
