@@ -37,6 +37,13 @@ The publisher needs these GitHub Actions secrets: `X_API_KEY`,
 `X_API_SECRET`, `X_ACCESS_TOKEN`, and `X_ACCESS_TOKEN_SECRET`. The X app and
 the access token must have Read and Write permission.
 
+## Instagram assets
+
+`Movie bot Instagram assets` is manual-only. It turns the next queued movies
+into a pair of 1080 × 1080 images: the poster card and the matching details /
+availability card, plus the caption. It never posts to Instagram or edits the
+queue.
+
 `workflow-templates/` contains the two GitHub Actions workflows needed to
 initialize the queue and publish it. They are templates because workflow
 changes must be added through the repository's GitHub workflow editor in this

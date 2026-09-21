@@ -1,0 +1,41 @@
+name: Movie bot Instagram assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      count:
+        description: Number of upcoming queued movies to export (1-28; default 14).
+        required: false
+        default: '14'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  generate-instagram-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+      TMDB_BEARER_TOKEN: ${{ secrets.TMDB_BEARER_TOKEN }}
+      WEBSITE_URL: https://90minutemovie.com
+      BOT_INSTAGRAM_LIMIT: ${{ inputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install card font
+        run: |
+          mkdir -p ~/.local/share/fonts
+          curl -fL --retry 3 'https://github.com/google/fonts/raw/main/ofl/robotoflex/RobotoFlex%5BGRAD%2CXOPQ%2CXTRA%2CYOPQ%2CYTAS%2CYTDE%2CYTFI%2CYTLC%2CYTUC%2Copsz%2Cslnt%2Cwdth%2Cwght%5D.ttf' -o ~/.local/share/fonts/RobotoFlex.ttf
+          fc-cache -f
+      - run: node bot/generate-instagram-assets.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: movie-bot-instagram-assets
+          path: bot-instagram-assets/
+          if-no-files-found: error

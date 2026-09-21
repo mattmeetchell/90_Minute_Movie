@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import sharp from 'sharp';
 import { getCardTheme } from './card-themes.mjs';
+import { createTrackedCharacters, getSquareTitleLayout, getTitleLayout } from './card-layout.mjs';
 
 const outputDirectory = resolve(process.env.BOT_OUTPUT_DIR || 'bot-output');
 const tmdbBaseUrl = 'https://api.themoviedb.org/3';
@@ -63,55 +64,6 @@ const fetchBuffer = async (url) => {
 const toDataUri = (buffer, contentType = 'image/png') => `data:${contentType};base64,${buffer.toString('base64')}`;
 const xmlEscape = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&apos;', '"': '&quot;' })[character]);
 
-// The card has a deliberately generous right-side gutter; titles must never
-// enter the logo area or run off the exported image.
-const createTrackedCharacters = (line, tracking) => Array.from(line).map((character, characterIndex) => (
-  `<tspan dx="${characterIndex === 0 ? 0 : tracking}">${xmlEscape(character)}</tspan>`
-)).join('');
-
-const splitTitleIntoLines = (words, lineCount) => {
-  if (lineCount === 1) return [[words.join(' ')]];
-  const candidates = [];
-  for (let index = 1; index <= words.length - lineCount + 1; index += 1) {
-    const firstLine = words.slice(0, index).join(' ');
-    splitTitleIntoLines(words.slice(index), lineCount - 1).forEach((remainingLines) => {
-      candidates.push([firstLine, ...remainingLines]);
-    });
-  }
-  return candidates;
-};
-
-const fontSizeForTitleLength = (length) => {
-  if (length <= 8) return 126;
-  if (length <= 10) return 116;
-  if (length <= 12) return 104;
-  if (length <= 14) return 88;
-  if (length <= 16) return 72;
-  if (length <= 18) return 60;
-  if (length <= 22) return 52;
-  return 48;
-};
-
-const getTitleLayout = (title) => {
-  const words = title.split(/\s+/).filter(Boolean);
-  if (title.length <= 15 || words.length < 2) {
-    const fontSize = fontSizeForTitleLength(title.length);
-    return { lines: [title], fontSize, tracking: (fontSize * 0.02).toFixed(2) };
-  }
-
-  const twoLineCandidates = splitTitleIntoLines(words, 2);
-  const bestTwoLineCandidate = twoLineCandidates.sort((first, second) => (
-    Math.max(...first.map((line) => line.length)) - Math.max(...second.map((line) => line.length))
-  ))[0];
-  const longestTwoLineLength = Math.max(...bestTwoLineCandidate.map((line) => line.length));
-  const lines = longestTwoLineLength <= 18 || words.length < 3
-    ? bestTwoLineCandidate
-    : splitTitleIntoLines(words, 3).sort((first, second) => (
-      Math.max(...first.map((line) => line.length)) - Math.max(...second.map((line) => line.length))
-    ))[0];
-  const fontSize = fontSizeForTitleLength(Math.max(...lines.map((line) => line.length)));
-  return { lines, fontSize, tracking: (fontSize * 0.02).toFixed(2) };
-};
 
 const dateSeed = () => {
   const now = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
@@ -204,6 +156,7 @@ const main = async () => {
   ]);
 
   const director = credits.crew.find((person) => person.job === 'Director')?.name || 'Unknown';
+  const leadCast = credits.cast.slice(0, 4).map((person) => person.name).filter(Boolean);
   const year = (details.release_date || candidate.release_date || '').slice(0, 4) || '—';
   const isHorror = details.genres.some((genre) => genre.id === 27);
   const hasTargetRuntime = details.runtime >= (isOccasionalLongPick ? 103 : 90)
@@ -241,7 +194,7 @@ const main = async () => {
     : '').join('');
   const availabilitySvg = providerSvg || `<image href="${toDataUri(bluRayIcon, 'image/svg+xml')}" x="806" y="773" width="80" height="80" />`;
   const titleSvg = titleLines.map((line, index) => {
-    const trackedCharacters = createTrackedCharacters(line, titleTracking);
+    const trackedCharacters = createTrackedCharacters(line, titleTracking, xmlEscape);
     return `<text x="806" y="${titleTop + index * titleLineHeight}" class="title" dominant-baseline="hanging" xml:space="preserve">${trackedCharacters}</text>`;
   }).join('');
   const meta = `${Math.floor(details.runtime / 60)}h ${details.runtime % 60}m • ${certification} • Director: ${director}`;
@@ -265,13 +218,54 @@ const main = async () => {
     <image href="${toDataUri(logo, 'image/svg+xml')}" x="1502" y="68" width="112" height="112" />
   </svg>`;
 
+  const squareTheme = cardTheme.name === 'october'
+    ? '<linearGradient id="square-background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050101"/><stop offset=".55" stop-color="#260604"/><stop offset="1" stop-color="#8b2106"/></linearGradient><radialGradient id="square-glow" cx="0" cy="1" r=".82"><stop stop-color="#e17b17" stop-opacity=".82"/><stop offset="1" stop-color="#e17b17" stop-opacity="0"/></radialGradient>'
+    : '<linearGradient id="square-background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050608"/><stop offset=".55" stop-color="#1b3443"/><stop offset="1" stop-color="#159b82"/></linearGradient><radialGradient id="square-glow" cx="0" cy="1" r=".82"><stop stop-color="#96002e" stop-opacity=".82"/><stop offset="1" stop-color="#96002e" stop-opacity="0"/></radialGradient>';
+  const squareTitle = getSquareTitleLayout(details.title);
+  const squareTitleSvg = squareTitle.lines.map((line, index) => (
+    `<text x="84" y="${272 + index * (squareTitle.fontSize + 18)}" class="square-title" dominant-baseline="hanging" xml:space="preserve">${createTrackedCharacters(line, squareTitle.tracking, xmlEscape)}</text>`
+  )).join('');
+  const squareProviderSvg = providerImages.slice(0, 5).map((image, index) => image
+    ? `<clipPath id="square-provider-${index}"><circle cx="${106 + index * 100}" cy="898" r="36"/></clipPath><circle cx="${106 + index * 100}" cy="898" r="36" fill="#fff"/><image href="${toDataUri(image)}" x="70" y="862" width="72" height="72" preserveAspectRatio="xMidYMid slice" clip-path="url(#square-provider-${index})"/>`
+    : '').join('');
+  const squareAvailabilitySvg = squareProviderSvg || `<circle cx="106" cy="898" r="36" fill="#fff"/><image href="${toDataUri(bluRayIcon, 'image/svg+xml')}" x="70" y="862" width="72" height="72"/>`;
+  const instagramPosterSvg = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+    <defs>${squareTheme}</defs><rect width="1080" height="1080" fill="url(#square-background)"/><rect width="1080" height="1080" fill="url(#square-glow)"/>
+    <rect x="226" y="84" width="630" height="914" rx="40" fill="none" stroke="#fff" stroke-width="4"/>
+    <clipPath id="instagram-poster"><rect x="254" y="112" width="574" height="858" rx="30"/></clipPath><image href="${toDataUri(poster, 'image/jpeg')}" x="254" y="112" width="574" height="858" preserveAspectRatio="xMidYMid slice" clip-path="url(#instagram-poster)"/>
+    <image href="${toDataUri(logo, 'image/svg+xml')}" x="886" y="70" width="116" height="116"/><circle cx="958" cy="956" r="48" fill="none" stroke="#fff" stroke-width="4"/><text x="958" y="973" text-anchor="middle" fill="#fff" font-family="Roboto Flex, Arial, sans-serif" font-size="54">→</text>
+  </svg>`;
+  const instagramDetailsSvg = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+    <defs>${squareTheme}<style>.square-title{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:${squareTitle.fontSize}px;font-weight:900}.square-copy{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:22px;font-weight:400}.square-label{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:19px;font-weight:700;letter-spacing:2px}</style></defs>
+    <rect width="1080" height="1080" fill="url(#square-background)"/><rect width="1080" height="1080" fill="url(#square-glow)"/><image href="${toDataUri(logo, 'image/svg+xml')}" x="886" y="70" width="116" height="116"/>
+    <rect x="84" y="145" width="120" height="58" rx="29" fill="#fff"/><text x="144" y="183" text-anchor="middle" fill="#111" font-family="Roboto Flex, Arial, sans-serif" font-size="29">${year}</text>
+    ${squareTitleSvg}<text x="84" y="${272 + squareTitle.lines.length * (squareTitle.fontSize + 18) + 34}" class="square-copy">${xmlEscape(meta)}</text>
+    <text x="84" y="820" class="square-label">WATCH IT ON</text><line x1="84" y1="850" x2="996" y2="850" stroke="#fff" stroke-width="3"/>${squareAvailabilitySvg}
+  </svg>`;
+
   const postText = `${details.title} (${year})\nDirector: ${director}\nGenres: ${genres.join(', ')}\n${websiteUrl}/?movie=${details.id}`;
+  const instagramCaption = [
+    `${details.title} (${year})`,
+    `Director: ${director}`,
+    `Starring: ${leadCast.join(', ') || 'Cast details unavailable'}`,
+    `Genres: ${genres.join(', ')}`,
+    details.overview || 'A 90-ish minute movie pick from 90 Minute Movie.',
+    websiteUrl ? `${websiteUrl}/?movie=${details.id}` : ''
+  ].filter(Boolean).join('\n\n');
   await mkdir(outputDirectory, { recursive: true });
-  await Promise.all([
+  const files = [
     writeFile(resolve(outputDirectory, 'post.txt'), `${postText}\n`),
     sharp(Buffer.from(cardSvg)).png().toFile(resolve(outputDirectory, 'card.png')),
     writeFile(resolve(outputDirectory, 'movie.json'), `${JSON.stringify({ id: details.id, title: details.title, year, runtime: details.runtime, certification, director, genres, providers: providersForUs.map((provider) => provider.provider_name), postText, scheduledAt: process.env.SCHEDULE_AT || null, theme: cardTheme.name }, null, 2)}\n`)
-  ]);
+  ];
+  if (process.env.BOT_EXPORT_INSTAGRAM === '1') {
+    files.push(
+      sharp(Buffer.from(instagramPosterSvg)).png().toFile(resolve(outputDirectory, 'instagram-poster-1080x1080.png')),
+      sharp(Buffer.from(instagramDetailsSvg)).png().toFile(resolve(outputDirectory, 'instagram-details-1080x1080.png')),
+      writeFile(resolve(outputDirectory, 'instagram-caption.txt'), `${instagramCaption}\n`)
+    );
+  }
+  await Promise.all(files);
   console.log(postText);
 };
 

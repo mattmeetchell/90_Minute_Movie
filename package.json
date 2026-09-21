@@ -10,7 +10,8 @@
     "bot:queue:october-2026:reroll": "node bot/reroll-october-review.mjs",
     "bot:queue:october-2026:approve": "node bot/add-october-review-to-queue.mjs",
     "bot:queue:november-2026": "node bot/add-november-2026-to-queue.mjs",
-    "bot:publish": "node bot/publish-queue.mjs"
+    "bot:publish": "node bot/publish-queue.mjs",
+    "bot:instagram": "node bot/generate-instagram-assets.mjs"
   },
   "dependencies": {
     "sharp": "^0.35.4",
