@@ -49,7 +49,7 @@ export const getSquareTitleLayout = (title) => {
     Math.max(...first.map((line) => line.length)) - Math.max(...second.map((line) => line.length))
   ))[0];
   const longest = Math.max(...lines.map((line) => line.length));
-  const fontSize = longest <= 8 ? 104 : longest <= 11 ? 92 : longest <= 14 ? 78 : longest <= 18 ? 66 : longest <= 23 ? 54 : 46;
+  const fontSize = longest <= 8 ? 152 : longest <= 11 ? 138 : longest <= 14 ? 118 : longest <= 18 ? 96 : longest <= 23 ? 76 : 62;
   return { lines, fontSize, tracking: (fontSize * 0.014).toFixed(2) };
 };
 
