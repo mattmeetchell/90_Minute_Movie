@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta id="themeColor" name="theme-color" content="#417EB9" />
   <script>
     if (window.location.protocol === 'file:') {
       window.location.replace('http://localhost:8001/');
+    }
+
+    if (/^\/halloween-movies\/?$/.test(window.location.pathname) || new URLSearchParams(window.location.search).get('collection') === 'halloween') {
+      document.getElementById('themeColor').setAttribute('content', '#FFA200');
     }
   </script>
   <title>90 Minute Movie Picker</title>
