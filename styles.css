@@ -95,6 +95,63 @@ body:has(.app-shell[data-collection="halloween"])::before {
   border-color: rgba(255, 132, 58, 0.42);
 }
 
+@keyframes halloweenCtaTypeShiver {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-0.25px); }
+  40% { transform: translateX(0.5px); }
+  60% { transform: translateX(-0.5px); }
+  80% { transform: translateX(0.25px); }
+}
+
+@keyframes halloweenCtaTextBuzz {
+  0%, 100% { text-shadow: none; }
+  20% { text-shadow: -0.25px 0 currentColor; }
+  40% { text-shadow: 0.5px 0 currentColor; }
+  60% { text-shadow: -0.5px 0 currentColor; }
+  80% { text-shadow: 0.25px 0 currentColor; }
+}
+
+.app-shell[data-collection="halloween"] .halloween-cta-label {
+  display: inline-block;
+  will-change: transform;
+}
+
+.app-shell[data-collection="halloween"] .button-primary:hover .halloween-cta-label {
+  animation: halloweenCtaTypeShiver 480ms steps(3, end) infinite;
+}
+
+.app-shell[data-collection="halloween"] #tryAgain.try-again-hovering::after {
+  animation:
+    tryAgainLabelRise 340ms cubic-bezier(0.16, 1, 0.3, 1) both,
+    halloweenCtaTextBuzz 480ms steps(3, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-collection="halloween"] .button-primary:hover .halloween-cta-label {
+    animation: none;
+  }
+}
+
+@media (min-width: 761px) {
+  .app-shell[data-collection="halloween"] .hero-copy {
+    width: min(560px, calc(100vw - 44px));
+  }
+
+  .app-shell[data-collection="halloween"] .hero-copy .hero-support {
+    max-width: 560px;
+  }
+
+  .halloween-support-first-line {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 760px) {
+  .halloween-desktop-break {
+    display: none;
+  }
+}
+
 @keyframes ambientGradient {
   0% {
     transform: translateY(-2%) scale(1.05);

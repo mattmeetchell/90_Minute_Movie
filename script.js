@@ -598,6 +598,7 @@ function showView(viewName) {
   }
   window.scrollTo(0, 0);
   if (viewName === 'landing') {
+    if (!currentPosterSamples.length) scheduleInitialFloatingPosterLoad();
     resumePosterWallAnimation();
     playLandingIntro();
   } else {
@@ -724,7 +725,7 @@ function resumePosterWallAnimation() {
   if (!els.posterTrack) return;
 
   els.posterTrack.classList.remove('paused');
-  requestAnimationFrame(updatePosterLoopWidth);
+  requestAnimationFrame(() => updatePosterLoopWidth());
 }
 
 function loadSavedMovies() {
@@ -2051,8 +2052,43 @@ function applyHalloweenCollectionCopy() {
   els.footerCampaignLink.textContent = '◀ Back to main flow';
   els.heroEyebrow.textContent = 'Got 90ish min?';
   els.landingView.querySelector('.hero-copy h1').innerHTML = 'Let\'s watch<br>a spooky movie';
-  els.heroSupport.innerHTML = 'Pick your rating, choose an era, and we\'ll find a Halloween-friendly movie for&nbsp;you.';
-  els.startPicking.textContent = 'Find a horror movie';
+  els.heroSupport.innerHTML = 'Pick your rating, choose an era, and we\'ll find a <span class="halloween-support-first-line">Halloween-friendly</span><br class="halloween-desktop-break"> movie for&nbsp;you.';
+  els.startPicking.textContent = "Let's Go0o0o0 👻";
+  decorateHalloweenCtaLabels();
+}
+
+function decorateHalloweenCtaLabels(root = document) {
+  const buttons = [];
+  if (root instanceof Element && root.matches('.button-primary')) buttons.push(root);
+  if (root.querySelectorAll) buttons.push(...root.querySelectorAll('.button-primary'));
+
+  buttons.forEach((button) => {
+    if (button.querySelector(':scope > .halloween-cta-label')) return;
+
+    const textNodes = [...button.childNodes].filter((node) => (
+      node.nodeType === Node.TEXT_NODE && node.textContent.trim()
+    ));
+    if (!textNodes.length) return;
+
+    const label = document.createElement('span');
+    label.className = 'halloween-cta-label';
+    button.insertBefore(label, textNodes[0]);
+    textNodes.forEach((node) => label.append(node));
+  });
+}
+
+function watchHalloweenCtaLabels() {
+  if (!IS_HALLOWEEN_COLLECTION) return;
+
+  decorateHalloweenCtaLabels();
+  new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'childList') decorateHalloweenCtaLabels(mutation.target);
+      mutation.addedNodes.forEach((node) => {
+        if (node instanceof Element) decorateHalloweenCtaLabels(node);
+      });
+    });
+  }).observe(els.appShell, { childList: true, subtree: true });
 }
 
 async function loadGenres() {
@@ -5329,6 +5365,7 @@ async function init() {
   els.appShell.dataset.resultSource = state.resultSource;
   els.appShell.dataset.navOpen = 'false';
   applyHalloweenCollectionCopy();
+  watchHalloweenCtaLabels();
   await preloadSelectorStateIcons();
   loadSavedMovies();
   randomizeAboutLongMovie();
