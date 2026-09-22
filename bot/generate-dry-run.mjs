@@ -82,6 +82,15 @@ const scheduledDate = process.env.SCHEDULE_DATE || new Intl.DateTimeFormat('en-C
 const avoidHorrorForThisSlot = /^\d{4}-09-/.test(scheduledDate);
 const requireHorrorForThisSlot = process.env.REQUIRE_HORROR === '1';
 const cardTheme = getCardTheme(process.env.BOT_CARD_THEME);
+const instagramTemplateFiles = cardTheme.name === 'october'
+  ? [
+      'bot/templates/instagram-poster-october-template.png',
+      'bot/templates/instagram-details-october-template.png'
+    ]
+  : [
+      'bot/templates/instagram-poster-template.png',
+      'bot/templates/instagram-details-template.png'
+    ];
 const isOccasionalLongPick = process.env.ALLOW_LONG_RUNTIME === undefined
   ? selectionSeed % 5 === 0
   : process.env.ALLOW_LONG_RUNTIME === '1';
@@ -182,8 +191,8 @@ const main = async () => {
     readFile(resolve('assets/brand/90_M_Logo.svg')),
     readFile(resolve('assets/media/Blu-ray.svg')),
     Promise.all(providersForUs.map((provider) => fetchBuffer(`${imageBaseUrl}/w185${provider.logo_path}`).catch(() => null))),
-    readFile(resolve('bot/templates/instagram-poster-template.png')),
-    readFile(resolve('bot/templates/instagram-details-template.png'))
+    readFile(resolve(instagramTemplateFiles[0])),
+    readFile(resolve(instagramTemplateFiles[1]))
   ]);
 
   const titleLayout = getTitleLayout(details.title);

@@ -42,7 +42,9 @@ the access token must have Read and Write permission.
 `Movie bot Instagram assets` is manual-only. It turns the next queued movies
 into a pair of 1080 × 1080 images at 2× export resolution (2160 × 2160): the poster card and the matching details /
 availability card, plus the caption. It never posts to Instagram or edits the
-queue.
+queue. In the Action, choose `posted` to generate older Twitter-published
+entries in chronological order for an Instagram catch-up batch, or `all` to
+include both posted and upcoming queue entries.
 
 `workflow-templates/` contains the two GitHub Actions workflows needed to
 initialize the queue and publish it. They are templates because workflow

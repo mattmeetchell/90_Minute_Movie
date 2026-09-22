@@ -4,10 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       count:
-        description: Number of upcoming queued movies to export (1-28; default 14).
+        description: Number of movies to export (1-28; default 14).
         required: false
         default: '14'
         type: string
+      source:
+        description: Choose queued movies, previously posted movies for catch-up, or both.
+        required: false
+        default: queued
+        type: choice
+        options:
+          - queued
+          - posted
+          - all
 
 permissions:
   contents: read
@@ -21,6 +30,7 @@ jobs:
       TMDB_BEARER_TOKEN: ${{ secrets.TMDB_BEARER_TOKEN }}
       WEBSITE_URL: https://90minutemovie.com
       BOT_INSTAGRAM_LIMIT: ${{ inputs.count }}
+      BOT_INSTAGRAM_SOURCE: ${{ inputs.source }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

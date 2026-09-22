@@ -5,16 +5,23 @@ import { readQueue } from './queue-utils.mjs';
 
 const outputDirectory = resolve(process.env.BOT_INSTAGRAM_OUTPUT_DIR || 'bot-instagram-assets');
 const limit = Math.max(1, Math.min(28, Number.parseInt(process.env.BOT_INSTAGRAM_LIMIT || '14', 10)));
+const source = process.env.BOT_INSTAGRAM_SOURCE || 'queued';
+
+if (!['queued', 'posted', 'all'].includes(source)) {
+  throw new Error('BOT_INSTAGRAM_SOURCE must be queued, posted, or all.');
+}
 
 const directoryNameFor = (entry) => `${entry.date}-${String(entry.hour).padStart(2, '0')}-${entry.title
   .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`;
 
 const main = async () => {
   const queue = await readQueue();
-  const entries = queue.entries.filter((entry) => entry.state === 'queued')
+  const entries = queue.entries.filter((entry) => (
+    source === 'all' ? ['queued', 'posted'].includes(entry.state) : entry.state === source
+  ))
     .sort((first, second) => `${first.date}-${first.hour}`.localeCompare(`${second.date}-${second.hour}`))
     .slice(0, limit);
-  if (!entries.length) throw new Error('There are no queued movies to export for Instagram.');
+  if (!entries.length) throw new Error(`There are no ${source === 'all' ? 'queued or posted' : source} movies to export for Instagram.`);
 
   await rm(outputDirectory, { recursive: true, force: true });
   await mkdir(outputDirectory, { recursive: true });
@@ -39,8 +46,8 @@ const main = async () => {
     await rm(renderDirectory, { recursive: true, force: true });
     manifest.push({ title: entry.title, scheduledAt: entry.slotLabel, directory });
   }
-  await writeFile(resolve(outputDirectory, 'README.txt'), 'Each folder contains the two ordered 1080 x 1080 Instagram images at 2× export resolution (2160 x 2160), plus the matching caption for one queued movie. This export never posts to Instagram and never changes the queue.\n');
-  await writeFile(resolve(outputDirectory, 'manifest.json'), `${JSON.stringify({ generatedAt: new Date().toISOString(), entries: manifest }, null, 2)}\n`);
+  await writeFile(resolve(outputDirectory, 'README.txt'), 'Each folder contains the two ordered 1080 x 1080 Instagram images at 2× export resolution (2160 x 2160), plus the matching caption. This export never posts to Instagram and never changes the queue.\n');
+  await writeFile(resolve(outputDirectory, 'manifest.json'), `${JSON.stringify({ generatedAt: new Date().toISOString(), source, entries: manifest }, null, 2)}\n`);
 };
 
 main().catch((error) => { console.error(error); process.exitCode = 1; });
