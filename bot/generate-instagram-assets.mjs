@@ -6,6 +6,7 @@ import { readQueue } from './queue-utils.mjs';
 const outputDirectory = resolve(process.env.BOT_INSTAGRAM_OUTPUT_DIR || 'bot-instagram-assets');
 const limit = Math.max(1, Math.min(28, Number.parseInt(process.env.BOT_INSTAGRAM_LIMIT || '14', 10)));
 const source = process.env.BOT_INSTAGRAM_SOURCE || 'queued';
+const startAfter = (process.env.BOT_INSTAGRAM_START_AFTER || '').trim();
 
 if (!['queued', 'posted', 'all'].includes(source)) {
   throw new Error('BOT_INSTAGRAM_SOURCE must be queued, posted, or all.');
@@ -14,13 +15,22 @@ if (!['queued', 'posted', 'all'].includes(source)) {
 const directoryNameFor = (entry) => `${entry.date}-${String(entry.hour).padStart(2, '0')}-${entry.title
   .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`;
 
+const normalizedTitle = (title) => title.trim().toLocaleLowerCase();
+
 const main = async () => {
   const queue = await readQueue();
-  const entries = queue.entries.filter((entry) => (
+  const matchingEntries = queue.entries.filter((entry) => (
     source === 'all' ? ['queued', 'posted'].includes(entry.state) : entry.state === source
   ))
-    .sort((first, second) => `${first.date}-${first.hour}`.localeCompare(`${second.date}-${second.hour}`))
-    .slice(0, limit);
+    .sort((first, second) => `${first.date}-${first.hour}`.localeCompare(`${second.date}-${second.hour}`));
+  let startIndex = 0;
+  if (startAfter) {
+    const matches = matchingEntries.filter((entry) => normalizedTitle(entry.title) === normalizedTitle(startAfter));
+    if (!matches.length) throw new Error(`Could not find "${startAfter}" among the ${source} queue entries.`);
+    if (matches.length > 1) throw new Error(`More than one ${source} queue entry is titled "${startAfter}". Use a unique title.`);
+    startIndex = matchingEntries.indexOf(matches[0]) + 1;
+  }
+  const entries = matchingEntries.slice(startIndex, startIndex + limit);
   if (!entries.length) throw new Error(`There are no ${source === 'all' ? 'queued or posted' : source} movies to export for Instagram.`);
 
   await rm(outputDirectory, { recursive: true, force: true });

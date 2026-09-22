@@ -17,6 +17,11 @@ on:
           - queued
           - posted
           - all
+      start_after:
+        description: Optional movie title to skip through; export starts with the next scheduled matching movie.
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: read
@@ -31,6 +36,7 @@ jobs:
       WEBSITE_URL: https://90minutemovie.com
       BOT_INSTAGRAM_LIMIT: ${{ inputs.count }}
       BOT_INSTAGRAM_SOURCE: ${{ inputs.source }}
+      BOT_INSTAGRAM_START_AFTER: ${{ inputs.start_after }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

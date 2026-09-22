@@ -50,3 +50,7 @@ include both posted and upcoming queue entries.
 initialize the queue and publish it. They are templates because workflow
 changes must be added through the repository's GitHub workflow editor in this
 setup. Copy them into `.github/workflows/` when enabling the bot.
+
+The Instagram Action's optional `start_after` field begins the export with the
+movie scheduled immediately after the supplied title. It only searches within
+the selected source (`queued`, `posted`, or `all`).
