@@ -20,7 +20,9 @@ const formatDate = (entry) => {
 const render = () => {
   const visibleEntries = entries.filter((entry) => {
     if (activeFilter === 'posted') return entry.state === 'posted';
-    if (activeFilter === 'all') return true;
+    // Skipped slots are retained in the source queue for audit history, but
+    // should not appear as planned or published movies on the public page.
+    if (activeFilter === 'all') return entry.state !== 'skipped';
     return entry.state === 'queued';
   });
 
