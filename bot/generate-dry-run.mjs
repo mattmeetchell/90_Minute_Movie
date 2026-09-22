@@ -233,9 +233,9 @@ const main = async () => {
     const centerY = y + size / 2;
     return `<clipPath id="square-provider-${index}"><circle cx="${centerX}" cy="${centerY}" r="48"/></clipPath><image href="${toDataUri(image)}" x="${x}" y="${y}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid slice" clip-path="url(#square-provider-${index})"/>`;
   }).join('');
-  const instagramPosterLayer = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg"><clipPath id="instagram-poster"><rect x="254" y="112" width="574" height="858" rx="30"/></clipPath><image href="${toDataUri(poster, 'image/jpeg')}" x="254" y="112" width="574" height="858" preserveAspectRatio="xMidYMid slice" clip-path="url(#instagram-poster)"/></svg>`;
-  const instagramDetailsLayer = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
-    <defs><style>.square-title{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:${squareTitle.fontSize}px;font-weight:900}.square-copy{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:22px;font-weight:400}.square-label{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:28px;font-weight:400;letter-spacing:2px}</style></defs>
+  const instagramPosterLayer = `<svg width="2160" height="2160" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg"><clipPath id="instagram-poster"><rect x="254" y="112" width="574" height="858" rx="30"/></clipPath><image href="${toDataUri(poster, 'image/jpeg')}" x="254" y="112" width="574" height="858" preserveAspectRatio="xMidYMid slice" clip-path="url(#instagram-poster)"/></svg>`;
+  const instagramDetailsLayer = `<svg width="2160" height="2160" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+    <defs><style>.square-title{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:${squareTitle.fontSize}px;font-weight:900}.square-copy{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:28px;font-weight:400}.square-label{fill:#fff;font-family:'Roboto Flex',Arial,sans-serif;font-size:28px;font-weight:400;letter-spacing:2px}</style></defs>
     <rect x="84" y="145" width="120" height="58" rx="29" fill="#fff"/><text x="144" y="183" text-anchor="middle" fill="#111" font-family="Roboto Flex, Arial, sans-serif" font-size="29">${year}</text>
     ${squareTitleSvg}<text x="84" y="${272 + squareTitle.lines.length * (squareTitle.fontSize + 18) + 34}" class="square-copy">${xmlEscape(meta)}</text>
     <text x="84" y="820" class="square-label">WATCH IT ON</text><line x1="84" y1="872" x2="996" y2="872" stroke="#fff" stroke-width="4"/>${squareProviderSvg}
@@ -258,8 +258,8 @@ const main = async () => {
   ];
   if (process.env.BOT_EXPORT_INSTAGRAM === '1') {
     files.push(
-      sharp(instagramPosterTemplate).resize(1080, 1080).composite([{ input: Buffer.from(instagramPosterLayer) }]).png().toFile(resolve(outputDirectory, 'instagram-poster-1080x1080.png')),
-      sharp(instagramDetailsTemplate).resize(1080, 1080).composite([{ input: Buffer.from(instagramDetailsLayer) }]).png().toFile(resolve(outputDirectory, 'instagram-details-1080x1080.png')),
+      sharp(instagramPosterTemplate).composite([{ input: Buffer.from(instagramPosterLayer) }]).png().toFile(resolve(outputDirectory, 'instagram-poster-1080x1080@2x.png')),
+      sharp(instagramDetailsTemplate).composite([{ input: Buffer.from(instagramDetailsLayer) }]).png().toFile(resolve(outputDirectory, 'instagram-details-1080x1080@2x.png')),
       writeFile(resolve(outputDirectory, 'instagram-caption.txt'), `${instagramCaption}\n`)
     );
   }

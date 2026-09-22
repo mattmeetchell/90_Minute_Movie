@@ -40,7 +40,7 @@ the access token must have Read and Write permission.
 ## Instagram assets
 
 `Movie bot Instagram assets` is manual-only. It turns the next queued movies
-into a pair of 1080 × 1080 images: the poster card and the matching details /
+into a pair of 1080 × 1080 images at 2× export resolution (2160 × 2160): the poster card and the matching details /
 availability card, plus the caption. It never posts to Instagram or edits the
 queue.
 
