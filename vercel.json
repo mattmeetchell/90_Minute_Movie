@@ -4,9 +4,14 @@
   "rewrites": [
     {
       "source": "/halloween-movies",
-      "destination": "/"
+      "destination": "/api/halloween-page"
     }
   ],
+  "functions": {
+    "api/halloween-page.js": {
+      "includeFiles": "index.html"
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",
