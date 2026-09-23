@@ -2,12 +2,9 @@ name: Movie bot publisher
 
 on:
   schedule:
-    # GitHub schedules use UTC and can be delayed at the top of the hour.
-    # Run seven minutes after each intended ET slot, covering both EDT and EST.
-    - cron: '7 16 * * *' # 12:07 PM EDT
-    - cron: '7 17 * * *' # 12:07 PM EST
-    - cron: '7 0 * * *'  # 8:07 PM EDT
-    - cron: '7 1 * * *'  # 8:07 PM EST
+    # Check off the hour so a delayed GitHub schedule can still recover a due
+    # entry that day. publish-queue.mjs sends nothing unless a queue item is due.
+    - cron: '7 * * * *'
   workflow_dispatch:
     inputs:
       live_post:
