@@ -2,9 +2,12 @@ const grid = document.querySelector('#queueGrid');
 const summary = document.querySelector('#queueSummary');
 const errorMessage = document.querySelector('#queueError');
 const filters = [...document.querySelectorAll('[data-filter]')];
+const TMDB_PROXY_URL = '/api/tmdb';
+const POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w342';
 
 let entries = [];
 let activeFilter = 'upcoming';
+const posterPathCache = new Map();
 
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
 
@@ -15,6 +18,42 @@ const formatDate = (entry) => {
     day: new Intl.DateTimeFormat('en-US', { day: 'numeric', timeZone: 'UTC' }).format(date),
     time: entry.hour === 12 ? '12 PM ET' : '8 PM ET'
   };
+};
+
+const loadPoster = async (image) => {
+  const movieId = image.dataset.movieId;
+  try {
+    let posterPath = posterPathCache.get(movieId);
+    if (posterPath === undefined) {
+      const response = await fetch(`${TMDB_PROXY_URL}?path=/movie/${encodeURIComponent(movieId)}`);
+      if (!response.ok) throw new Error(`Movie lookup failed (${response.status}).`);
+      const movie = await response.json();
+      posterPath = movie.poster_path || null;
+      posterPathCache.set(movieId, posterPath);
+    }
+    if (!posterPath) throw new Error('No poster available.');
+    image.src = `${POSTER_BASE_URL}${posterPath}`;
+    image.hidden = false;
+  } catch {
+    image.closest('.queue-poster')?.classList.add('is-unavailable');
+  }
+};
+
+const hydratePosters = () => {
+  const images = [...grid.querySelectorAll('[data-movie-id]')];
+  if (!('IntersectionObserver' in window)) {
+    images.forEach(loadPoster);
+    return;
+  }
+
+  const observer = new IntersectionObserver((records) => {
+    records.forEach((record) => {
+      if (!record.isIntersecting) return;
+      observer.unobserve(record.target);
+      loadPoster(record.target);
+    });
+  }, { rootMargin: '240px 0px' });
+  images.forEach((image) => observer.observe(image));
 };
 
 const render = () => {
@@ -38,6 +77,9 @@ const render = () => {
     const tweetLink = entry.tweetUrl ? `<a href="${escapeHtml(entry.tweetUrl)}" target="_blank" rel="noreferrer">View post</a>` : '';
     return `<article class="queue-card">
       <div class="queue-date" aria-label="${escapeHtml(entry.slotLabel)}"><span class="queue-date-month">${date.month}</span><span class="queue-date-day">${date.day}</span><span class="queue-date-time">${date.time}</span></div>
+      <a class="queue-poster" href="/?movie=${encodeURIComponent(entry.id)}" aria-label="Open ${escapeHtml(entry.title)}">
+        <img data-movie-id="${encodeURIComponent(entry.id)}" alt="${escapeHtml(entry.title)} poster" hidden />
+      </a>
       <div class="queue-content">
         <span class="status ${isPosted ? 'posted' : ''}">${status}</span>
         <h2 class="queue-title">${escapeHtml(entry.title)} <span class="queue-year">(${escapeHtml(entry.year)})</span></h2>
@@ -47,6 +89,7 @@ const render = () => {
       </div>
     </article>`;
   }).join('');
+  hydratePosters();
 };
 
 filters.forEach((filter) => filter.addEventListener('click', () => {
