@@ -1439,6 +1439,7 @@ img {
   grid-template-columns: repeat(6, minmax(112px, 1fr));
 }
 
+
 .rating-grid {
   grid-template-columns: repeat(4, minmax(132px, 1fr));
   justify-items: center;
@@ -4115,6 +4116,7 @@ button.result-filter-pill:focus-visible::after {
   padding: 4px;
   text-align: center;
 }
+
 
 .video-frame {
   aspect-ratio: 16 / 9;

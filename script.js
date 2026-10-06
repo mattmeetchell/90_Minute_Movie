@@ -214,6 +214,12 @@ const FOOTER_DVD_FILTERS = [
   'brightness(0) saturate(100%) invert(68%) sepia(76%) saturate(1568%) hue-rotate(72deg) brightness(104%) contrast(102%)'
 ];
 
+const PREFERRED_STREAMING_SERVICES = [
+  'Netflix', 'Hulu', 'Prime Video', 'Disney Plus', 'Max', 'Tubi', 'Peacock',
+  'Paramount Plus', 'Apple TV Plus', 'The Roku Channel', 'Pluto TV', 'Freevee'
+];
+const HALLOWEEN_PRIORITY_SERVICES = ['Shudder', ...PREFERRED_STREAMING_SERVICES];
+
 const state = {
   genres: [],
   selectedGenreIds: [],
@@ -221,6 +227,7 @@ const state = {
   anyRatingSelected: false,
   selectedDecades: [],
   anyEraSelected: false,
+  canonicalProviderLogos: new Map(),
   isLoadingCount: false,
   activeView: 'landing',
   resultSource: 'filtered',
@@ -2099,6 +2106,49 @@ async function loadGenres() {
   renderGenrePills();
 }
 
+async function loadCanonicalProviderLogos() {
+  try {
+    const data = await tmdbFetch('/watch/providers/movie', { watch_region: 'US', language: 'en-US' });
+    const logos = new Map();
+    (data.results || []).forEach((provider) => {
+      const originalName = provider?.provider_name || '';
+      const normalizedName = normalizeProviderName(originalName);
+      // Only accept a provider's own catalog entry, never a channel, plan, or
+      // reseller variant that happens to normalize to the same destination.
+      if (
+        provider?.logo_path &&
+        originalName === normalizedName &&
+        !/(?:channel|with ads|essential|premium)/i.test(originalName)
+      ) {
+        logos.set(normalizedName, provider.logo_path);
+      }
+    });
+    state.canonicalProviderLogos = logos;
+    if (state.currentResultBundle) {
+      renderProviders(
+        state.currentResultBundle.providerData.results?.US || state.currentResultBundle.providerData.results?.GB || null,
+        state.currentResultBundle.details
+      );
+    }
+  } catch (error) {
+    console.warn('Could not load canonical provider logos.', error);
+  }
+}
+
+function getProviderPriority(name = '') {
+  const normalized = normalizeProviderName(name).toLowerCase();
+  const priorities = IS_HALLOWEEN_COLLECTION ? HALLOWEEN_PRIORITY_SERVICES : PREFERRED_STREAMING_SERVICES;
+  const aliases = [
+    [/netflix/, 'Netflix'], [/hulu/, 'Hulu'], [/prime video|amazon prime/, 'Prime Video'],
+    [/disney/, 'Disney Plus'], [/^(?:max|hbo)/, 'Max'], [/tubi/, 'Tubi'], [/peacock/, 'Peacock'],
+    [/paramount/, 'Paramount Plus'], [/apple tv/, 'Apple TV Plus'], [/roku/, 'The Roku Channel'],
+    [/pluto/, 'Pluto TV'], [/freevee/, 'Freevee'], [/shudder/, 'Shudder']
+  ];
+  const canonical = aliases.find(([pattern]) => pattern.test(normalized))?.[1] || normalized;
+  const index = priorities.findIndex((service) => canonical === service.toLowerCase());
+  return index < 0 ? 1000 : index;
+}
+
 function preloadGenreIcons() {
   const iconPaths = [...new Set([...Object.values(GENRE_ICONS), ...Object.values(GENRE_FILLED_ICONS)])];
   return preloadImagePaths(iconPaths);
@@ -3479,20 +3529,47 @@ async function fetchValidMovieBundle(candidates) {
 }
 
 async function findValidMovieBundle(candidates) {
-  for (const movie of candidates.slice(0, 60)) {
-    const bundle = await fetchMovieBundle(movie.id);
-    const [details, , , providers] = bundle;
+  // A small parallel batch preserves the provider preference without turning a
+  // single picker tap into a long sequence of TMDb requests. We only look at
+  // more candidates when an entire batch has no usable result.
+  const batchSize = 8;
+  const maxCandidates = Math.min(candidates.length, 24);
 
-    if (!isValidPickerRuntime(details.runtime)) continue;
+  for (let start = 0; start < maxCandidates; start += batchSize) {
+    const batch = candidates.slice(start, start + batchSize);
+    const matches = await mapWithConcurrency(batch, 4, async (movie, index) => {
+      // Credits, videos, and release dates are only needed for the winner.
+      // Checking just details + providers keeps the ranking pass lightweight.
+      const [details, providers] = await Promise.all([
+        tmdbFetch(`/movie/${movie.id}`, { language: 'en-US' }),
+        tmdbFetch(`/movie/${movie.id}/watch/providers`)
+      ]);
+      if (!isValidPickerRuntime(details.runtime)) return null;
 
-    const hasStreamers = hasStreamingProviders(providers.results?.US || providers.results?.GB || null);
-    if (state.physicalMode ? !hasStreamers : hasStreamers) {
-      if (!await isEligibleFranchiseEntry(details)) continue;
-      return bundle;
-    }
+      const regionData = providers.results?.US || providers.results?.GB || null;
+      const hasStreamers = hasStreamingProviders(regionData);
+      if (state.physicalMode ? hasStreamers : !hasStreamers) return null;
+      if (!await isEligibleFranchiseEntry(details)) return null;
+
+      return {
+        movieId: movie.id,
+        index,
+        score: state.physicalMode ? 0 : getMovieProviderScore(regionData)
+      };
+    });
+    const validMatches = matches.filter(Boolean);
+    if (!validMatches.length) continue;
+
+    validMatches.sort((a, b) => a.score - b.score || a.index - b.index);
+    return fetchMovieBundle(validMatches[0].movieId);
   }
 
   return null;
+}
+
+function getMovieProviderScore(regionData) {
+  const providers = regionData?.flatrate || [];
+  return Math.min(...providers.map((provider) => getProviderPriority(provider.provider_name)), 1000);
 }
 
 async function isEligibleFranchiseEntry(details) {
@@ -4132,7 +4209,6 @@ function getResultFilterItems(movie = null) {
   const eras = state.anyEraSelected
     ? [{ label: 'All eras', removable: false, type: 'era', values: [] }]
     : formatSelectedEraPills(state.selectedDecades);
-
   return [
     ...(genres.length ? genres : [{ label: 'Any vibe', removable: false, type: 'genre', values: [] }]),
     ...(ratings.length ? ratings : [{ label: 'Any rating', removable: false, type: 'rating', values: [] }]),
@@ -4244,15 +4320,23 @@ function renderProviders(regionData, movie) {
   }
 
   const seen = new Set();
-  flatrate.slice(0, 5).forEach((provider) => {
+  const visibleProviders = [...flatrate]
+    .sort((a, b) => getProviderPriority(a.provider_name) - getProviderPriority(b.provider_name))
+    .filter((provider) => {
     const normalizedName = normalizeProviderName(provider.provider_name);
     if (seen.has(normalizedName)) return;
     seen.add(normalizedName);
+      return true;
+    })
+    .slice(0, 5);
+
+  visibleProviders.forEach((provider) => {
+    const normalizedName = normalizeProviderName(provider.provider_name);
 
     const pill = createProviderLink({
       name: normalizedName,
       url: getProviderUrl(normalizedName),
-      logoSrc: provider.logo_path ? `${PROVIDER_LOGO_BASE}${provider.logo_path}` : ''
+      logoSrc: getCanonicalProviderLogo(normalizedName, provider.logo_path)
     });
 
     els.providers.appendChild(pill);
@@ -4282,6 +4366,11 @@ function createProviderLink({ name, url, logoSrc }) {
   }
 
   return pill;
+}
+
+function getCanonicalProviderLogo(name, fallbackPath = '') {
+  const path = state.canonicalProviderLogos.get(name) || fallbackPath;
+  return path ? `${PROVIDER_LOGO_BASE}${path}` : '';
 }
 
 function getPhysicalMediaUrl(movie) {
@@ -4366,13 +4455,19 @@ function getProviderUrl(name) {
 
 function normalizeProviderName(name) {
   const replacements = [
-    [/HBO Max Amazon Channel/i, 'HBO Max'],
+    [/HBO Max Amazon Channel/i, 'Max'],
+    [/HBO Max/i, 'Max'],
     [/Max Amazon Channel/i, 'Max'],
-    [/Paramount Plus Apple TV Channel /i, 'Paramount Plus'],
+    [/Amazon Prime Video/i, 'Prime Video'],
+    [/Paramount Plus (?:Apple TV|Roku) (?:Premium )?Channel/i, 'Paramount Plus'],
     [/Paramount\+ Amazon Channel/i, 'Paramount Plus'],
+    [/Paramount\+ Roku Premium Channel/i, 'Paramount Plus'],
+    [/(.+) Amazon Channel/i, '$1'],
+    [/(.+) Apple TV Channel/i, '$1'],
+    [/(.+) Roku Premium Channel/i, '$1'],
     [/Paramount\+/i, 'Paramount Plus'],
     [/with Ads/i, ''],
-    [/ Premium/i, ''],
+    [/(?: Premium| Essential)/i, ''],
     [/ Standard/i, '']
   ];
 
@@ -5392,7 +5487,7 @@ async function init() {
   if (!sharedMovieId) scheduleInitialFloatingPosterLoad();
 
   try {
-    await Promise.all([loadGenres(), refreshCount()]);
+    await Promise.all([loadGenres(), loadCanonicalProviderLogos(), refreshCount()]);
   } catch (error) {
     console.error(error);
     els.resultCount.textContent = 'Add TMDb token';

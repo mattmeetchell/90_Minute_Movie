@@ -95,6 +95,38 @@ const isOccasionalLongPick = process.env.ALLOW_LONG_RUNTIME === undefined
   ? selectionSeed % 5 === 0
   : process.env.ALLOW_LONG_RUNTIME === '1';
 
+const preferredStreamingServices = [
+  'Netflix', 'Hulu', 'Prime Video', 'Disney Plus', 'Max', 'Tubi', 'Peacock',
+  'Paramount Plus', 'Apple TV Plus', 'The Roku Channel', 'Pluto TV', 'Freevee'
+];
+const normalizeProviderName = (name = '') => String(name)
+  .replace(/HBO Max Amazon Channel/i, 'HBO Max')
+  .replace(/Max Amazon Channel/i, 'Max')
+  .replace(/Paramount Plus Apple TV Channel /i, 'Paramount Plus')
+  .replace(/Paramount\+ Amazon Channel/i, 'Paramount Plus')
+  .replace(/Paramount\+/i, 'Paramount Plus')
+  .replace(/with Ads/i, '')
+  .replace(/ Premium/i, '')
+  .replace(/ Standard/i, '')
+  .trim();
+const getProviderScore = (providers = []) => {
+  const priorities = (requireHorrorForThisSlot || cardTheme.name === 'october')
+    ? ['Shudder', ...preferredStreamingServices]
+    : preferredStreamingServices;
+  return Math.min(...providers.map((provider) => {
+    const normalized = normalizeProviderName(provider.provider_name).toLowerCase();
+    const aliases = [
+      [/netflix/, 'Netflix'], [/hulu/, 'Hulu'], [/prime video|amazon prime/, 'Prime Video'],
+      [/disney/, 'Disney Plus'], [/^(?:max|hbo)/, 'Max'], [/tubi/, 'Tubi'], [/peacock/, 'Peacock'],
+      [/paramount/, 'Paramount Plus'], [/apple tv/, 'Apple TV Plus'], [/roku/, 'The Roku Channel'],
+      [/pluto/, 'Pluto TV'], [/freevee/, 'Freevee'], [/shudder/, 'Shudder']
+    ];
+    const canonical = aliases.find(([pattern]) => pattern.test(normalized))?.[1] || normalized;
+    const index = priorities.findIndex((service) => canonical === service.toLowerCase());
+    return index < 0 ? 1000 : index;
+  }), 1000);
+};
+
 const discoverMovie = async (seed) => {
   // Most picks stay close to the 100-minute brief. One in five attempts may
   // draw from the upper edge so the feed still has some longer variety.
@@ -115,7 +147,13 @@ const discoverMovie = async (seed) => {
   });
   const candidates = discovery.results.filter((movie) => movie.poster_path && movie.release_date);
   if (!candidates.length) throw new Error('No eligible movie was returned by TMDb.');
-  return candidates[Math.floor(seed / 50) % candidates.length];
+  const sample = candidates.slice(0, 10);
+  const ranked = await Promise.all(sample.map(async (movie) => {
+    const providers = await tmdbFetch(`/movie/${movie.id}/watch/providers`);
+    return { movie, score: getProviderScore(providers.results?.US?.flatrate || []) };
+  }));
+  ranked.sort((a, b) => a.score - b.score);
+  return ranked[0]?.movie || candidates[Math.floor(seed / 50) % candidates.length];
 };
 
 const movieReleaseTimestamp = (movie) => {
@@ -185,7 +223,9 @@ const main = async () => {
   const genres = isHorror
     ? ['Horror', ...genreNames.filter((genre) => genre !== 'Horror')].slice(0, 2)
     : genreNames.slice(0, 2);
-  const providersForUs = providers.results?.US?.flatrate?.slice(0, 5) || [];
+  const providersForUs = [...(providers.results?.US?.flatrate || [])]
+    .sort((a, b) => getProviderScore([a]) - getProviderScore([b]))
+    .slice(0, 5);
   const poster = await fetchBuffer(`${imageBaseUrl}/w780${details.poster_path}`);
   const [logo, bluRayIcon, providerImages, instagramPosterTemplate, instagramDetailsTemplate] = await Promise.all([
     readFile(resolve('assets/brand/90_M_Logo.svg')),
