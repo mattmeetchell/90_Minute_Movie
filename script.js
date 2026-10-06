@@ -2061,6 +2061,8 @@ function applyHalloweenCollectionCopy() {
   els.landingView.querySelector('.hero-copy h1').innerHTML = 'Let\'s watch<br>a spooky movie';
   els.heroSupport.innerHTML = 'Pick your rating, choose an era, and we\'ll find a <span class="halloween-support-first-line">Halloween-friendly</span><br class="halloween-desktop-break"> movie for&nbsp;you.';
   els.startPicking.textContent = "Let's Go0o0o0 👻";
+  document.getElementById('teamMattDescription').textContent = 'Basically Jigsaw if you think about it';
+  document.getElementById('teamChadDescription').textContent = 'JSON Voorhees';
   decorateHalloweenCtaLabels();
 }
 
