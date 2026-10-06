@@ -2063,6 +2063,8 @@ function applyHalloweenCollectionCopy() {
   els.startPicking.textContent = "Let's Go0o0o0 👻";
   document.getElementById('teamMattDescription').textContent = 'Basically Jigsaw if you think about it';
   document.getElementById('teamChadDescription').textContent = 'JSON Voorhees';
+  document.getElementById('teamMattAvatar').src = 'assets/team/matt-halloween.png';
+  document.getElementById('teamChadAvatar').src = 'assets/team/chad-halloween.png';
   decorateHalloweenCtaLabels();
 }
 
