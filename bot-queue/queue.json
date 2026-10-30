@@ -2,7 +2,7 @@
   "version": 1,
   "timeZone": "America/New_York",
   "createdAt": "2026-09-20T03:30:06.965Z",
-  "updatedAt": "2026-10-29T20:13:03.282Z",
+  "updatedAt": "2026-10-30T00:50:03.295Z",
   "entries": [
     {
       "id": 500,
@@ -2360,11 +2360,11 @@
       "hour": 20,
       "slotLabel": "Thursday, October 29 · 8:00 PM ET",
       "cardPath": "drafts/58/card.png",
-      "state": "queued",
+      "state": "posted",
       "source": "approved-october-2026",
-      "postedAt": null,
-      "tweetId": null,
-      "tweetUrl": null
+      "postedAt": "2026-10-30T00:50:03.295Z",
+      "tweetId": "2115969444585312665",
+      "tweetUrl": "https://x.com/90minutemovie/status/2115969444585312665"
     },
     {
       "id": 324544,
