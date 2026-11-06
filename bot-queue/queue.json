@@ -2,7 +2,7 @@
   "version": 1,
   "timeZone": "America/New_York",
   "createdAt": "2026-09-20T03:30:06.965Z",
-  "updatedAt": "2026-11-06T17:54:04.069Z",
+  "updatedAt": "2026-11-06T23:01:31.467Z",
   "entries": [
     {
       "id": 500,
@@ -3453,6 +3453,37 @@
       "date": "2026-12-03",
       "hour": 12,
       "slotLabel": "Thursday, December 3 · 12:00 PM ET",
+      "cardPath": "drafts/01/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 9072,
+      "title": "Little Man",
+      "year": "2006",
+      "runtime": 98,
+      "certification": "PG-13",
+      "director": "Keenen Ivory Wayans",
+      "genres": [
+        "Comedy",
+        "Crime"
+      ],
+      "providers": [
+        "Starz",
+        "Starz Apple TV channel",
+        "Starz Roku Premium Channel",
+        "Sony Pictures Core Amazon Channel"
+      ],
+      "postText": "Little Man (2006)\nDirector: Keenen Ivory Wayans\nGenres: Comedy, Crime\nhttps://90minutemovie.com/?movie=9072",
+      "scheduledAt": "Friday, December 4 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "01",
+      "date": "2026-12-04",
+      "hour": 12,
+      "slotLabel": "Friday, December 4 · 12:00 PM ET",
       "cardPath": "drafts/01/card.png",
       "state": "queued",
       "source": "automatic",
