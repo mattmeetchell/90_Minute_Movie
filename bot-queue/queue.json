@@ -2,7 +2,7 @@
   "version": 1,
   "timeZone": "America/New_York",
   "createdAt": "2026-09-20T03:30:06.965Z",
-  "updatedAt": "2026-11-05T21:55:40.038Z",
+  "updatedAt": "2026-11-06T02:17:19.413Z",
   "entries": [
     {
       "id": 500,
@@ -3425,6 +3425,34 @@
       "date": "2026-12-02",
       "hour": 12,
       "slotLabel": "Wednesday, December 2 · 12:00 PM ET",
+      "cardPath": "drafts/01/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 1397385,
+      "title": "Little Brother",
+      "year": "2026",
+      "runtime": 102,
+      "certification": "R",
+      "director": "Matt Spicer",
+      "genres": [
+        "Comedy"
+      ],
+      "providers": [
+        "Netflix",
+        "Netflix Standard with Ads"
+      ],
+      "postText": "Little Brother (2026)\nDirector: Matt Spicer\nGenres: Comedy\nhttps://90minutemovie.com/?movie=1397385",
+      "scheduledAt": "Thursday, December 3 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "01",
+      "date": "2026-12-03",
+      "hour": 12,
+      "slotLabel": "Thursday, December 3 · 12:00 PM ET",
       "cardPath": "drafts/01/card.png",
       "state": "queued",
       "source": "automatic",
