@@ -2,7 +2,7 @@
   "version": 1,
   "timeZone": "America/New_York",
   "createdAt": "2026-09-20T03:30:06.965Z",
-  "updatedAt": "2026-11-08T19:32:39.893Z",
+  "updatedAt": "2026-11-08T23:39:02.720Z",
   "entries": [
     {
       "id": 500,
@@ -3515,6 +3515,35 @@
       "date": "2026-12-05",
       "hour": 12,
       "slotLabel": "Saturday, December 5 · 12:00 PM ET",
+      "cardPath": "drafts/01/card.png",
+      "state": "queued",
+      "source": "automatic",
+      "postedAt": null,
+      "tweetId": null,
+      "tweetUrl": null
+    },
+    {
+      "id": 18311,
+      "title": "Days of Being Wild",
+      "year": "1990",
+      "runtime": 94,
+      "certification": "NR",
+      "director": "Wong Kar-wai",
+      "genres": [
+        "Crime",
+        "Drama"
+      ],
+      "providers": [
+        "HBO Max Amazon Channel",
+        "HBO Max"
+      ],
+      "postText": "Days of Being Wild (1990)\nDirector: Wong Kar-wai\nGenres: Crime, Drama\nhttps://90minutemovie.com/?movie=18311",
+      "scheduledAt": "Sunday, December 6 · 12:00 PM ET",
+      "theme": "standard",
+      "draftId": "01",
+      "date": "2026-12-06",
+      "hour": 12,
+      "slotLabel": "Sunday, December 6 · 12:00 PM ET",
       "cardPath": "drafts/01/card.png",
       "state": "queued",
       "source": "automatic",
