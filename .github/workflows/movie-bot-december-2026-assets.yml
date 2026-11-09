@@ -1,0 +1,75 @@
+name: December 2026 social assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_after:
+        description: Queue title immediately before the December run. Leave as-is for the committed December 2026 queue.
+        required: true
+        default: The Kissing Booth
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: december-2026-social-assets
+  cancel-in-progress: false
+
+jobs:
+  generate-assets:
+    name: Render December Instagram and X assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+      TMDB_BEARER_TOKEN: ${{ secrets.TMDB_BEARER_TOKEN }}
+      WEBSITE_URL: https://90minutemovie.com
+      START_AFTER: ${{ inputs.start_after }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install card font
+        run: |
+          mkdir -p ~/.local/share/fonts
+          curl -fL --retry 3 \
+            'https://github.com/google/fonts/raw/main/ofl/robotoflex/RobotoFlex%5BGRAD%2CXOPQ%2CXTRA%2CYOPQ%2CYTAS%2CYTDE%2CYTFI%2CYTLC%2CYTUC%2Copsz%2Cslnt%2Cwdth%2Cwght%5D.ttf' \
+            -o ~/.local/share/fonts/RobotoFlex.ttf
+          fc-cache -f
+
+      - name: Render Instagram assets — December 1–28
+        env:
+          BOT_INSTAGRAM_OUTPUT_DIR: december-social-assets/instagram/part-1
+          BOT_INSTAGRAM_LIMIT: '28'
+          BOT_INSTAGRAM_SOURCE: queued
+          BOT_INSTAGRAM_START_AFTER: ${{ env.START_AFTER }}
+        run: npm run bot:instagram
+
+      - name: Render Instagram assets — December 29–31
+        env:
+          BOT_INSTAGRAM_OUTPUT_DIR: december-social-assets/instagram/part-2
+          BOT_INSTAGRAM_LIMIT: '28'
+          BOT_INSTAGRAM_SOURCE: queued
+          BOT_INSTAGRAM_START_AFTER: While You Were Sleeping
+        run: npm run bot:instagram
+
+      - name: Render X assets — December 1–31
+        env:
+          BOT_X_OUTPUT_DIR: december-social-assets/x
+          BOT_X_LIMIT: '31'
+          BOT_X_SOURCE: queued
+          BOT_X_START_AFTER: ${{ env.START_AFTER }}
+        run: npm run bot:x-assets
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: december-2026-social-assets
+          path: december-social-assets/
+          if-no-files-found: error

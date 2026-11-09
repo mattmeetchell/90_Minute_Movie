@@ -9,7 +9,7 @@ const slots = (process.env.BOT_BATCH_HOURS || '12,20')
   .map((value) => Number.parseInt(value.trim(), 10))
   .filter((hour) => hour === 12 || hour === 20);
 if (!slots.length) throw new Error('BOT_BATCH_HOURS must include 12 and/or 20.');
-const maxAttemptsPerSlot = 60;
+const maxAttemptsPerSlot = Math.max(1, Math.min(300, Number.parseInt(process.env.BOT_MAX_ATTEMPTS_PER_SLOT || '60', 10)));
 const seedBase = Number.parseInt(process.env.SELECTION_SEED || '', 10) || Date.now();
 const cardTheme = process.env.BOT_BATCH_THEME || 'standard';
 const fixedSlots = JSON.parse(process.env.BOT_FIXED_SLOTS || '{}');
