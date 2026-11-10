@@ -14,7 +14,7 @@ const fixedSlots = {
   '2026-12-26-12': 9647,
   // Curated final-week holiday run. These are editorially approved even when
   // current US flatrate availability is absent or changing in TMDb.
-  '2026-12-27-12': 10439,
+  '2026-12-27-12': 10437,
   '2026-12-28-12': 2064,
   '2026-12-29-12': 9021,
   '2026-12-30-12': 104,
